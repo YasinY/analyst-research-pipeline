@@ -13,6 +13,7 @@ import java.io.UncheckedIOException;
 import java.net.InetSocketAddress;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public final class WebServer {
@@ -21,30 +22,51 @@ public final class WebServer {
     private final ObjectMapper mapper;
     private final int port;
     private final PrintStream console;
-    private final RequestGuard guard;
+    private final String indexResource;
+    private HttpServer server;
+    private ExecutorService executor;
 
     public WebServer(ResearchRunRegistry registry, ObjectMapper mapper, int port, PrintStream console) {
+        this(registry, mapper, port, console, WebConstants.INDEX_RESOURCE);
+    }
+
+    public WebServer(ResearchRunRegistry registry, ObjectMapper mapper, int port, PrintStream console,
+            String indexResource) {
         this.registry = registry;
         this.mapper = mapper;
         this.port = port;
         this.console = console;
-        this.guard = new RequestGuard(port);
+        this.indexResource = indexResource;
     }
 
-    public void start() {
+    public int start() {
         try {
-            var server = HttpServer.create(new InetSocketAddress(WebConstants.BIND_HOST, port), WebConstants.BACKLOG);
-            server.createContext(WebConstants.RESEARCHES_PATH, exchange -> guarded(exchange, this::handleResearches));
-            server.createContext(WebConstants.ROOT_PATH, exchange -> guarded(exchange, this::handleIndex));
-            server.setExecutor(Executors.newVirtualThreadPerTaskExecutor());
+            server = HttpServer.create(new InetSocketAddress(WebConstants.BIND_HOST, port), WebConstants.BACKLOG);
+            var boundPort = server.getAddress().getPort();
+            var guard = new RequestGuard(boundPort);
+            server.createContext(WebConstants.RESEARCHES_PATH,
+                    exchange -> guarded(exchange, guard, this::handleResearches));
+            server.createContext(WebConstants.ROOT_PATH, exchange -> guarded(exchange, guard, this::handleIndex));
+            executor = Executors.newVirtualThreadPerTaskExecutor();
+            server.setExecutor(executor);
             server.start();
-            console.println(WebConstants.STARTED_MESSAGE.formatted(WebConstants.BIND_HOST, port));
+            console.println(WebConstants.STARTED_MESSAGE.formatted(WebConstants.BIND_HOST, boundPort));
+            return boundPort;
         } catch (IOException failure) {
             throw new UncheckedIOException(failure);
         }
     }
 
-    private void guarded(HttpExchange exchange, HttpHandler handler) throws IOException {
+    public void stop() {
+        if (server == null) {
+            return;
+        }
+        server.stop(WebConstants.STOP_DELAY_SECONDS);
+        executor.shutdown();
+        server = null;
+    }
+
+    private void guarded(HttpExchange exchange, RequestGuard guard, HttpHandler handler) throws IOException {
         if (!guard.permits(exchange.getRequestMethod(), exchange.getRequestHeaders())) {
             respondError(exchange, WebConstants.HTTP_FORBIDDEN, WebConstants.ERROR_FORBIDDEN);
             return;
@@ -61,11 +83,12 @@ public final class WebServer {
             respondError(exchange, WebConstants.HTTP_NOT_FOUND, WebConstants.ERROR_NOT_FOUND);
             return;
         }
-        try (InputStream page = getClass().getClassLoader().getResourceAsStream(WebConstants.INDEX_RESOURCE)) {
-            if (page == null) {
-                respondError(exchange, WebConstants.HTTP_INTERNAL_ERROR, WebConstants.ERROR_INDEX_MISSING);
-                return;
-            }
+        InputStream page = getClass().getClassLoader().getResourceAsStream(indexResource);
+        if (page == null) {
+            respondError(exchange, WebConstants.HTTP_INTERNAL_ERROR, WebConstants.ERROR_INDEX_MISSING);
+            return;
+        }
+        try (page) {
             respond(exchange, WebConstants.HTTP_OK, WebConstants.CONTENT_TYPE_HTML, page.readAllBytes());
         }
     }

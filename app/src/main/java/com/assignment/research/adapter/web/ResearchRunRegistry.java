@@ -15,7 +15,7 @@ import java.util.Optional;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
 import lombok.RequiredArgsConstructor;
@@ -30,15 +30,20 @@ public final class ResearchRunRegistry {
     private final ObjectMapper mapper;
     private final Clock clock;
     private final PrintStream console;
+    private final Executor executor;
     private final Map<String, ResearchRun> runs = new ConcurrentHashMap<>();
     private final Queue<String> finishedRunIds = new ConcurrentLinkedQueue<>();
     private final AtomicLong counter = new AtomicLong(FIRST_RUN_NUMBER);
-    private final ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
+
+    public ResearchRunRegistry(ProduceBriefingUseCase useCase, AppConfig config, ObjectMapper mapper, Clock clock,
+            PrintStream console) {
+        this(useCase, config, mapper, clock, console, Executors.newVirtualThreadPerTaskExecutor());
+    }
 
     public ResearchRun start(String queryText) {
         var run = new ResearchRun(WebConstants.RUN_ID_FORMAT.formatted(counter.getAndIncrement()), queryText);
         runs.put(run.getId(), run);
-        executor.submit(() -> execute(run));
+        executor.execute(() -> execute(run));
         return run;
     }
 

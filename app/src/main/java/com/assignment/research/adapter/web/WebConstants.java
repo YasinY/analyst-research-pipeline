@@ -4,6 +4,7 @@ public final class WebConstants {
 
     public static final int DEFAULT_PORT = 8787;
     public static final int BACKLOG = 16;
+    public static final int STOP_DELAY_SECONDS = 0;
     public static final String BIND_HOST = "127.0.0.1";
     public static final String LOCALHOST = "localhost";
     public static final String HOST_FORMAT = "%s:%d";
