@@ -1,0 +1,167 @@
+[
+  {
+    "id": "src-fleet-stats-2026",
+    "title": "World Dry Bulk Fleet Review 2025",
+    "publisher": "Maritime Statistics Bureau",
+    "type": "OFFICIAL_STATISTICS",
+    "publishedAt": "2026-02-10",
+    "citesSourceId": null,
+    "keywords": ["dry bulk", "fleet", "fleet growth", "supply", "orderbook", "dwt", "vessels", "newbuilding", "deliveries", "scrapping", "capesize", "panamax", "supramax", "handysize", "market overview"],
+    "excerpt": "The world dry bulk fleet grew by 3.1 percent in 2025 to 1,020 million deadweight tonnes (dwt), the fastest expansion since 2021. Deliveries reached 31.6 million dwt while demolition stayed low at 3.9 million dwt because earnings remained above scrapping thresholds. The orderbook stood at 10.2 percent of the fleet at year end, concentrated in the Panamax and Supramax segments. Capesize vessels account for 39 percent of fleet capacity, Panamax for 25 percent, Supramax and Handysize for the remainder. The Bureau counts vessels above 10,000 dwt.",
+    "scenario": "S1 conflict side A (tier A, current) and S5 original for the derivative article"
+  },
+  {
+    "id": "src-broker-fleet-2026",
+    "title": "Dry Bulk Supply Outlook, Spring 2026",
+    "publisher": "Nordhaven Shipbrokers",
+    "type": "BROKER_NOTE",
+    "publishedAt": "2026-03-18",
+    "citesSourceId": null,
+    "keywords": ["dry bulk", "fleet", "fleet growth", "supply", "orderbook", "newbuilding", "scrapping", "deliveries", "shipyard", "capacity", "outlook"],
+    "excerpt": "On our vessel database the dry bulk fleet expanded by 2.4 percent in 2025, below the 3 percent some agencies report, because we exclude vessels in long-term lay-up and count conversions out of the fleet. Deliveries were 30.1 million dwt and removals 5.5 million dwt. We estimate the orderbook at 9.8 percent of the fleet and expect net fleet growth of 2.0 to 2.5 percent in 2026 as shipyard slots remain tight and newbuilding prices stay high. Supply growth therefore looks manageable relative to demand.",
+    "scenario": "S1 conflict side B (tier B, current): different growth figure for the same year"
+  },
+  {
+    "id": "src-tradepress-fleet-2026",
+    "title": "Bulk fleet grew 3.1 percent last year, Bureau says",
+    "publisher": "Bulk Carrier Weekly",
+    "type": "TRADE_PRESS",
+    "publishedAt": "2026-02-12",
+    "citesSourceId": "src-fleet-stats-2026",
+    "keywords": ["dry bulk", "fleet", "fleet growth", "supply", "orderbook", "deliveries", "news"],
+    "excerpt": "The Maritime Statistics Bureau reported this week that the dry bulk fleet grew 3.1 percent in 2025 to about 1,020 million dwt, with deliveries of 31.6 million dwt and very little scrapping. The Bureau put the orderbook at 10.2 percent of the fleet. Industry participants quoted in the report expect deliveries to stay elevated in 2026 before easing in 2027.",
+    "scenario": "S5 derivative: repeats the Bureau figure and must not count as independent confirmation"
+  },
+  {
+    "id": "src-ironore-stats-2026",
+    "title": "Seaborne Iron Ore Trade Statistics 2025",
+    "publisher": "Maritime Statistics Bureau",
+    "type": "OFFICIAL_STATISTICS",
+    "publishedAt": "2026-01-28",
+    "citesSourceId": null,
+    "keywords": ["iron ore", "demand", "china", "imports", "steel", "seaborne trade", "cargo", "volumes", "dry bulk", "market overview"],
+    "excerpt": "Seaborne iron ore trade reached 1.62 billion tonnes in 2025, up 1.3 percent on the year. China imported 1.15 billion tonnes and accounted for 71 percent of seaborne iron ore imports, unchanged from 2024 despite lower domestic steel output. Australia supplied 56 percent and Brazil 24 percent of seaborne volumes. Iron ore remains the single largest dry bulk commodity, ahead of coal and grain.",
+    "scenario": "S4 corroboration source 1 of 3 for China's iron ore import share"
+  },
+  {
+    "id": "src-industry-body-demand-2026",
+    "title": "Dry Bulk Trade Annual Report 2025",
+    "publisher": "International Dry Cargo Association",
+    "type": "INDUSTRY_BODY",
+    "publishedAt": "2026-03-05",
+    "citesSourceId": null,
+    "keywords": ["demand", "seaborne trade", "iron ore", "coal", "grain", "china", "imports", "volumes", "dry bulk", "tonne-miles", "market overview", "cargo"],
+    "excerpt": "Total seaborne dry bulk trade grew 1.1 percent to 5.5 billion tonnes in 2025. Iron ore and coal together made up 55 percent of volumes, grain and soybeans 10 percent, minor bulks the remainder. China accounted for 71 percent of seaborne iron ore imports in 2025. Grain trade shifted towards South American exporters after a weak North American harvest. Tonne-mile demand grew faster than tonnes because of longer Atlantic to Pacific routes.",
+    "scenario": "S4 corroboration source 2 of 3; also supports demand overview"
+  },
+  {
+    "id": "src-broker-demand-2026",
+    "title": "Dry Bulk Demand Monitor, April 2026",
+    "publisher": "Nordhaven Shipbrokers",
+    "type": "BROKER_NOTE",
+    "publishedAt": "2026-04-09",
+    "citesSourceId": null,
+    "keywords": ["demand", "china", "iron ore", "coal", "imports", "steel", "cargo", "volumes", "dry bulk", "coal imports", "panamax"],
+    "excerpt": "China took roughly 70 to 71 percent of seaborne iron ore in 2025, in line with official statistics. Chinese seaborne coal imports fell about 6 percent in 2025 as domestic production rose and hydro output recovered, which weighed on Panamax demand in the Pacific. We expect Chinese coal imports to decline further in 2026. Indian coal imports grew 4 percent and partly offset the Chinese decline.",
+    "scenario": "S4 corroboration source 3 of 3; S2 current side of the coal conflict (tier B, 2026)"
+  },
+  {
+    "id": "src-coal-stats-2019",
+    "title": "Coal Trade Outlook 2019",
+    "publisher": "Maritime Statistics Bureau",
+    "type": "OFFICIAL_STATISTICS",
+    "publishedAt": "2019-06-14",
+    "citesSourceId": null,
+    "keywords": ["coal", "china", "imports", "coal imports", "demand", "panamax", "dry bulk", "outlook"],
+    "excerpt": "Chinese seaborne coal imports rose about 5 percent per year between 2016 and 2018 and are expected to keep growing through the mid 2020s as coastal power demand expands. Coal remains the main driver of Panamax demand in the Pacific basin. Indian imports are also projected to rise steadily, supported by power generation growth.",
+    "scenario": "S2 stale side of the coal conflict: tier A but from 2019, contradicts the 2026 broker note"
+  },
+  {
+    "id": "src-index-rates-2026",
+    "title": "Dry Bulk Freight Index Annual Summary 2025",
+    "publisher": "Northern Freight Index Board",
+    "type": "INDUSTRY_BODY",
+    "publishedAt": "2026-01-15",
+    "citesSourceId": null,
+    "keywords": ["freight rates", "baltic dry index", "bdi", "earnings", "charter rates", "pricing", "performance", "volatility", "capesize", "dry bulk", "market overview"],
+    "excerpt": "The composite dry bulk freight index averaged 1,650 points in 2025, 9 percent below the 2024 average. Capesize earnings were the most volatile segment, swinging between 8,000 and 34,000 US dollars per day within the year. Panamax and Supramax earnings were steadier and averaged close to 12,000 US dollars per day. The index ended the year at 1,480 points.",
+    "scenario": "S4-style corroboration for freight rates (tier A); baseline for pricing sub-question"
+  },
+  {
+    "id": "src-broker-rates-2026",
+    "title": "Freight Market Recap 2025",
+    "publisher": "Nordhaven Shipbrokers",
+    "type": "BROKER_NOTE",
+    "publishedAt": "2026-01-22",
+    "citesSourceId": null,
+    "keywords": ["freight rates", "baltic dry index", "bdi", "earnings", "charter rates", "pricing", "capesize", "panamax", "dry bulk"],
+    "excerpt": "The dry bulk index averaged about 1,650 points in 2025, down roughly 9 percent year on year, with Capesize volatility driven by Brazilian iron ore timing and Chinese restocking. One-year time charter rates for a modern Kamsarmax averaged 13,500 US dollars per day. We see 2026 rates supported by low fleet growth but capped by soft Chinese steel demand.",
+    "scenario": "Independent confirmation of the freight index figure (tier B)"
+  },
+  {
+    "id": "src-risk-report-2026",
+    "title": "Dry Bulk Shipping Risk Drivers 2026",
+    "publisher": "Hanseatic Maritime Research",
+    "type": "INDUSTRY_REPORT",
+    "publishedAt": "2026-05-20",
+    "citesSourceId": null,
+    "keywords": ["risk", "risk drivers", "geopolitics", "china", "steel demand", "simandou", "iron ore", "grain", "port congestion", "bunker prices", "fuel costs", "red sea", "tonne-miles", "dry bulk", "outlook", "market overview"],
+    "excerpt": "We identify six main risk drivers for dry bulk earnings in 2026: Chinese steel demand and property construction, the ramp-up of the Simandou iron ore project in Guinea which lengthens average haul distances, shifts in grain trade flows between the Americas and Asia, port congestion, bunker fuel prices, and geopolitical disruption of routes including Red Sea diversions. Tonne-mile demand grew 2.3 percent in 2025, roughly double the growth in tonnes.",
+    "scenario": "Primary source for the risk-driver sub-question (tier B)"
+  },
+  {
+    "id": "src-tonnemile-stats-2026",
+    "title": "Tonne-Mile Demand Indicators 2025",
+    "publisher": "Maritime Statistics Bureau",
+    "type": "OFFICIAL_STATISTICS",
+    "publishedAt": "2026-08-03",
+    "citesSourceId": null,
+    "keywords": ["tonne-miles", "demand", "distances", "routes", "red sea", "geopolitics", "dry bulk", "seaborne trade"],
+    "excerpt": "Dry bulk tonne-mile demand increased 2.3 percent in 2025 while tonnes carried rose 1.1 percent, reflecting longer average voyage distances. Diversions away from the Red Sea and Suez Canal accounted for an estimated 1 percentage point of the tonne-mile growth. Average laden voyage distance reached 5,200 nautical miles.",
+    "scenario": "Tier A confirmation of the tonne-mile figure from the risk report"
+  },
+  {
+    "id": "src-news-redsea-2026",
+    "title": "Red Sea detours still adding to bulk carrier demand, analysts say",
+    "publisher": "Northern Maritime News",
+    "type": "NEWS",
+    "publishedAt": "2026-07-11",
+    "citesSourceId": null,
+    "keywords": ["red sea", "geopolitics", "risk", "routes", "suez", "tonne-miles", "dry bulk", "news", "demand"],
+    "excerpt": "Analysts estimate that continued diversions around the Cape of Good Hope added between 1 and 2 percent to dry bulk tonne-mile demand in 2025. A return to Suez routing would release the equivalent of roughly 2 percent of fleet capacity, which several brokers describe as the largest single downside risk to freight rates in 2026.",
+    "scenario": "Supports risk drivers; overlaps with tonne-mile statistics without contradicting them"
+  },
+  {
+    "id": "src-blog-rates-2026",
+    "title": "Why the Baltic Dry Index will DOUBLE by 2027",
+    "publisher": "FreightMoonshot Blog",
+    "type": "BLOG",
+    "publishedAt": "2026-05-02",
+    "citesSourceId": null,
+    "keywords": ["freight rates", "baltic dry index", "bdi", "forecast", "outlook", "dry bulk", "pricing", "earnings"],
+    "excerpt": "Insiders tell us the Baltic Dry Index will double by 2027. Shipyards are full, China is about to unleash a massive stimulus and every Capesize will be earning 60,000 dollars a day. The big brokers do not want you to know this. Buy shipping stocks now before it is too late.",
+    "scenario": "S3 lone low-quality source: sensational forecast with no corroboration, must not become a key fact"
+  },
+  {
+    "id": "src-forum-regulation-2026",
+    "title": "Secret IMO rule will force half the bulk fleet to scrap in 2027 (thread)",
+    "publisher": "ShipTalk Forum",
+    "type": "FORUM",
+    "publishedAt": "2026-04-21",
+    "citesSourceId": null,
+    "keywords": ["regulation", "imo", "emissions", "cii", "eexi", "carbon", "eu ets", "decarbonisation", "environmental rules", "scrapping", "dry bulk", "policy"],
+    "excerpt": "A poster claims that an unpublished IMO rule will force half of the dry bulk fleet into scrapping by 2027 because of carbon intensity ratings. Other posters disagree and say the current CII and EEXI rules only require slow steaming or efficiency upgrades. Nobody in the thread cites an official document.",
+    "scenario": "S7 gap: regulation is covered only by a tier C forum thread, so the sub-question stays uncovered"
+  },
+  {
+    "id": "src-container-2026",
+    "title": "Container fleet growth hits 8 percent as freight rates slide",
+    "publisher": "Box Lines Review",
+    "type": "TRADE_PRESS",
+    "publishedAt": "2026-03-30",
+    "citesSourceId": null,
+    "keywords": ["container shipping", "fleet growth", "freight rates", "supply", "orderbook", "shipping", "liner", "teu"],
+    "excerpt": "The global container fleet grew 8 percent in 2025 to 32 million TEU as record deliveries met weakening demand on Asia to Europe routes. Spot freight rates for a forty-foot box fell 35 percent over the year. Liner operators responded with blank sailings and slower steaming. The container orderbook remains above 25 percent of the fleet.",
+    "scenario": "S6 irrelevant hit: overlapping keywords but about container shipping, researcher should extract nothing for dry bulk"
+  }
+]
