@@ -62,7 +62,8 @@ public final class ConfidenceCalculator {
         if (additional <= 0) {
             return Optional.empty();
         }
-        var bonus = Math.min(additional * ConfidenceConstants.CORROBORATION_BONUS_PER_SOURCE, ConfidenceConstants.CORROBORATION_BONUS_CAP);
+        var bonus = Math.min(additional * ConfidenceConstants.CORROBORATION_BONUS_PER_SOURCE,
+                ConfidenceConstants.CORROBORATION_BONUS_CAP);
         return Optional.of(new ConfidenceFactor(ConfidenceConstants.CORROBORATION_LABEL.formatted(additional), bonus));
     }
 
@@ -71,7 +72,8 @@ public final class ConfidenceCalculator {
         if (age < ConfidenceConstants.STALE_AFTER_YEARS) {
             return Optional.empty();
         }
-        return Optional.of(new ConfidenceFactor(ConfidenceConstants.STALE_LABEL.formatted(ConfidenceConstants.STALE_AFTER_YEARS), ConfidenceConstants.STALE_PENALTY));
+        var label = ConfidenceConstants.STALE_LABEL.formatted(ConfidenceConstants.STALE_AFTER_YEARS);
+        return Optional.of(new ConfidenceFactor(label, ConfidenceConstants.STALE_PENALTY));
     }
 
     private static Optional<ConfidenceFactor> conflict(EvidenceGroup group) {

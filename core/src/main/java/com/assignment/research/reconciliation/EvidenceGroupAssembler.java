@@ -29,7 +29,8 @@ public final class EvidenceGroupAssembler {
         var drafts = assignClaimsToGroups(claimsById.keySet(), output.getGroups()).stream()
                 .map(group -> draft(group, claimsById, sourcesById))
                 .toList();
-        var draftsByModelId = drafts.stream().collect(Collectors.toMap(GroupDraft::getModelGroupId, Function.identity()));
+        var draftsByModelId = drafts.stream()
+                .collect(Collectors.toMap(GroupDraft::getModelGroupId, Function.identity()));
         var conflictsByModelId = indexConflicts(output.getConflicts(), draftsByModelId.keySet());
         var finalIds = assignFinalIds(subQuestionId, drafts);
 
@@ -101,7 +102,8 @@ public final class EvidenceGroupAssembler {
         var finalIds = new LinkedHashMap<String, String>();
         var number = ReconciliationConstants.FIRST_GROUP_NUMBER;
         for (var draft : drafts) {
-            finalIds.put(draft.getModelGroupId(), ReconciliationConstants.GROUP_ID_FORMAT.formatted(subQuestionId, number++));
+            var finalId = ReconciliationConstants.GROUP_ID_FORMAT.formatted(subQuestionId, number++);
+            finalIds.put(draft.getModelGroupId(), finalId);
         }
         return finalIds;
     }
