@@ -20,7 +20,7 @@ Requirements: JDK 25 and an API key for Anthropic or for an OpenAI-compatible en
 The intended way is the web UI:
 
 1. Download `research-pipeline.zip` from the [latest release](../../releases/latest) and unzip it. It contains the jar and the `data/` folder (prompts, mock corpus, pricing) the jar reads at startup. Or build it yourself with `./mvnw -B package` and run from the repository root.
-2. Double-click `start.bat` (Windows) or run `./start.sh` (macOS, Linux). It starts the server and opens [http://127.0.0.1:8787](http://127.0.0.1:8787) in the browser. The same by hand:
+2. Double-click `start.bat` (Windows) or run `./start.sh` (macOS, Linux). The script looks for a JDK 25 in `JAVA_HOME`, on the `PATH` and in the usual install folders, starts the server and opens [http://127.0.0.1:8787](http://127.0.0.1:8787) in the browser. The same by hand:
 
    ```bash
    java -jar research-pipeline.jar --serve
