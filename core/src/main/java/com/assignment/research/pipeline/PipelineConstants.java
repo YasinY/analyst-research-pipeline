@@ -4,7 +4,7 @@ public final class PipelineConstants {
 
     public static final int FIRST_ROUND = 1;
     public static final int MAX_RESEARCH_ROUNDS = 2;
-    public static final int MAX_REWRITES_PER_ROUND = 1;
+    public static final int MAX_REWRITES_PER_ROUND = 2;
     public static final int MAX_LLM_CALLS = 30;
     public static final int FIRST_CRITIQUE_PASS = 1;
     public static final String FOLLOW_UP_QUESTION_ID_FORMAT = "q%d";

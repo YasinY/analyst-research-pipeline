@@ -34,6 +34,13 @@ class TraceStatisticsTest {
     }
 
     @Test
+    void roundIsReadFromTheRoundSegmentOrZero() {
+        assertThat(TraceStatistics.roundOf("planner")).isZero();
+        assertThat(TraceStatistics.roundOf("researcher/q1/round2")).isEqualTo(2);
+        assertThat(TraceStatistics.roundOf("critic/round1/pass2")).isEqualTo(1);
+    }
+
+    @Test
     void roleIsTheWholeLabelWithoutASeparator() {
         assertThat(TraceStatistics.roleOf("critic")).isEqualTo("critic");
         assertThat(TraceStatistics.roleOf("synthesizer/round-2")).isEqualTo("synthesizer");

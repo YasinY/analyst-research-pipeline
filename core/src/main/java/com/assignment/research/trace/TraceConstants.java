@@ -8,6 +8,8 @@ public final class TraceConstants {
     public static final String ROLE_SEPARATOR = "/";
     public static final int NO_SEPARATOR = -1;
     public static final int LABEL_START = 0;
+    public static final String ROUND_SEGMENT_PREFIX = "round";
+    public static final int NO_ROUND = 0;
     public static final int NO_CALLS = 0;
     public static final int ONE_CALL = 1;
 

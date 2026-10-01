@@ -80,6 +80,9 @@ class ResearchRunTest {
         assertThat(call.getInputTokens()).isEqualTo(BriefingFixtures.INPUT_TOKENS);
         assertThat(call.getCachedInputTokens()).isEqualTo(BriefingFixtures.CACHED_INPUT_TOKENS);
         assertThat(call.getOutputTokens()).isEqualTo(BriefingFixtures.OUTPUT_TOKENS);
+        assertThat(call.getRole()).isEqualTo(BriefingFixtures.PLANNER_LABEL);
+        assertThat(call.getRound()).isZero();
+        assertThat(call.getStartedAtMillis()).isEqualTo(BriefingFixtures.STARTED_AT.toEpochMilli());
         assertThat(call.getCostUsd()).isCloseTo(BriefingFixtures.CALL_COST_USD,
                 within(BriefingFixtures.COST_TOLERANCE));
     }

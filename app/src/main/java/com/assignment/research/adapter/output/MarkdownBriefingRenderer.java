@@ -14,6 +14,7 @@ import com.assignment.research.trace.TraceEntry;
 import com.assignment.research.trace.TraceStatistics;
 import java.time.Clock;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -43,9 +44,8 @@ public final class MarkdownBriefingRenderer {
                 .collect(Collectors.toMap(Source::getId, Function.identity()));
         var confidenceById = state.getConfidences().stream()
                 .collect(Collectors.toMap(GroupConfidence::getGroupId, Function.identity()));
-        Function<EvidenceGroup, List<String>> noDetails = group -> List.of();
-        Function<EvidenceGroup, List<String>> evidenceNotes =
-                group -> List.of(evidenceNote(group, confidenceById.get(group.getId())));
+        Function<List<EvidenceGroup>, List<String>> noDetails = cited -> List.of();
+        Function<List<EvidenceGroup>, List<String>> evidenceNotes = cited -> evidenceNote(cited, confidenceById);
         var draft = result.getDraft();
 
         var out = new StringBuilder();
@@ -78,7 +78,7 @@ public final class MarkdownBriefingRenderer {
 
     private static void section(StringBuilder out, String heading, List<GroundedStatement> statements,
             Map<String, EvidenceGroup> groups, Map<String, Source> sources,
-            Function<EvidenceGroup, List<String>> details) {
+            Function<List<EvidenceGroup>, List<String>> details) {
         heading(out, heading);
         if (statements.isEmpty()) {
             noneLine(out);
@@ -87,7 +87,7 @@ public final class MarkdownBriefingRenderer {
         for (var statement : statements) {
             var cited = statement.getGroupIds().stream().map(groups::get).filter(Objects::nonNull).toList();
             bullet(out, OutputConstants.STATEMENT_LINE.formatted(statement.getText(), attribution(cited, sources)));
-            cited.stream().map(details).flatMap(List::stream).forEach(detail -> line(out, detail));
+            details.apply(cited).forEach(detail -> line(out, detail));
         }
         blankLine(out);
     }
@@ -107,15 +107,29 @@ public final class MarkdownBriefingRenderer {
         return OutputConstants.SOURCES_ATTRIBUTION.formatted(publishers);
     }
 
-    private static String evidenceNote(EvidenceGroup group, GroupConfidence confidence) {
-        return OutputConstants.EVIDENCE_NOTE.formatted(sourcesPhrase(group),
-                OutputConstants.CONFLICT_WORDS.get(group.getConflictStatus()), confidence.getLevel());
+    private static List<String> evidenceNote(List<EvidenceGroup> cited, Map<String, GroupConfidence> confidences) {
+        if (cited.isEmpty()) {
+            return List.of();
+        }
+        var level = cited.stream()
+                .map(group -> confidences.get(group.getId()))
+                .max(Comparator.comparingDouble(GroupConfidence::getScore))
+                .orElseThrow()
+                .getLevel();
+        var worstConflict = cited.stream()
+                .map(EvidenceGroup::getConflictStatus)
+                .max(Comparator.comparingInt(OutputConstants.CONFLICT_SEVERITY_ORDER::indexOf))
+                .orElseThrow();
+        return List.of(OutputConstants.EVIDENCE_NOTE.formatted(sourcesPhrase(cited),
+                OutputConstants.CONFLICT_WORDS.get(worstConflict), level));
     }
 
-    private static String sourcesPhrase(EvidenceGroup group) {
-        var tier = OutputConstants.TIER_WORDS.get(group.getBestTier());
-        var published = group.getNewestSourceDate().format(OutputConstants.MONTH_YEAR_FORMAT);
-        var count = group.getIndependentSourceCount();
+    private static String sourcesPhrase(List<EvidenceGroup> cited) {
+        var strongestTier = cited.stream().map(EvidenceGroup::getBestTier).min(Comparator.naturalOrder()).orElseThrow();
+        var tier = OutputConstants.TIER_WORDS.get(strongestTier);
+        var published = cited.stream().map(EvidenceGroup::getNewestSourceDate).max(Comparator.naturalOrder())
+                .orElseThrow().format(OutputConstants.MONTH_YEAR_FORMAT);
+        var count = (int) cited.stream().flatMap(group -> group.getIndependentSourceIds().stream()).distinct().count();
         if (count == OutputConstants.SINGLE_SOURCE_COUNT) {
             return OutputConstants.SINGLE_SOURCE_PHRASE.formatted(tier, published);
         }

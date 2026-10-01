@@ -154,13 +154,11 @@ class MarkdownBriefingRendererTest {
             ## Key facts
 
             - The dry bulk fleet grew 3.1 percent in 2025. Sources: Maritime Statistics Bureau (2026), Nordhaven Shipbrokers (2026), Bulk Trade Weekly (2025).
-              Evidence: one independent source, official statistics or industry body, published March 2026, no conflicting source. Confidence HIGH.
-              Evidence: two independent sources, the strongest being industry report, broker or press, the newest published February 2026, another source disagrees. Confidence MEDIUM.
+              Evidence: three independent sources, the strongest being official statistics or industry body, the newest published March 2026, another source disagrees. Confidence HIGH.
             - Owners are cautious about newbuild orders. Sources: Deck Log Blog (2026).
               Evidence: three independent sources, the strongest being blog or forum, the newest published January 2026, an older source disagrees, this one is newer. Confidence LOW.
             - Scrapping will accelerate in 2026. Sources: Maritime Statistics Bureau (2026), Nordhaven Shipbrokers (2026), Bulk Trade Weekly (2025), Deck Log Blog (2026).
-              Evidence: 4 independent sources, the strongest being official statistics or industry body, the newest published March 2026, a newer source disagrees. Confidence MEDIUM.
-              Evidence: one independent source, official statistics or industry body, published March 2026, no conflicting source. Confidence HIGH.
+              Evidence: 4 independent sources, the strongest being official statistics or industry body, the newest published March 2026, a newer source disagrees. Confidence HIGH.
             - Port congestion eased in the first quarter. Sources: not identified.
 
             ## Identified uncertainties

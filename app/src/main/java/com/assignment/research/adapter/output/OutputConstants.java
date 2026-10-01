@@ -5,6 +5,7 @@ import com.assignment.research.critique.FindingType;
 import com.assignment.research.evidence.SourceTier;
 import com.assignment.research.reconciliation.ConflictStatus;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -93,6 +94,8 @@ public final class OutputConstants {
             SourceTier.A, "official statistics or industry body",
             SourceTier.B, "industry report, broker or press",
             SourceTier.C, "blog or forum");
+    public static final List<ConflictStatus> CONFLICT_SEVERITY_ORDER = List.of(ConflictStatus.NONE,
+            ConflictStatus.RESOLVED_BY_RECENCY, ConflictStatus.OPEN, ConflictStatus.SUPERSEDED);
     public static final Map<ConflictStatus, String> CONFLICT_WORDS = Map.of(
             ConflictStatus.NONE, "no conflicting source",
             ConflictStatus.OPEN, "another source disagrees",

@@ -97,7 +97,9 @@
   .tl-scale span:nth-child(2) { display: flex; justify-content: space-between; }
   .log { list-style: none; margin: 0; padding: 0; font-family: var(--mono); font-size: 12.5px; line-height: 1.5; }
   .log li { padding: 8px 0; border-top: 1px solid var(--hairline); }
-  .log li.step { color: var(--muted); font-weight: 600; }
+  .log li.step { color: var(--muted); font-size: 11.5px; }
+  .log li.phase { font: 700 11px/1.4 "Helvetica Neue", Helvetica, Arial, sans-serif; letter-spacing: .14em; text-transform: uppercase; color: var(--ink); border-top: 2px solid var(--ink); margin-top: 10px; padding-top: 10px; }
+  .log .clock { color: var(--muted); font-weight: 400; letter-spacing: 0; text-transform: none; font-family: var(--mono); }
   .log li.call { cursor: pointer; }
   .log li.call:hover { color: var(--brand); }
   .log .tok { color: var(--muted); }
@@ -283,6 +285,7 @@
   var serverDefaults = null;
   var currentRunId = null;
   var renderedItems = 0;
+  var renderedPhase = '';
 
   providerInputs.forEach(function (input) {
     input.addEventListener('change', function () { applyProvider(input.value); });
@@ -344,6 +347,7 @@
     log.innerHTML = '';
     logEmpty.style.display = 'none';
     renderedItems = 0;
+    renderedPhase = '';
     resetStatistics();
     briefingBox.innerHTML = '<p class="empty">Der Lauf ist gestartet. Das Briefing erscheint hier, sobald er abgeschlossen ist.</p>';
     fetch('/researches', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
@@ -425,7 +429,7 @@
     timeline.innerHTML = calls.map(function (call) {
       var role = roleOf(call.label);
       var width = Math.max(call.durationMillis / longest * 100, 0.5).toFixed(2);
-      var tooltip = '[' + pad(call.sequence) + '] ' + call.label + '\n'
+      var tooltip = '[' + pad(call.sequence) + '] ' + call.label + ', Start ' + clock(call.startedAtMillis) + '\n'
         + 'Tokens rein ' + number(call.inputTokens) + ' (Cache ' + number(call.cachedInputTokens) + ')\n'
         + 'Tokens raus ' + number(call.outputTokens) + '\n'
         + 'Dauer ' + seconds(call.durationMillis) + ' s, ' + usd(call.costUsd);
@@ -446,22 +450,37 @@
     run.calls.forEach(function (call) { merged.push({ kind: 'call', order: call.sequence * 2, data: call }); });
     run.steps.forEach(function (step, index) { merged.push({ kind: 'step', order: step.callsSoFar * 2 + 1 + index / 1000, data: step }); });
     merged.sort(function (a, b) { return a.order - b.order; });
-    merged.slice(renderedItems).forEach(function (item) { log.appendChild(item.kind === 'call' ? callItem(item.data) : stepItem(item.data)); });
+    merged.slice(renderedItems).forEach(function (item) {
+      if (item.kind === 'step') { log.appendChild(stepItem(item.data)); return; }
+      var phase = phaseOf(item.data);
+      if (phase !== renderedPhase) { log.appendChild(phaseItem(item.data)); renderedPhase = phase; }
+      log.appendChild(callItem(item.data));
+    });
     renderedItems = merged.length;
+  }
+
+  function phaseOf(call) { return call.role + '#' + call.round; }
+
+  function phaseItem(call) {
+    var li = document.createElement('li');
+    li.className = 'phase';
+    li.innerHTML = '<span class="swatch ' + roleClass(call.role) + '"></span>' + escapeHtml(ROLE_LABELS[call.role] || call.role)
+      + (call.round ? ' · Runde ' + call.round : '') + '  <span class="clock">' + clock(call.startedAtMillis) + '</span>';
+    return li;
   }
 
   function stepItem(step) {
     var li = document.createElement('li');
     li.className = 'step';
-    li.textContent = step.step + ' (' + (STEP_LABELS[step.step] || step.step) + ')  Runde ' + step.round + '  '
-      + step.subQuestions + ' Teilfrage(n)  ' + step.claims + ' Claim(s)  ' + step.groups + ' Gruppe(n)';
+    li.textContent = 'Zustand nach ' + (STEP_LABELS[step.step] || step.step) + ' (' + step.step + '): Runde ' + step.round + ', '
+      + step.subQuestions + ' Teilfrage(n), ' + step.claims + ' Claim(s), ' + step.groups + ' Gruppe(n)';
     return li;
   }
 
   function callItem(call) {
     var li = document.createElement('li');
     li.className = 'call';
-    li.innerHTML = '[' + pad(call.sequence) + '] ' + escapeHtml(call.label) + ' <span class="tok">' + escapeHtml(call.model)
+    li.innerHTML = '<span class="clock">' + clock(call.startedAtMillis) + '</span>  [' + pad(call.sequence) + '] ' + escapeHtml(call.label) + ' <span class="tok">' + escapeHtml(call.model)
       + '  rein ' + number(call.inputTokens) + '  Cache ' + number(call.cachedInputTokens) + '  raus ' + number(call.outputTokens)
       + '  ' + seconds(call.durationMillis) + ' s  ' + usd(call.costUsd) + '</span>  <span class="st-' + call.status + '" title="' + call.status + '">'
       + escapeHtml(CALL_STATUS_LABELS[call.status] || call.status) + '</span>'
@@ -513,6 +532,10 @@
 
   function usd(value) {
     return 'USD ' + Number(value || 0).toLocaleString(LOCALE, { minimumFractionDigits: 4, maximumFractionDigits: 4 });
+  }
+
+  function clock(millis) {
+    return new Date(Number(millis || 0)).toLocaleTimeString(LOCALE, { hour: '2-digit', minute: '2-digit', second: '2-digit' });
   }
 
   function pad(number) { return number < 10 ? '0' + number : String(number); }
