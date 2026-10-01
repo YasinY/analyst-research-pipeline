@@ -8,7 +8,7 @@ Honest record of the time spent on this submission.
 | 2 | 2026-10-01 20:29 | 2026-10-01 21:18 | 49 min | 25 min | App module, LLM adapters for OpenAI-compatible and Anthropic endpoints, mock corpus, CLI, first real runs and prompt tuning. Includes a dinner break. |
 | 3 | 2026-10-01 21:31 | 2026-10-01 22:30 | 59 min | ca. 40 min | Beyond the required scope: global reconciliation, web UI, code review with fixes, coverage to 100 percent, CI, README. Agents working in parallel count as development time. |
 | 4 | 2026-10-01 22:33 | 2026-10-01 23:05 | 32 min | ca. 25 min | Statistics: cached tokens, Anthropic prompt caching, pricing and cost estimate, German web UI with timeline, role table and per-run provider selection, local provider via Ollama. |
-| 5 | 2026-10-01 23:05 | 2026-10-01 23:28 | 23 min | ca. 15 min | Critic sees its previous findings, two rewrites per round, pipeline view grouped by phase with start times, one evidence note per key fact, analyst-facing briefing wording. |
-| **Total** | | | **236 min (3 h 56)** | **ca. 171 min (2 h 51)** | Blocks 1 and 2 cover everything the task asked for in 91 minutes net. |
+| 5 | 2026-10-01 23:05 | 2026-10-01 23:42 | 37 min | ca. 23 min | Critic sees its previous findings, two rewrites per round, pipeline view grouped by phase with start times, one evidence note per key fact, analyst-facing briefing wording, release zip with data folder, run id in the URL, screenshots. |
+| **Total** | | | **250 min (4 h 10)** | **ca. 179 min (2 h 59)** | Blocks 1 and 2 cover everything the task asked for in 91 minutes net. |
 
 Gross is wall-clock time. Net development excludes build times, pipeline runs, and reading their output.
