@@ -1,6 +1,5 @@
 package com.assignment.research.adapter.web;
 
-import com.assignment.research.pipeline.BriefingResult;
 import com.assignment.research.pipeline.BriefingState;
 import com.assignment.research.pipeline.PipelineObserver;
 import com.assignment.research.pipeline.PipelineStep;
@@ -19,11 +18,7 @@ public final class ResearchRun implements PipelineObserver {
     private final String query;
     private final List<TraceEntry> entries = new CopyOnWriteArrayList<>();
     private final List<StepLine> steps = new CopyOnWriteArrayList<>();
-    private final AtomicReference<RunStatus> status = new AtomicReference<>(RunStatus.RUNNING);
-    private final AtomicReference<BriefingResult> result = new AtomicReference<>();
-    private final AtomicReference<String> briefingMarkdown = new AtomicReference<>();
-    private final AtomicReference<String> outputDirectory = new AtomicReference<>();
-    private final AtomicReference<String> error = new AtomicReference<>();
+    private final AtomicReference<RunOutcome> outcome = new AtomicReference<>(RunOutcome.running());
 
     public ResearchRun(String id, String query) {
         this.id = id;
@@ -40,16 +35,8 @@ public final class ResearchRun implements PipelineObserver {
         steps.add(StepLine.from(step, stateAfterStep, entries.size()));
     }
 
-    public void finish(BriefingResult briefingResult, String markdown, String directory) {
-        result.set(briefingResult);
-        briefingMarkdown.set(markdown);
-        outputDirectory.set(directory);
-        status.set(RunStatus.FINISHED);
-    }
-
-    public void fail(String message) {
-        error.set(message);
-        status.set(RunStatus.FAILED);
+    public void complete(RunOutcome terminalOutcome) {
+        outcome.set(terminalOutcome);
     }
 
     public Optional<CallDetail> call(int sequence) {
@@ -57,18 +44,18 @@ public final class ResearchRun implements PipelineObserver {
     }
 
     public RunStatusResponse toResponse() {
-        var finished = result.get();
+        var snapshot = outcome.get();
         return new RunStatusResponse(
                 id,
                 query,
-                status.get(),
+                snapshot.getStatus(),
                 List.copyOf(steps),
                 entries.stream().map(TraceLine::from).toList(),
-                briefingMarkdown.get(),
-                finished == null ? null : finished.getConfidence().getLevel().name(),
-                finished == null ? null : finished.getStopDecision().getReason().name(),
-                finished == null ? null : finished.getStopDecision().getExplanation(),
-                outputDirectory.get(),
-                error.get());
+                snapshot.getBriefingMarkdown(),
+                snapshot.getConfidence(),
+                snapshot.getStopReason(),
+                snapshot.getStopExplanation(),
+                snapshot.getOutputDirectory(),
+                snapshot.getError());
     }
 }
