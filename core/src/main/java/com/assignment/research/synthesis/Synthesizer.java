@@ -1,6 +1,6 @@
 package com.assignment.research.synthesis;
 
-import com.assignment.research.confidence.ConfidenceLevel;
+import com.assignment.research.confidence.ConfidenceConstants;
 import com.assignment.research.confidence.GroupConfidence;
 import com.assignment.research.llm.LLMPort;
 import com.assignment.research.llm.LLMRequest;
@@ -11,12 +11,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public final class Synthesizer {
-
-    private static final ConfidenceLevel KEY_FACT_MINIMUM = ConfidenceLevel.MEDIUM;
 
     private final LLMPort llm;
     private final PromptTemplates prompts;
@@ -30,8 +29,8 @@ public final class Synthesizer {
 
     private LLMRequest buildRequest(SynthesisInput input, Map<String, GroupConfidence> confidences, int round) {
         var template = prompts.forAgent(AgentName.SYNTHESIZER);
-        var eligible = groupsAtLeast(input.getGroups(), confidences, true);
-        var weak = groupsAtLeast(input.getGroups(), confidences, false);
+        var eligible = eligibleGroups(input.getGroups(), confidences);
+        var weak = weakGroups(input.getGroups(), confidences);
         var userPrompt = template.renderUserPrompt(Map.of(
                 SynthesisConstants.QUERY_VARIABLE, input.getQuery().getText(),
                 SynthesisConstants.INTERPRETATION_VARIABLE, input.getInterpretation(),
@@ -46,11 +45,26 @@ public final class Synthesizer {
                 SynthesisConstants.MAX_OUTPUT_TOKENS);
     }
 
-    private static List<EvidenceGroup> groupsAtLeast(List<EvidenceGroup> groups,
-            Map<String, GroupConfidence> confidences, boolean eligible) {
-        return groups.stream()
-                .filter(group -> confidences.containsKey(group.getId()))
-                .filter(group -> confidences.get(group.getId()).getLevel().isAtLeast(KEY_FACT_MINIMUM) == eligible)
+    private static List<EvidenceGroup> eligibleGroups(List<EvidenceGroup> groups,
+            Map<String, GroupConfidence> confidences) {
+        return scoredGroups(groups, confidences)
+                .filter(group -> hasAdequateEvidence(confidences.get(group.getId())))
                 .toList();
+    }
+
+    private static List<EvidenceGroup> weakGroups(List<EvidenceGroup> groups,
+            Map<String, GroupConfidence> confidences) {
+        return scoredGroups(groups, confidences)
+                .filter(group -> !hasAdequateEvidence(confidences.get(group.getId())))
+                .toList();
+    }
+
+    private static Stream<EvidenceGroup> scoredGroups(List<EvidenceGroup> groups,
+            Map<String, GroupConfidence> confidences) {
+        return groups.stream().filter(group -> confidences.containsKey(group.getId()));
+    }
+
+    private static boolean hasAdequateEvidence(GroupConfidence confidence) {
+        return confidence.getLevel().isAtLeast(ConfidenceConstants.ADEQUATE_EVIDENCE);
     }
 }

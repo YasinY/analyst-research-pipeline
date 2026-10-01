@@ -10,10 +10,6 @@ public class Critique {
     @NonNull
     private final List<CriticFinding> findings;
 
-    public static Critique approved() {
-        return new Critique(List.of());
-    }
-
     public boolean isApproved() {
         return findings.isEmpty();
     }

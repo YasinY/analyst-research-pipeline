@@ -57,7 +57,8 @@ public final class EvidenceGroupAssembler {
         }
         knownClaimIds.stream()
                 .filter(assigned::add)
-                .forEach(claimId -> groups.add(new ClaimGroupOutput(claimId, "", List.of(claimId))));
+                .forEach(claimId -> groups.add(new ClaimGroupOutput(claimId,
+                        ReconciliationConstants.EMPTY_ASSERTION, List.of(claimId))));
         return groups;
     }
 
@@ -76,16 +77,17 @@ public final class EvidenceGroupAssembler {
                 : group.getAssertion();
         var bestTier = independent.stream().map(Source::getTier).min(Comparator.naturalOrder()).orElse(SourceTier.C);
         var newestDate = independent.stream().map(Source::getPublishedAt).max(Comparator.naturalOrder())
-                .orElse(LocalDate.MIN);
+                .orElse(ReconciliationConstants.UNKNOWN_DATE);
         return new GroupDraft(group.getId(), assertion, group.getClaimIds(),
                 independent.stream().map(Source::getId).toList(), bestTier, newestDate);
     }
 
     private static List<Source> independentSources(List<Source> groupSources) {
         var presentIds = groupSources.stream().map(Source::getId).collect(Collectors.toSet());
-        return groupSources.stream()
+        var independent = groupSources.stream()
                 .filter(source -> source.getCitedSource().map(cited -> !presentIds.contains(cited)).orElse(true))
                 .toList();
+        return independent.isEmpty() ? groupSources : independent;
     }
 
     private static Map<String, List<ConflictOutput>> indexConflicts(
@@ -103,12 +105,13 @@ public final class EvidenceGroupAssembler {
     }
 
     private static Map<String, String> assignFinalIds(List<GroupDraft> drafts) {
-        var finalIds = new LinkedHashMap<String, String>();
-        var number = ReconciliationConstants.FIRST_GROUP_NUMBER;
-        for (var draft : drafts) {
-            finalIds.put(draft.getModelGroupId(), ReconciliationConstants.GROUP_ID_FORMAT.formatted(number++));
-        }
-        return finalIds;
+        return drafts.stream().collect(Collectors.toMap(GroupDraft::getModelGroupId,
+                EvidenceGroupAssembler::stableGroupId));
+    }
+
+    private static String stableGroupId(GroupDraft draft) {
+        var smallestClaimId = draft.getClaimIds().stream().min(Comparator.naturalOrder()).orElseThrow();
+        return ReconciliationConstants.GROUP_ID_FORMAT.formatted(smallestClaimId);
     }
 
     private static EvidenceGroup toGroup(GroupDraft draft, Map<String, Claim> claimsById,
@@ -149,7 +152,7 @@ public final class EvidenceGroupAssembler {
                     .map(draftsByModelId::get)
                     .map(GroupDraft::getNewestDate)
                     .max(Comparator.naturalOrder())
-                    .orElse(LocalDate.MIN);
+                    .orElse(ReconciliationConstants.UNKNOWN_DATE);
             status = status.worseOf(statusAgainst(draft.getNewestDate(), othersNewest));
         }
         return status;

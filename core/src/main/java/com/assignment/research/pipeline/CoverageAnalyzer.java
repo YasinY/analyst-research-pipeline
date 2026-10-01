@@ -1,6 +1,6 @@
 package com.assignment.research.pipeline;
 
-import com.assignment.research.confidence.ConfidenceLevel;
+import com.assignment.research.confidence.ConfidenceConstants;
 import com.assignment.research.confidence.GroupConfidence;
 import com.assignment.research.planning.SubQuestion;
 import com.assignment.research.reconciliation.EvidenceGroup;
@@ -10,8 +10,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public final class CoverageAnalyzer {
-
-    private static final ConfidenceLevel ADEQUATE_EVIDENCE = ConfidenceLevel.MEDIUM;
 
     private CoverageAnalyzer() {
     }
@@ -37,6 +35,6 @@ public final class CoverageAnalyzer {
     }
 
     private static boolean isAdequate(GroupConfidence confidence) {
-        return confidence != null && confidence.getLevel().isAtLeast(ADEQUATE_EVIDENCE);
+        return confidence != null && confidence.getLevel().isAtLeast(ConfidenceConstants.ADEQUATE_EVIDENCE);
     }
 }

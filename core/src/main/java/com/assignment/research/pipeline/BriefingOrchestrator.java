@@ -2,6 +2,7 @@ package com.assignment.research.pipeline;
 
 import com.assignment.research.critique.Critique;
 import com.assignment.research.critique.CritiqueInput;
+import com.assignment.research.evidence.EvidenceConstants;
 import com.assignment.research.evidence.ResearchResult;
 import com.assignment.research.evidence.SourceSearchPort;
 import com.assignment.research.llm.LLMException;
@@ -61,6 +62,16 @@ public final class BriefingOrchestrator implements ProduceBriefingUseCase {
     }
 
     private static BriefingState apply(PipelineStep step, BriefingState state, RunAgents agents) {
+        try {
+            return run(step, state, agents);
+        } catch (PipelineAbortedException aborted) {
+            throw aborted;
+        } catch (RuntimeException failure) {
+            throw new PipelineAbortedException(step.name(), failure);
+        }
+    }
+
+    private static BriefingState run(PipelineStep step, BriefingState state, RunAgents agents) {
         return switch (step) {
             case PLAN -> plan(state, agents);
             case RESEARCH -> research(state, agents);
@@ -72,17 +83,13 @@ public final class BriefingOrchestrator implements ProduceBriefingUseCase {
     }
 
     private static BriefingState plan(BriefingState state, RunAgents agents) {
-        try {
-            var plan = agents.getPlanner().plan(state.getQuery());
-            var pendingIds = plan.getSubQuestions().stream().map(SubQuestion::getId).toList();
-            return state.toBuilder()
-                    .interpretation(plan.getInterpretation())
-                    .subQuestions(plan.getSubQuestions())
-                    .pendingResearchIds(pendingIds)
-                    .build();
-        } catch (RuntimeException failure) {
-            throw new PipelineAbortedException(PipelineConstants.FAILURE_PLANNER, failure);
-        }
+        var plan = agents.getPlanner().plan(state.getQuery());
+        var pendingIds = plan.getSubQuestions().stream().map(SubQuestion::getId).toList();
+        return state.toBuilder()
+                .interpretation(plan.getInterpretation())
+                .subQuestions(plan.getSubQuestions())
+                .pendingResearchIds(pendingIds)
+                .build();
     }
 
     private static BriefingState research(BriefingState state, RunAgents agents) {
@@ -100,7 +107,7 @@ public final class BriefingOrchestrator implements ProduceBriefingUseCase {
         var round = state.getRound();
         ResearchResult result;
         try {
-            result = agents.getResearcher().research(question, round);
+            result = agents.getResearcher().research(question, round, nextClaimNumber(state, question));
         } catch (LLMException failure) {
             exhausted.add(question.getId());
             return state.withFailure(new AgentFailure(
@@ -131,17 +138,13 @@ public final class BriefingOrchestrator implements ProduceBriefingUseCase {
     }
 
     private static BriefingState synthesize(BriefingState state, RunAgents agents) {
-        var input = SynthesisInput.firstDraft(state.getQuery(), state.getInterpretation().orElse(""),
-                state.getGroups(), state.getConfidences(), CoverageAnalyzer.uncovered(state));
-        var isRevision = state.hasDraft() && state.getLatestCritique().isPresent();
-        if (isRevision) {
-            input = input.revisedWith(state.getDraft().orElseThrow(),
-                    state.getLatestCritique().orElseThrow().getFindings());
-        }
+        var input = synthesisInput(state);
         try {
             var draft = agents.getSynthesizer().synthesize(input, state.getRound());
-            var countsAsRewrite = isRevision && !state.isDraftStale();
-            var rewrites = countsAsRewrite ? state.getRewritesInRound() + 1 : state.getRewritesInRound();
+            var countsAsRewrite = input.isRevision() && !state.isDraftStale();
+            var rewrites = countsAsRewrite
+                    ? state.getRewritesInRound() + PipelineConstants.SINGLE_REWRITE
+                    : state.getRewritesInRound();
             return state.toBuilder()
                     .draft(draft)
                     .draftReviewed(false)
@@ -164,6 +167,18 @@ public final class BriefingOrchestrator implements ProduceBriefingUseCase {
         }
     }
 
+    private static SynthesisInput synthesisInput(BriefingState state) {
+        var firstDraft = SynthesisInput.firstDraft(state.getQuery(),
+                state.getInterpretation().orElse(PipelineConstants.NO_INTERPRETATION), state.getGroups(),
+                state.getConfidences(), CoverageAnalyzer.uncovered(state));
+        var previousDraft = state.getDraft();
+        var latestCritique = state.getLatestCritique();
+        if (previousDraft.isEmpty() || latestCritique.isEmpty()) {
+            return firstDraft;
+        }
+        return firstDraft.revisedWith(previousDraft.get(), latestCritique.get().getFindings());
+    }
+
     private static BriefingState critique(BriefingState state, RunAgents agents) {
         var input = new CritiqueInput(state.getQuery(), state.getDraft().orElseThrow(), state.getGroups(),
                 state.getConfidences(), CoverageAnalyzer.uncovered(state));
@@ -179,6 +194,14 @@ public final class BriefingOrchestrator implements ProduceBriefingUseCase {
                     .draftReviewed(true)
                     .build();
         }
+    }
+
+    private static int nextClaimNumber(BriefingState state, SubQuestion question) {
+        var questionId = question.getId();
+        var existingClaims = state.getClaims().stream()
+                .filter(claim -> claim.getSubQuestionId().equals(questionId))
+                .count();
+        return Math.toIntExact(existingClaims) + EvidenceConstants.FIRST_CLAIM_NUMBER;
     }
 
     private static List<SubQuestion> pendingQuestions(BriefingState state) {

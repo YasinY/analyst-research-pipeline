@@ -10,6 +10,9 @@ public final class PipelineConstants {
     public static final String FOLLOW_UP_QUESTION_ID_FORMAT = "q%d";
     public static final String FOLLOW_UP_QUESTION_FALLBACK = "What does the evidence say about: %s?";
     public static final String KEYWORD_SEPARATOR = ", ";
+    public static final String NO_INTERPRETATION = "";
+    public static final int NO_REWRITES = 0;
+    public static final int SINGLE_REWRITE = 1;
 
     public static final String EXPLANATION_APPROVED =
             "The reviewer approved the briefing and no sub-question that could still be researched remained open.";
@@ -24,11 +27,21 @@ public final class PipelineConstants {
     public static final String EXPLANATION_AGENT_FAILURE =
             "A pipeline step failed and could not be recovered: %s. The briefing is delivered as far as it got.";
 
-    public static final String FAILURE_PLANNER = "planner";
     public static final String FAILURE_RESEARCHER_FORMAT = "researcher/%s";
     public static final String FAILURE_RECONCILER = "reconciler";
     public static final String FAILURE_SYNTHESIZER = "synthesizer";
     public static final String FAILURE_CRITIC = "critic";
+
+    public static final double NO_SCORE = 0.0;
+    public static final int MEDIAN_HALVES = 2;
+    public static final String REASON_KEY_FACTS = "%d key fact(s) with a median evidence score of %.2f";
+    public static final String REASON_NO_KEY_FACTS = "no key fact rests on adequate evidence";
+    public static final String REASON_COVERAGE = "%d of %d sub-question(s) covered by adequate evidence";
+    public static final String REASON_COVERAGE_CAP = "confidence capped at MEDIUM because of uncovered sub-questions";
+    public static final String REASON_OPEN_FINDINGS = "%d open review finding(s), %d of them major";
+    public static final String REASON_MAJOR_CAP = "confidence capped at LOW because a major review finding is open";
+    public static final String REASON_UNVERIFIED = "confidence capped at LOW because the review step failed";
+    public static final String REASON_APPROVED = "the reviewer approved the final draft";
 
     private PipelineConstants() {
     }

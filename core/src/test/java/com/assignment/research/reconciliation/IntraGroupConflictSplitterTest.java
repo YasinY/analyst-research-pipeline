@@ -24,6 +24,22 @@ class IntraGroupConflictSplitterTest {
     }
 
     @Test
+    void otherConflictsReferencingASplitGroupAreRewrittenToAllItsParts() {
+        var output = new ReconciliationOutput(
+                List.of(new ClaimGroupOutput("g1", "Fleet grew in 2025.", List.of("q3-c1", "q3-c6")),
+                        new ClaimGroupOutput("g2", "Fleet shrank in 2025.", List.of("q3-c2"))),
+                List.of(new ConflictOutput(List.of("g2", "g1"), "grew vs shrank"),
+                        new ConflictOutput(List.of("g1"), "2.4 percent vs 3.1 percent")));
+
+        var normalized = IntraGroupConflictSplitter.split(output);
+
+        assertThat(normalized.getConflicts()).extracting(ConflictOutput::getGroupIds)
+                .containsExactly(List.of("g2", "g1.1", "g1.2"), List.of("g1.1", "g1.2"));
+        assertThat(normalized.getConflicts()).extracting(ConflictOutput::getDescription)
+                .containsExactly("grew vs shrank", "2.4 percent vs 3.1 percent");
+    }
+
+    @Test
     void ordinaryConflictsAndSingleClaimGroupsAreLeftUntouched() {
         var output = new ReconciliationOutput(
                 List.of(new ClaimGroupOutput("g1", "A", List.of("c1")), new ClaimGroupOutput("g2", "B", List.of("c2"))),

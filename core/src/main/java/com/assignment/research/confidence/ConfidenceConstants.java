@@ -19,6 +19,8 @@ public final class ConfidenceConstants {
     public static final double HIGH_THRESHOLD = 0.70;
     public static final double MEDIUM_THRESHOLD = 0.40;
 
+    public static final ConfidenceLevel ADEQUATE_EVIDENCE = ConfidenceLevel.MEDIUM;
+
     public static final double MIN_SCORE = 0.0;
     public static final double MAX_SCORE = 1.0;
     public static final int SINGLE_SOURCE = 1;

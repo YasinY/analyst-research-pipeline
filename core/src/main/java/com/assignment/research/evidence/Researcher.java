@@ -19,7 +19,7 @@ public final class Researcher {
     private final SourceSearchPort search;
     private final PromptTemplates prompts;
 
-    public ResearchResult research(SubQuestion question, int round) {
+    public ResearchResult research(SubQuestion question, int round, int firstClaimNumber) {
         var sources = search.search(question.getSearchKeywords(), EvidenceConstants.MAX_SEARCH_HITS).stream()
                 .map(SearchHit::getSource)
                 .toList();
@@ -28,7 +28,7 @@ public final class Researcher {
         }
 
         var output = llm.complete(buildRequest(question, sources, round), ResearchOutput.class).getValue();
-        return toResult(question.getId(), sources, output.getClaims());
+        return toResult(question.getId(), sources, output.getClaims(), firstClaimNumber);
     }
 
     private LLMRequest buildRequest(SubQuestion question, List<Source> sources, int round) {
@@ -41,7 +41,8 @@ public final class Researcher {
                 EvidenceConstants.MAX_OUTPUT_TOKENS);
     }
 
-    private static ResearchResult toResult(String subQuestionId, List<Source> sources, List<ExtractedClaim> extracted) {
+    private static ResearchResult toResult(String subQuestionId, List<Source> sources, List<ExtractedClaim> extracted,
+            int firstClaimNumber) {
         var knownSourceIds = sources.stream().map(Source::getId).collect(Collectors.toSet());
         var rejectedSourceIds = new LinkedHashSet<String>();
         var claims = new ArrayList<Claim>();
@@ -56,7 +57,7 @@ public final class Researcher {
             if (statement.isEmpty() || !seenStatements.add(statementKey(candidate.getSourceId(), statement))) {
                 continue;
             }
-            var claimNumber = claims.size() + EvidenceConstants.FIRST_CLAIM_NUMBER;
+            var claimNumber = firstClaimNumber + claims.size();
             var claimId = EvidenceConstants.CLAIM_ID_FORMAT.formatted(subQuestionId, claimNumber);
             claims.add(new Claim(claimId, subQuestionId, statement, candidate.getSourceId()));
         }

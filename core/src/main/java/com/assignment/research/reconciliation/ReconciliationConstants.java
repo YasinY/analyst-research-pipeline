@@ -1,13 +1,18 @@
 package com.assignment.research.reconciliation;
 
+import java.time.LocalDate;
+
 public final class ReconciliationConstants {
 
-    public static final String GROUP_ID_FORMAT = "g%d";
+    public static final String GROUP_ID_FORMAT = "g-%s";
     public static final String SPLIT_GROUP_ID_FORMAT = "%s.%d";
     public static final String EMPTY_ASSERTION = "";
     public static final int FIRST_GROUP_NUMBER = 1;
     public static final int MIN_GROUPS_IN_CONFLICT = 2;
+    public static final int MIN_CLAIMS_TO_SPLIT = 2;
+    public static final int SELF_CONFLICT_GROUP_COUNT = 1;
     public static final int RECENCY_THRESHOLD_YEARS = 3;
+    public static final LocalDate UNKNOWN_DATE = LocalDate.EPOCH;
 
     public static final String TRACE_LABEL_FORMAT = "reconciler/round%d";
     public static final String QUESTIONS_VARIABLE = "questions";

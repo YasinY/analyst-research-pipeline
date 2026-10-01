@@ -22,7 +22,7 @@ public final class CritiqueAssembler {
         return new Critique(List.copyOf(findings));
     }
 
-    public static List<CriticFinding> mechanicalFindings(BriefingDraft draft) {
+    private static List<CriticFinding> mechanicalFindings(BriefingDraft draft) {
         return Stream.concat(draft.getSummary().stream(), draft.getKeyFacts().stream())
                 .filter(statement -> !statement.isGrounded())
                 .map(CritiqueAssembler::ungroundedFinding)

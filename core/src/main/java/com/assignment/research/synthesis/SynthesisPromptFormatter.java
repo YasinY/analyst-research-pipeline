@@ -41,7 +41,7 @@ public final class SynthesisPromptFormatter {
                 section(SynthesisConstants.KEY_FACTS_HEADING, draft.getKeyFacts()),
                 section(SynthesisConstants.UNCERTAINTIES_HEADING, draft.getUncertainties()),
                 SynthesisConstants.SECTION_FORMAT.formatted(SynthesisConstants.FOLLOW_UPS_HEADING,
-                        joinOrNone(draft.getFollowUpQuestions().stream().map("- %s"::formatted).toList())));
+                        joinOrNone(draft.getFollowUpQuestions().stream().map(SynthesisConstants.FOLLOW_UP_LINE::formatted).toList())));
     }
 
     private static String formatGroup(EvidenceGroup group, GroupConfidence confidence) {
