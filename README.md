@@ -2,7 +2,7 @@
 [![Java](https://img.shields.io/badge/Java-25-e76f00?style=flat-square)](https://openjdk.org/projects/jdk/25/)
 [![Maven](https://img.shields.io/badge/Maven-3-c71a36?style=flat-square)](https://maven.apache.org)
 [![Framework](https://img.shields.io/badge/framework-none-lightgrey?style=flat-square)](#architecture)
-[![Coverage](https://img.shields.io/badge/Coverage-core%2096%25%20%7C%20app%2049%25-yellow?style=flat-square)](#run-it)
+[![Coverage](https://img.shields.io/badge/Coverage-100%25%20lines%20%7C%20100%25%20branches-brightgreen?style=flat-square)](#run-it)
 [![CI](https://github.com/YasinY/analyst-research-pipeline/actions/workflows/ci.yml/badge.svg)](https://github.com/YasinY/analyst-research-pipeline/actions/workflows/ci.yml)
 
 Turns a free-text analyst question into a structured briefing with a confidence level that is computed from the run record, not asserted by a model. Five LLM agents (planner, researcher, reconciler, synthesizer, critic) work against a fictional mock corpus of 15 dry bulk shipping sources. Plain Java: JDK `HttpClient` and `HttpServer`, Jackson, Lombok, no framework.
@@ -25,7 +25,7 @@ Requirements: JDK 25 and an API key for Anthropic or for any OpenAI-compatible e
 ./mvnw -B package                                           # build and test, produces app/target/research-pipeline.jar
 java -jar app/target/research-pipeline.jar --query "Give me an overview of the dry bulk shipping market and its main risk drivers."
 java -jar app/target/research-pipeline.jar --serve          # web UI on http://127.0.0.1:8787
-./mvnw -B test                                              # tests only, JaCoCo report under core|app/target/site/jacoco
+./mvnw -B test                                              # tests only; JaCoCo enforces 100% line and branch coverage, report under core|app/target/site/jacoco
 ```
 
 Every run writes a folder under `runs/` with `briefing.md`, `result.json`, `state.json`, `trace.json`, every prompt and raw response under `calls/`, and a state snapshot after each step under `state/`.
@@ -86,11 +86,12 @@ For the briefing (`BriefingConfidenceAggregator`): the median of the best group 
 
 ## With more time
 
-- Real retrieval (web or document store with embeddings) behind `SourceSearchPort` instead of keyword search over a mock corpus.
+- Few-shot examples per agent role, loaded next to the prompts in `data/prompts/`; the reconciler's remaining mistakes (merging different numbers, reporting non-conflicts) are the kind a worked example fixes better than another rule.
+- An evaluation set of queries with planted conflicts, derivative sources and gaps, asserting structural properties of the run in CI against recorded responses.
 - Calibrate the confidence weights against analyst judgement instead of hand-set constants.
-- An evaluation set of queries with expected facts and conflicts, run in CI against recorded responses.
-- Run the per-sub-question research calls in parallel.
-- More tests for the `app` adapters (web server, HTTP clients), which are covered far less than `core`.
+- Model routing per role: the reconciler and critic benefit from a stronger model, the researcher does not; the port already allows one adapter per agent.
+- Prompt caching: order prompts stable-first so the evidence block is a cacheable prefix, mark it for Anthropic, report cached tokens and cost per call.
+- Real retrieval behind `SourceSearchPort` instead of keyword search over a mock corpus, and research calls per sub-question in parallel.
 
 ## Time spent
 
@@ -100,7 +101,8 @@ Honest record of the time spent on this submission.
 |-------|-------|------|-----------------|-------|
 | 1 | 2026-10-01 18:37 | 2026-10-01 19:50 | 66 min | Skeleton, ports, five agents, confidence model, pipeline orchestration, tests. Paused at 19:50 for an appointment at 20:00. |
 | 2 | 2026-10-01 20:29 | 2026-10-01 21:18 | 25 min | App module, LLM adapters for OpenAI-compatible and Anthropic endpoints, mock corpus, CLI, first real runs and prompt tuning. Includes a dinner break. |
-| **Total** | | | **91 min** | |
+| 3 | 2026-10-01 21:31 | | | Global reconciliation, web UI, code review with fixes, coverage, CI, README. |
+| **Total** | | | **91 min + block 3** | |
 
 Net development excludes build times, pipeline runs, and reading their output.
 
