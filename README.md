@@ -10,7 +10,7 @@ Turns a free-text analyst question into a structured briefing with a confidence 
 ---
 
 <img src="docs/web-ui.png" width="49%"> <img src="docs/web-ui-stats.png" width="49%">
-<img src="docs/web-ui-pipeline.png" width="49%"> <img src="docs/coverage-core.png" width="49%">
+<img src="docs/web-ui-pipeline.png" width="100%">
 
 ---
 ## Run it
@@ -32,12 +32,7 @@ The CLI does the same without a browser and reads the key from the environment:
 
 ```bash
 java -jar research-pipeline.jar --query "Give me an overview of the dry bulk shipping market and its main risk drivers."
-./mvnw -B test        # tests only; JaCoCo enforces 100% line and branch coverage, report under core|app/target/site/jacoco
 ```
-
-JaCoCo report of the current build, both modules at 100 percent line and branch coverage:
-
-<img src="docs/coverage-core.png" width="49%"> <img src="docs/coverage-app.png" width="49%">
 
 - `LLM_PROVIDER`: `anthropic` (default), `openai` or `local`
 - `ANTHROPIC_API_KEY`, `ANTHROPIC_MODEL` (default `claude-sonnet-5-5`), `ANTHROPIC_API_URL`
@@ -46,6 +41,10 @@ JaCoCo report of the current build, both modules at 100 percent line and branch 
 - `DATA_DIR` (default `./data`), `RUNS_DIR` (default `./runs`), `PORT` (default `8787`)
 
 Every run writes a folder under `runs/` with `briefing.md`, `result.json`, `state.json`, `trace.json`, every prompt and raw response under `calls/`, and a state snapshot after each step under `state/`.
+
+Build and tests: `./mvnw -B package` builds the jar, `./mvnw -B test` runs the tests only. JaCoCo fails the build below 100 percent line and branch coverage in both modules; the report lands under `core/target/site/jacoco` and `app/target/site/jacoco`. CI runs the same build on every push and attaches the zip to the `latest` release.
+
+<img src="docs/coverage-core.png" width="49%"> <img src="docs/coverage-app.png" width="49%">
 
 ## Example output
 
@@ -63,7 +62,7 @@ Hexagonal, two modules. `core` holds the domain, the agents and the orchestratio
 - **Planner** splits the query into sub-questions with search keywords.
 - **Researcher** searches the corpus per sub-question and extracts claims with source references.
 - **Reconciler** groups claims that assert the same fact and lists conflicts between groups. It does not judge reliability.
-- **Synthesizer** writes summary, key facts and uncertainties. Every statement cites evidence group ids; unknown ids are dropped.
+- **Synthesizer** writes summary, key facts and uncertainties. Every statement cites evidence group ids; unknown ids are dropped. The rendered briefing shows the publishers and years behind each statement instead of the ids.
 - **Critic** reviews the draft against the evidence and returns typed findings, each either a rewrite (unsupported, overstated, smoothed conflict, ...) or a research request (missing evidence, with keywords). On a revised draft it sees its previous findings, so it reports what is still open instead of raising the bar.
 
 Why this shape:
@@ -91,7 +90,7 @@ The run stops at the first of:
 
 A sub-question is covered when at least one evidence group for it scores MEDIUM or better. Before the first draft, uncovered and not yet exhausted sub-questions get another research round; after a critique, research findings become follow-up sub-questions.
 
-Per evidence group (`ConfidenceCalculator`), each factor is listed in the briefing:
+Per evidence group (`ConfidenceCalculator`):
 
 - base from the best independent source tier: A (official statistics, industry bodies) 0.60, B (reports, brokers, press) 0.40, C (blogs, forums) 0.15
 - +0.15 per additional independent source, capped at +0.30; a source citing another source in the same group does not count
@@ -99,7 +98,7 @@ Per evidence group (`ConfidenceCalculator`), each factor is listed in the briefi
 - conflict: open -0.30, won by recency -0.10, superseded by a source 3+ years newer -0.50
 - HIGH from 0.70, MEDIUM from 0.40, else LOW
 
-For the briefing (`BriefingConfidenceAggregator`): the median of the best group score behind each key fact gives the level, capped at MEDIUM if any sub-question is uncovered and at LOW if a major review finding is open or the review failed. The reasons are printed under "Confidence" in the briefing.
+For the briefing (`BriefingConfidenceAggregator`): the median of the best group score behind each key fact gives the level, capped at MEDIUM if any sub-question is uncovered and at LOW if a major review finding is open or the review failed. The reasons are printed under "Confidence" in the briefing, each key fact carries a plain-language evidence note (independent sources, strongest tier, newest date, conflicts), and the full factor breakdown per group is in `state.json`.
 
 ## With more time
 
@@ -107,8 +106,8 @@ For the briefing (`BriefingConfidenceAggregator`): the median of the best group 
 - An evaluation set of queries with planted conflicts, derivative sources and gaps, asserting structural properties of the run in CI against recorded responses.
 - Calibrate the confidence weights against analyst judgement instead of hand-set constants.
 - Model routing per role: the reconciler and critic benefit from a stronger model, the researcher does not; the port already allows one adapter per agent.
-- Prompt caching: order prompts stable-first so the evidence block is a cacheable prefix, mark it for Anthropic, report cached tokens and cost per call.
 - Real retrieval behind `SourceSearchPort` instead of keyword search over a mock corpus, and research calls per sub-question in parallel.
+- A/B test of the critic prompt on a fixed set of drafts: the variance between runs of the same query comes mostly from the critic, and today it is judged by hand from the run archive.
 
 ## Time spent
 
@@ -121,7 +120,7 @@ Honest record of the time spent on this submission.
 | 3 | 2026-10-01 21:31 | 2026-10-01 22:30 | ca. 40 min | Beyond the required scope: global reconciliation, web UI, code review with fixes, coverage to 100 percent, CI, README. Agents working in parallel count as development time. |
 | 4 | 2026-10-01 22:33 | 2026-10-01 23:05 | ca. 25 min | Statistics: cached tokens, Anthropic prompt caching, pricing and cost estimate, German web UI with timeline, role table and per-run provider selection, local provider via Ollama. |
 | 5 | 2026-10-01 23:05 | 2026-10-01 23:42 | ca. 23 min | Critic sees its previous findings, two rewrites per round, pipeline view grouped by phase with start times, one evidence note per key fact, analyst-facing briefing wording, release zip with data folder, run id in the URL, screenshots. |
-| **Total** | | | **ca. 179 min (2 h 59)** | Blocks 1 and 2 cover everything the task asked for in 91 minutes net. |
+| **Total** | | | **ca. 179 min (2 h 59)** | Blocks 1 and 2 cover everything the task asked for in 91 minutes. |
 
 Start and stop are wall-clock times. Development time excludes build times, pipeline runs, and reading their output.
 
