@@ -8,11 +8,9 @@ import lombok.Value;
 public class Reconciliation {
 
     @NonNull
-    private final String subQuestionId;
-    @NonNull
     private final List<EvidenceGroup> groups;
 
-    public static Reconciliation empty(String subQuestionId) {
-        return new Reconciliation(subQuestionId, List.of());
+    public static Reconciliation empty() {
+        return new Reconciliation(List.of());
     }
 }

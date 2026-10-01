@@ -2,6 +2,7 @@ package com.assignment.research.reconciliation;
 
 import com.assignment.research.evidence.Claim;
 import com.assignment.research.evidence.Source;
+import com.assignment.research.planning.SubQuestion;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -12,7 +13,14 @@ public final class ClaimPromptFormatter {
     private ClaimPromptFormatter() {
     }
 
-    public static String format(List<Claim> claims, List<Source> sources) {
+    public static String formatQuestions(List<SubQuestion> questions) {
+        return questions.stream()
+                .map(question -> ReconciliationConstants.QUESTION_LINE.formatted(question.getId(),
+                        question.getQuestion()))
+                .collect(Collectors.joining(ReconciliationConstants.LINE_SEPARATOR));
+    }
+
+    public static String formatClaims(List<Claim> claims, List<Source> sources) {
         var sourcesById = sources.stream().collect(Collectors.toMap(Source::getId, Function.identity()));
         return claims.stream()
                 .map(claim -> formatOne(claim, sourcesById))
@@ -24,7 +32,7 @@ public final class ClaimPromptFormatter {
         var publisher = source == null ? ReconciliationConstants.UNKNOWN : source.getPublisher();
         var type = source == null ? ReconciliationConstants.UNKNOWN : source.getType().toString();
         var published = source == null ? ReconciliationConstants.UNKNOWN : source.getPublishedAt().toString();
-        return ReconciliationConstants.CLAIM_LINE.formatted(claim.getId(), claim.getSourceId(), publisher, type,
-                published, claim.getStatement());
+        return ReconciliationConstants.CLAIM_LINE.formatted(claim.getId(), claim.getSubQuestionId(),
+                claim.getSourceId(), publisher, type, published, claim.getStatement());
     }
 }

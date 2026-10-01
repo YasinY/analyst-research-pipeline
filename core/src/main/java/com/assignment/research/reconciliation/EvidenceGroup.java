@@ -4,6 +4,7 @@ import com.assignment.research.evidence.SourceTier;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import lombok.NonNull;
 import lombok.Value;
 
@@ -13,7 +14,7 @@ public class EvidenceGroup {
     @NonNull
     private final String id;
     @NonNull
-    private final String subQuestionId;
+    private final Set<String> subQuestionIds;
     @NonNull
     private final String assertion;
     @NonNull

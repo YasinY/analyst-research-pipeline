@@ -94,15 +94,16 @@ public class BriefingState {
         return toBuilder().subQuestions(concat(subQuestions, added)).build();
     }
 
-    public BriefingState withResearchAppended(ResearchResult result, List<EvidenceGroup> newGroups,
-            List<GroupConfidence> newConfidences) {
+    public BriefingState withResearchAppended(ResearchResult result) {
         return toBuilder()
                 .sources(concatDistinctSources(result.getConsultedSources()))
                 .claims(concat(claims, result.getClaims()))
                 .researchResults(concat(researchResults, List.of(result)))
-                .groups(concat(groups, newGroups))
-                .confidences(concat(confidences, newConfidences))
                 .build();
+    }
+
+    public BriefingState withEvidence(List<EvidenceGroup> allGroups, List<GroupConfidence> allConfidences) {
+        return toBuilder().groups(allGroups).confidences(allConfidences).build();
     }
 
     public BriefingState withFailure(AgentFailure failure) {

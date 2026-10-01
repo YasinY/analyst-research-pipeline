@@ -11,6 +11,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.IntStream;
 import org.junit.jupiter.api.Test;
 
@@ -26,7 +27,7 @@ class ConfidenceCalculatorTest {
     private static EvidenceGroup group(SourceTier tier, int independentSources, LocalDate newest,
             ConflictStatus conflict) {
         var sourceIds = IntStream.range(0, independentSources).mapToObj(index -> "src-" + index).toList();
-        return new EvidenceGroup("q1-g1", "q1", "assertion", List.of("q1-c1"), sourceIds, tier, newest, conflict,
+        return new EvidenceGroup("q1-g1", Set.of("q1"), "assertion", List.of("q1-c1"), sourceIds, tier, newest, conflict,
                 null, List.of());
     }
 

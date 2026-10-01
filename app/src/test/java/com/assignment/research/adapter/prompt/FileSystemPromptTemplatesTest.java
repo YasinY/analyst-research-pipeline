@@ -28,7 +28,7 @@ class FileSystemPromptTemplatesTest {
     void userPromptsOnlyUseTheVariablesTheAgentsSupply() {
         assertPlaceholders(AgentName.PLANNER, "query");
         assertPlaceholders(AgentName.RESEARCHER, "question", "sources");
-        assertPlaceholders(AgentName.RECONCILER, "question", "claims");
+        assertPlaceholders(AgentName.RECONCILER, "questions", "claims");
         assertPlaceholders(AgentName.SYNTHESIZER, "query", "interpretation", "evidence", "weakEvidence", "gaps",
                 "revision");
         assertPlaceholders(AgentName.CRITIC, "query", "draft", "evidence", "gaps");

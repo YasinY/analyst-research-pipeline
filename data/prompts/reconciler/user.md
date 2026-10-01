@@ -1,8 +1,8 @@
-Sub-question:
+Sub-questions the claims were collected for:
 
-{{question}}
+{{questions}}
 
-Claims extracted from the sources (one per line):
+Claims extracted from the sources (one per line, with the sub-question each claim was collected for):
 
 {{claims}}
 

@@ -17,25 +17,26 @@ public final class Reconciler {
     private final LLMPort llm;
     private final PromptTemplates prompts;
 
-    public Reconciliation reconcile(SubQuestion question, List<Claim> claims, List<Source> sources, int round) {
-        var subQuestionId = question.getId();
+    public Reconciliation reconcile(List<SubQuestion> questions, List<Claim> claims, List<Source> sources,
+            int round) {
         if (claims.isEmpty()) {
-            return Reconciliation.empty(subQuestionId);
+            return Reconciliation.empty();
         }
         if (claims.size() < ReconciliationConstants.MIN_CLAIMS_WORTH_COMPARING) {
-            return EvidenceGroupAssembler.assemble(subQuestionId, claims, sources, ReconciliationOutput.empty());
+            return EvidenceGroupAssembler.assemble(claims, sources, ReconciliationOutput.empty());
         }
-        var output = llm.complete(buildRequest(question, claims, sources, round), ReconciliationOutput.class)
+        var output = llm.complete(buildRequest(questions, claims, sources, round), ReconciliationOutput.class)
                 .getValue();
-        return EvidenceGroupAssembler.assemble(subQuestionId, claims, sources, output);
+        return EvidenceGroupAssembler.assemble(claims, sources, output);
     }
 
-    private LLMRequest buildRequest(SubQuestion question, List<Claim> claims, List<Source> sources, int round) {
+    private LLMRequest buildRequest(List<SubQuestion> questions, List<Claim> claims, List<Source> sources,
+            int round) {
         var template = prompts.forAgent(AgentName.RECONCILER);
         var userPrompt = template.renderUserPrompt(Map.of(
-                ReconciliationConstants.QUESTION_VARIABLE, question.getQuestion(),
-                ReconciliationConstants.CLAIMS_VARIABLE, ClaimPromptFormatter.format(claims, sources)));
-        var label = ReconciliationConstants.TRACE_LABEL_FORMAT.formatted(question.getId(), round);
+                ReconciliationConstants.QUESTIONS_VARIABLE, ClaimPromptFormatter.formatQuestions(questions),
+                ReconciliationConstants.CLAIMS_VARIABLE, ClaimPromptFormatter.formatClaims(claims, sources)));
+        var label = ReconciliationConstants.TRACE_LABEL_FORMAT.formatted(round);
         return new LLMRequest(label, template.getSystemPrompt(), userPrompt,
                 ReconciliationConstants.MAX_OUTPUT_TOKENS);
     }

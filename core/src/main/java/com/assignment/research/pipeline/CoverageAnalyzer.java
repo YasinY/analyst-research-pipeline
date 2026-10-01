@@ -21,7 +21,8 @@ public final class CoverageAnalyzer {
                 .collect(Collectors.toMap(GroupConfidence::getGroupId, Function.identity()));
         return state.getGroups().stream()
                 .filter(group -> isAdequate(confidenceByGroup.get(group.getId())))
-                .map(EvidenceGroup::getSubQuestionId)
+                .map(EvidenceGroup::getSubQuestionIds)
+                .flatMap(Set::stream)
                 .collect(Collectors.toUnmodifiableSet());
     }
 

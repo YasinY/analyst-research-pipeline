@@ -16,6 +16,7 @@ import com.assignment.research.reconciliation.ConflictStatus;
 import com.assignment.research.reconciliation.EvidenceGroup;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 class SynthesizerTest {
@@ -31,7 +32,7 @@ class SynthesizerTest {
     private static EvidenceGroup group(String id, ConflictStatus conflict, String conflictingWith) {
         var conflictingIds = conflictingWith == null ? List.<String>of() : List.of(conflictingWith);
         var description = conflictingWith == null ? null : "3.1% vs 2.4%";
-        return new EvidenceGroup(id, "q1", "Fleet grew 3.1% in 2025.", List.of(id + "-c1"), List.of("src-a"),
+        return new EvidenceGroup(id, Set.of("q1"), "Fleet grew 3.1% in 2025.", List.of(id + "-c1"), List.of("src-a"),
                 SourceTier.A, RECENT, conflict, description, conflictingIds);
     }
 

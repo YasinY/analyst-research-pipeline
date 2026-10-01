@@ -26,7 +26,7 @@ public final class PipelineConstants {
 
     public static final String FAILURE_PLANNER = "planner";
     public static final String FAILURE_RESEARCHER_FORMAT = "researcher/%s";
-    public static final String FAILURE_RECONCILER_FORMAT = "reconciler/%s";
+    public static final String FAILURE_RECONCILER = "reconciler";
     public static final String FAILURE_SYNTHESIZER = "synthesizer";
     public static final String FAILURE_CRITIC = "critic";
 

@@ -62,7 +62,7 @@ class BriefingOrchestratorTest {
 
     private static FindingOutput overstated() {
         return new FindingOutput(FindingType.OVERSTATED_CERTAINTY, FindingSeverity.MAJOR,
-                "Fleet grew about 3% in 2025.", "Evidence is medium.", List.of("q1-g1"), List.of());
+                "Fleet grew about 3% in 2025.", "Evidence is medium.", List.of("g1"), List.of());
     }
 
     @Test
@@ -71,7 +71,7 @@ class BriefingOrchestratorTest {
                 .on("planner", TWO_QUESTIONS)
                 .on("researcher", TWO_CLAIMS)
                 .on("reconciler", ONE_GROUP)
-                .on("synthesizer", groundedDraft("q1-g1"))
+                .on("synthesizer", groundedDraft("g1"))
                 .on("critic", CLEAN);
 
         var result = new BriefingOrchestrator(llm, search, prompts, CLOCK).produce(QUERY, observer);
@@ -81,12 +81,12 @@ class BriefingOrchestratorTest {
         assertThat(result.getConfidence().getLevel()).isEqualTo(ConfidenceLevel.HIGH);
         assertThat(result.getOpenFindings()).isEmpty();
         assertThat(result.getGaps()).isEmpty();
-        assertThat(result.getTrace()).hasSize(7);
-        assertThat(result.getUsage().getTotalTokens()).isEqualTo(7 * 150);
+        assertThat(result.getTrace()).hasSize(6);
+        assertThat(result.getUsage().getTotalTokens()).isEqualTo(6 * 150);
         assertThat(observer.getSteps()).containsExactly(PipelineStep.PLAN, PipelineStep.RESEARCH, PipelineStep.SYNTHESIZE,
                 PipelineStep.CRITIQUE, PipelineStep.FINISH);
-        assertThat(llm.getLabels()).containsExactly("planner", "researcher/q1/round1", "reconciler/q1/round1",
-                "researcher/q2/round1", "reconciler/q2/round1", "synthesizer/round1", "critic/round1/pass1");
+        assertThat(llm.getLabels()).containsExactly("planner", "researcher/q1/round1", "researcher/q2/round1",
+                "reconciler/round1", "synthesizer/round1", "critic/round1/pass1");
     }
 
     @Test
@@ -97,7 +97,7 @@ class BriefingOrchestratorTest {
                 .on("planner", TWO_QUESTIONS)
                 .on("researcher", TWO_CLAIMS)
                 .on("reconciler", ONE_GROUP)
-                .on("synthesizer", groundedDraft("q1-g1"))
+                .on("synthesizer", groundedDraft("g1"))
                 .on("critic", new CritiqueOutput(List.of(missingEvidence())), CLEAN);
 
         var result = new BriefingOrchestrator(llm, searchWithoutFollowUpHits, prompts, CLOCK)
@@ -118,7 +118,7 @@ class BriefingOrchestratorTest {
                 .on("planner", TWO_QUESTIONS)
                 .on("researcher", TWO_CLAIMS)
                 .on("reconciler", ONE_GROUP)
-                .on("synthesizer", groundedDraft("q1-g1"))
+                .on("synthesizer", groundedDraft("g1"))
                 .on("critic", new CritiqueOutput(List.of(overstated())));
 
         var result = new BriefingOrchestrator(llm, search, prompts, CLOCK).produce(QUERY, observer);
@@ -136,7 +136,7 @@ class BriefingOrchestratorTest {
                 .on("planner", TWO_QUESTIONS)
                 .on("researcher", TWO_CLAIMS)
                 .on("reconciler", ONE_GROUP)
-                .on("synthesizer", groundedDraft("q1-g1"))
+                .on("synthesizer", groundedDraft("g1"))
                 .on("critic", new LLMException("provider down"));
 
         var result = new BriefingOrchestrator(llm, search, prompts, CLOCK).produce(QUERY, observer);
@@ -162,7 +162,7 @@ class BriefingOrchestratorTest {
                 .on("researcher/q1", TWO_CLAIMS)
                 .on("researcher/q2", new LLMException("timeout"))
                 .on("reconciler", ONE_GROUP)
-                .on("synthesizer", groundedDraft("q1-g1"))
+                .on("synthesizer", groundedDraft("g1"))
                 .on("critic", CLEAN);
 
         var result = new BriefingOrchestrator(llm, search, prompts, CLOCK).produce(QUERY, observer);

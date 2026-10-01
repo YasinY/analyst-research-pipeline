@@ -15,12 +15,13 @@ import com.assignment.research.synthesis.BriefingDraft;
 import com.assignment.research.synthesis.GroundedStatement;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 class CriticTest {
 
     private static final AnalystQuery QUERY = new AnalystQuery("Dry bulk shipping overview");
-    private static final EvidenceGroup GROUP = new EvidenceGroup("q1-g1", "q1", "Fleet grew 3.1% in 2025.",
+    private static final EvidenceGroup GROUP = new EvidenceGroup("q1-g1", Set.of("q1"), "Fleet grew 3.1% in 2025.",
             List.of("q1-c1"), List.of("src-a"), SourceTier.A, LocalDate.of(2026, 3, 1), ConflictStatus.NONE, null,
             List.of());
     private static final GroupConfidence CONFIDENCE = new GroupConfidence("q1-g1", 0.6, ConfidenceLevel.MEDIUM,

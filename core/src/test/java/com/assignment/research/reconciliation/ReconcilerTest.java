@@ -15,13 +15,13 @@ class ReconcilerTest {
     private static final SubQuestion QUESTION = new SubQuestion("q1", "How fast does the fleet grow?", List.of("fleet"));
     private static final int ROUND = 1;
 
-    private final FakePromptTemplates prompts = new FakePromptTemplates("Q: {{question}}\n{{claims}}");
+    private final FakePromptTemplates prompts = new FakePromptTemplates("{{questions}}\n{{claims}}");
 
     @Test
     void returnsEmptyReconciliationWithoutClaimsAndWithoutLLMCall() {
         var llm = FakeLLMPort.returning(ReconciliationOutput.empty());
 
-        var result = new Reconciler(llm, prompts).reconcile(QUESTION, List.of(), List.of(), ROUND);
+        var result = new Reconciler(llm, prompts).reconcile(List.of(QUESTION), List.of(), List.of(), ROUND);
 
         assertThat(result.getGroups()).isEmpty();
         assertThat(llm.getLastRequest()).isNull();
@@ -32,7 +32,7 @@ class ReconcilerTest {
         var llm = FakeLLMPort.returning(ReconciliationOutput.empty());
         var claim = new Claim("q1-c1", "q1", "Fleet grew 3.1%.", "src-a");
 
-        var result = new Reconciler(llm, prompts).reconcile(QUESTION, List.of(claim), List.of(Sources.tierA("src-a")),
+        var result = new Reconciler(llm, prompts).reconcile(List.of(QUESTION), List.of(claim), List.of(Sources.tierA("src-a")),
                 ROUND);
 
         assertThat(result.getGroups()).hasSize(1);
@@ -49,11 +49,12 @@ class ReconcilerTest {
                 new Claim("q1-c2", "q1", "Fleet grew 2.9%.", "src-b"));
         var sources = List.of(Sources.tierA("src-a"), Sources.tierB("src-b", Sources.RECENT));
 
-        var result = new Reconciler(llm, prompts).reconcile(QUESTION, claims, sources, 2);
+        var result = new Reconciler(llm, prompts).reconcile(List.of(QUESTION), claims, sources, 2);
 
         assertThat(result.getGroups()).hasSize(1);
         var request = llm.getLastRequest();
-        assertThat(request.getLabel()).isEqualTo("reconciler/q1/round2");
-        assertThat(request.getUserPrompt()).contains("[q1-c1] (source src-a, Fictional Statistics Office");
+        assertThat(request.getLabel()).isEqualTo("reconciler/round2");
+        assertThat(request.getUserPrompt()).contains("[q1] How fast does the fleet grow?")
+                .contains("[q1-c1] (q1; source src-a, Fictional Statistics Office");
     }
 }

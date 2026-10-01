@@ -25,10 +25,11 @@ class EvidenceGroupAssemblerTest {
         var output = new ReconciliationOutput(
                 List.of(new ClaimGroupOutput("g1", "Fleet grew 3.1%.", List.of("c1", "c2"))), List.of());
 
-        var result = EvidenceGroupAssembler.assemble(SUB_QUESTION, claims, List.of(original, copy), output);
+        var result = EvidenceGroupAssembler.assemble(claims, List.of(original, copy), output);
 
         var group = result.getGroups().getFirst();
-        assertThat(group.getId()).isEqualTo("q1-g1");
+        assertThat(group.getId()).isEqualTo("g1");
+        assertThat(group.getSubQuestionIds()).containsExactly("q1");
         assertThat(group.getIndependentSourceIds()).containsExactly("src-a");
         assertThat(group.getBestTier()).isEqualTo(SourceTier.A);
         assertThat(group.getConflictStatus()).isEqualTo(ConflictStatus.NONE);
@@ -41,7 +42,7 @@ class EvidenceGroupAssemblerTest {
         var output = new ReconciliationOutput(
                 List.of(new ClaimGroupOutput("g1", "Same fact.", List.of("c1", "c2"))), List.of());
 
-        var group = EvidenceGroupAssembler.assemble(SUB_QUESTION, claims, sources, output).getGroups().getFirst();
+        var group = EvidenceGroupAssembler.assemble(claims, sources, output).getGroups().getFirst();
 
         assertThat(group.getIndependentSourceCount()).isEqualTo(2);
         assertThat(group.getBestTier()).isEqualTo(SourceTier.B);
@@ -57,11 +58,11 @@ class EvidenceGroupAssemblerTest {
                         new ClaimGroupOutput("g2", "Growth 2.4%.", List.of("c2"))),
                 List.of(new ConflictOutput(List.of("g1", "g2"), "3.1% vs 2.4% for 2026")));
 
-        var groups = EvidenceGroupAssembler.assemble(SUB_QUESTION, claims, sources, output).getGroups();
+        var groups = EvidenceGroupAssembler.assemble(claims, sources, output).getGroups();
 
         assertThat(groups).extracting(EvidenceGroup::getConflictStatus)
                 .containsExactly(ConflictStatus.OPEN, ConflictStatus.OPEN);
-        assertThat(groups.getFirst().getConflictingGroupIds()).containsExactly("q1-g2");
+        assertThat(groups.getFirst().getConflictingGroupIds()).containsExactly("g2");
         assertThat(groups.getFirst().getConflict()).contains("3.1% vs 2.4% for 2026");
     }
 
@@ -74,7 +75,7 @@ class EvidenceGroupAssemblerTest {
                         new ClaimGroupOutput("g2", "China imports falling.", List.of("c2"))),
                 List.of(new ConflictOutput(List.of("g1", "g2"), "rising vs falling")));
 
-        var groups = EvidenceGroupAssembler.assemble(SUB_QUESTION, claims, sources, output).getGroups();
+        var groups = EvidenceGroupAssembler.assemble(claims, sources, output).getGroups();
 
         assertThat(groups).extracting(EvidenceGroup::getConflictStatus)
                 .containsExactly(ConflictStatus.SUPERSEDED, ConflictStatus.RESOLVED_BY_RECENCY);
@@ -87,7 +88,7 @@ class EvidenceGroupAssemblerTest {
         var output = new ReconciliationOutput(
                 List.of(new ClaimGroupOutput("g1", "Known.", List.of("c1", "c-invented"))), List.of());
 
-        var groups = EvidenceGroupAssembler.assemble(SUB_QUESTION, claims, sources, output).getGroups();
+        var groups = EvidenceGroupAssembler.assemble(claims, sources, output).getGroups();
 
         assertThat(groups).hasSize(2);
         assertThat(groups.get(0).getClaimIds()).containsExactly("c1");
@@ -104,7 +105,7 @@ class EvidenceGroupAssemblerTest {
                         new ClaimGroupOutput("g2", "Second.", List.of("c1"))),
                 List.of());
 
-        var groups = EvidenceGroupAssembler.assemble(SUB_QUESTION, claims, sources, output).getGroups();
+        var groups = EvidenceGroupAssembler.assemble(claims, sources, output).getGroups();
 
         assertThat(groups).hasSize(1);
         assertThat(groups.getFirst().getAssertion()).isEqualTo("First.");

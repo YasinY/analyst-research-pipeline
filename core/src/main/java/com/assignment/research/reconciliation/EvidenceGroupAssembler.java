@@ -5,6 +5,7 @@ import com.assignment.research.evidence.Source;
 import com.assignment.research.evidence.SourceTier;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -21,11 +23,12 @@ public final class EvidenceGroupAssembler {
     private EvidenceGroupAssembler() {
     }
 
-    public static Reconciliation assemble(
-            String subQuestionId, List<Claim> claims, List<Source> sources, ReconciliationOutput rawOutput) {
+    public static Reconciliation assemble(List<Claim> claims, List<Source> sources, ReconciliationOutput rawOutput) {
         var output = IntraGroupConflictSplitter.split(rawOutput);
-        var claimsById = claims.stream().collect(Collectors.toMap(Claim::getId, Function.identity()));
-        var sourcesById = sources.stream().collect(Collectors.toMap(Source::getId, Function.identity()));
+        var claimsById = claims.stream().collect(Collectors.toMap(Claim::getId, Function.identity(),
+                (first, second) -> first, LinkedHashMap::new));
+        var sourcesById = sources.stream().collect(Collectors.toMap(Source::getId, Function.identity(),
+                (first, second) -> first));
 
         var drafts = assignClaimsToGroups(claimsById.keySet(), output.getGroups()).stream()
                 .map(group -> draft(group, claimsById, sourcesById))
@@ -33,12 +36,12 @@ public final class EvidenceGroupAssembler {
         var draftsByModelId = drafts.stream()
                 .collect(Collectors.toMap(GroupDraft::getModelGroupId, Function.identity()));
         var conflictsByModelId = indexConflicts(output.getConflicts(), draftsByModelId.keySet());
-        var finalIds = assignFinalIds(subQuestionId, drafts);
+        var finalIds = assignFinalIds(drafts);
 
         var groups = drafts.stream()
-                .map(draft -> toGroup(subQuestionId, draft, conflictsByModelId, draftsByModelId, finalIds))
+                .map(draft -> toGroup(draft, claimsById, conflictsByModelId, draftsByModelId, finalIds))
                 .toList();
-        return new Reconciliation(subQuestionId, groups);
+        return new Reconciliation(groups);
     }
 
     private static List<ClaimGroupOutput> assignClaimsToGroups(
@@ -99,17 +102,16 @@ public final class EvidenceGroupAssembler {
         return index;
     }
 
-    private static Map<String, String> assignFinalIds(String subQuestionId, List<GroupDraft> drafts) {
+    private static Map<String, String> assignFinalIds(List<GroupDraft> drafts) {
         var finalIds = new LinkedHashMap<String, String>();
         var number = ReconciliationConstants.FIRST_GROUP_NUMBER;
         for (var draft : drafts) {
-            var finalId = ReconciliationConstants.GROUP_ID_FORMAT.formatted(subQuestionId, number++);
-            finalIds.put(draft.getModelGroupId(), finalId);
+            finalIds.put(draft.getModelGroupId(), ReconciliationConstants.GROUP_ID_FORMAT.formatted(number++));
         }
         return finalIds;
     }
 
-    private static EvidenceGroup toGroup(String subQuestionId, GroupDraft draft,
+    private static EvidenceGroup toGroup(GroupDraft draft, Map<String, Claim> claimsById,
             Map<String, List<ConflictOutput>> conflictsByModelId, Map<String, GroupDraft> draftsByModelId,
             Map<String, String> finalIds) {
         var modelGroupId = draft.getModelGroupId();
@@ -121,9 +123,13 @@ public final class EvidenceGroupAssembler {
                 .map(finalIds::get)
                 .toList();
         var description = conflicts.isEmpty() ? null : conflicts.getFirst().getDescription();
+        var subQuestionIds = draft.getClaimIds().stream()
+                .map(claimsById::get)
+                .map(Claim::getSubQuestionId)
+                .collect(Collectors.toCollection(TreeSet::new));
         return new EvidenceGroup(
                 finalIds.get(modelGroupId),
-                subQuestionId,
+                Collections.unmodifiableSet(subQuestionIds),
                 draft.getAssertion(),
                 draft.getClaimIds(),
                 draft.getIndependentSourceIds(),

@@ -10,6 +10,7 @@ import com.assignment.research.planning.SubQuestion;
 import com.assignment.research.prompt.PromptTemplates;
 import com.assignment.research.query.AnalystQuery;
 import com.assignment.research.reconciliation.EvidenceGroupAssembler;
+import com.assignment.research.reconciliation.Reconciliation;
 import com.assignment.research.reconciliation.ReconciliationOutput;
 import com.assignment.research.synthesis.SynthesisInput;
 import com.assignment.research.trace.InMemoryTraceSink;
@@ -19,7 +20,6 @@ import java.time.Clock;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -33,8 +33,8 @@ public final class BriefingOrchestrator implements ProduceBriefingUseCase {
     @Override
     public BriefingResult produce(AnalystQuery query, PipelineObserver observer) {
         var trace = new InMemoryTraceSink();
-        var tracingLLM = new TracingLLMPort(llm, entry -> record(trace, observer, entry), clock);
-        var agents = new RunAgents(tracingLLM, search, prompts, clock);
+        var tracingLlm = new TracingLLMPort(llm, entry -> record(trace, observer, entry), clock);
+        var agents = new RunAgents(tracingLlm, search, prompts, clock);
 
         var state = BriefingState.initial(query);
         while (true) {
@@ -91,6 +91,7 @@ public final class BriefingOrchestrator implements ProduceBriefingUseCase {
         for (var question : pendingQuestions(state)) {
             current = researchOne(current, question, agents, exhausted);
         }
+        current = reconcileAll(current, agents);
         return current.toBuilder().pendingResearchIds(List.of()).build().withExhausted(exhausted);
     }
 
@@ -109,25 +110,24 @@ public final class BriefingOrchestrator implements ProduceBriefingUseCase {
         if (!result.hasClaims()) {
             exhausted.add(question.getId());
         }
-        var reconciled = reconcile(state, question, result, agents);
-        var confidences = agents.getConfidenceCalculator().scoreAll(reconciled.getGroups());
-        return reconciled.getState().withResearchAppended(result, reconciled.getGroups(), confidences);
+        return state.withResearchAppended(result);
     }
 
-    private static ReconciledResearch reconcile(BriefingState state, SubQuestion question, ResearchResult result,
-            RunAgents agents) {
+    private static BriefingState reconcileAll(BriefingState state, RunAgents agents) {
+        var claims = state.getClaims();
+        var sources = state.getSources();
+        var current = state;
+        Reconciliation reconciliation;
         try {
-            var reconciliation = agents.getReconciler().reconcile(question, result.getClaims(),
-                    result.getConsultedSources(), state.getRound());
-            return new ReconciledResearch(state, reconciliation.getGroups());
+            reconciliation = agents.getReconciler().reconcile(state.getSubQuestions(), claims, sources,
+                    state.getRound());
         } catch (LLMException failure) {
-            var singletons = EvidenceGroupAssembler.assemble(question.getId(), result.getClaims(),
-                    result.getConsultedSources(), ReconciliationOutput.empty());
-            var degraded = state.withFailure(new AgentFailure(
-                    PipelineConstants.FAILURE_RECONCILER_FORMAT.formatted(question.getId()), state.getRound(),
+            reconciliation = EvidenceGroupAssembler.assemble(claims, sources, ReconciliationOutput.empty());
+            current = state.withFailure(new AgentFailure(PipelineConstants.FAILURE_RECONCILER, state.getRound(),
                     failure.getMessage()));
-            return new ReconciledResearch(degraded, singletons.getGroups());
         }
+        var groups = reconciliation.getGroups();
+        return current.withEvidence(groups, agents.getConfidenceCalculator().scoreAll(groups));
     }
 
     private static BriefingState synthesize(BriefingState state, RunAgents agents) {
@@ -156,6 +156,7 @@ public final class BriefingOrchestrator implements ProduceBriefingUseCase {
                             failure.getMessage()))
                     .toBuilder()
                     .draftReviewed(true)
+                    .draftStale(false)
                     .stopDecision(new StopDecision(StopReason.AGENT_FAILURE,
                             PipelineConstants.EXPLANATION_AGENT_FAILURE.formatted(
                                     PipelineConstants.FAILURE_SYNTHESIZER)))
@@ -182,7 +183,6 @@ public final class BriefingOrchestrator implements ProduceBriefingUseCase {
 
     private static List<SubQuestion> pendingQuestions(BriefingState state) {
         var pending = Set.copyOf(state.getPendingResearchIds());
-        return state.getSubQuestions().stream().filter(question -> pending.contains(question.getId()))
-                .collect(Collectors.toList());
+        return state.getSubQuestions().stream().filter(question -> pending.contains(question.getId())).toList();
     }
 }
