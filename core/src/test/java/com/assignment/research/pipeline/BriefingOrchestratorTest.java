@@ -22,7 +22,9 @@ import com.assignment.research.query.AnalystQuery;
 import com.assignment.research.reconciliation.ClaimGroupOutput;
 import com.assignment.research.reconciliation.EvidenceGroup;
 import com.assignment.research.reconciliation.ReconciliationOutput;
+import com.assignment.research.synthesis.BriefingDraft;
 import com.assignment.research.synthesis.GroundedStatement;
+import com.assignment.research.synthesis.SynthesisInput;
 import com.assignment.research.synthesis.SynthesisOutput;
 import java.time.Clock;
 import java.time.Instant;
@@ -47,6 +49,8 @@ class BriefingOrchestratorTest {
                     "q2-c2"))), List.of());
     private static final CritiqueOutput CLEAN = CritiqueOutput.clean();
     private static final String GROUP_OF_Q1_C1 = "g-q1-c1";
+    private static final String RUN_METHOD = "run";
+    private static final String SYNTHESIS_INPUT_METHOD = "synthesisInput";
 
     private final FakePromptTemplates prompts = new FakePromptTemplates("prompt without placeholders");
     private final FakeSourceSearchPort search = FakeSourceSearchPort.returning(Sources.tierA("src-a"),
@@ -222,5 +226,77 @@ class BriefingOrchestratorTest {
         assertThat(result.getFinalState().getFailures()).extracting(AgentFailure::getAgent)
                 .containsExactly("researcher/q2");
         assertThat(result.getConfidence().getLevel()).isEqualTo(ConfidenceLevel.MEDIUM);
+    }
+
+    @Test
+    void reconcilerFailureFallsBackToOneGroupPerClaimAndRecordsTheFailure() {
+        var llm = new ScriptedLLMPort()
+                .on("planner", TWO_QUESTIONS)
+                .on("researcher", TWO_CLAIMS)
+                .on("reconciler", new LLMException("provider down"))
+                .on("synthesizer", groundedDraft(GROUP_OF_Q1_C1))
+                .on("critic", CLEAN);
+
+        var result = new BriefingOrchestrator(llm, search, prompts, CLOCK).produce(QUERY, observer);
+
+        assertThat(result.getStopDecision().getReason()).isEqualTo(StopReason.APPROVED);
+        assertThat(result.getFinalState().getFailures()).extracting(AgentFailure::getAgent)
+                .containsExactly(PipelineConstants.FAILURE_RECONCILER);
+        assertThat(result.getFinalState().getGroups()).hasSize(4);
+    }
+
+    @Test
+    void synthesizerFailureBeforeTheFirstDraftAbortsTheRun() {
+        var failure = new LLMException("provider down");
+        var llm = new ScriptedLLMPort()
+                .on("planner", TWO_QUESTIONS)
+                .on("researcher", TWO_CLAIMS)
+                .on("reconciler", ONE_GROUP)
+                .on("synthesizer", failure);
+
+        assertThatThrownBy(() -> new BriefingOrchestrator(llm, search, prompts, CLOCK).produce(QUERY, observer))
+                .isInstanceOf(PipelineAbortedException.class)
+                .hasMessage(PipelineConstants.FAILURE_SYNTHESIZER)
+                .hasCause(failure);
+    }
+
+    @Test
+    void synthesizerFailureOnARevisionDeliversThePreviousDraft() {
+        var llm = new ScriptedLLMPort()
+                .on("planner", TWO_QUESTIONS)
+                .on("researcher", TWO_CLAIMS)
+                .on("reconciler", ONE_GROUP)
+                .on("synthesizer", groundedDraft(GROUP_OF_Q1_C1), new LLMException("provider down"))
+                .on("critic", new CritiqueOutput(List.of(overstated())));
+
+        var result = new BriefingOrchestrator(llm, search, prompts, CLOCK).produce(QUERY, observer);
+
+        assertThat(result.getStopDecision().getReason()).isEqualTo(StopReason.AGENT_FAILURE);
+        assertThat(result.getFinalState().getFailures()).extracting(AgentFailure::getAgent)
+                .containsExactly(PipelineConstants.FAILURE_SYNTHESIZER);
+        assertThat(result.getDraft().getKeyFacts()).isNotEmpty();
+    }
+
+    @Test
+    void finishStepLeavesTheStateUnchanged() throws ReflectiveOperationException {
+        var run = BriefingOrchestrator.class.getDeclaredMethod(RUN_METHOD, PipelineStep.class, BriefingState.class,
+                RunAgents.class);
+        run.setAccessible(true);
+        var state = BriefingState.initial(QUERY);
+
+        assertThat(run.invoke(null, PipelineStep.FINISH, state, null)).isSameAs(state);
+    }
+
+    @Test
+    void draftWithoutCritiqueIsSynthesizedAsAFirstDraft() throws ReflectiveOperationException {
+        var synthesisInput = BriefingOrchestrator.class.getDeclaredMethod(SYNTHESIS_INPUT_METHOD,
+                BriefingState.class);
+        synthesisInput.setAccessible(true);
+        var draft = new BriefingDraft(List.of(), List.of(), List.of(), List.of(), List.of(), List.of());
+        var state = BriefingState.initial(QUERY).toBuilder().draft(draft).build();
+
+        var input = (SynthesisInput) synthesisInput.invoke(null, state);
+
+        assertThat(input.getPreviousDraft()).isEmpty();
     }
 }

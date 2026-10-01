@@ -59,4 +59,19 @@ class CritiqueAssemblerTest {
 
         assertThat(critique.isApproved()).isTrue();
     }
+
+    @Test
+    void stripsSuggestedQuestionsAndDropsBlankOnes() {
+        var output = new CritiqueOutput(List.of(
+                new FindingOutput(FindingType.MISSING_EVIDENCE, FindingSeverity.MAJOR, "", "No data on scrapping.",
+                        List.of(), List.of("scrapping"), "  How many ships were scrapped?  "),
+                new FindingOutput(FindingType.MISSING_EVIDENCE, FindingSeverity.MAJOR, "", "No data on orders.",
+                        List.of(), List.of("orders"), "   ")));
+        var draft = draft(new GroundedStatement("Grounded.", List.of("q1-g1")));
+
+        var findings = CritiqueAssembler.assemble(draft, output, KNOWN_GROUPS).getFindings();
+
+        assertThat(findings.get(0).getSuggestedQuestion()).contains("How many ships were scrapped?");
+        assertThat(findings.get(1).getSuggestedQuestion()).isEmpty();
+    }
 }

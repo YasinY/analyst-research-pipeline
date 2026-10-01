@@ -162,4 +162,43 @@ class EvidenceGroupAssemblerTest {
         assertThat(groups).hasSize(1);
         assertThat(groups.getFirst().getAssertion()).isEqualTo("First.");
     }
+
+    @Test
+    void keepsTheFirstOfDuplicateClaimsAndSources() {
+        var firstSource = Sources.tierA("src-a");
+        var claims = List.of(claim("c1", "src-a"), new Claim("c1", SUB_QUESTION, "duplicate", "src-a"));
+        var output = new ReconciliationOutput(List.of(), List.of());
+
+        var groups = EvidenceGroupAssembler.assemble(claims, List.of(firstSource, Sources.tierC("src-a")), output)
+                .getGroups();
+
+        assertThat(groups).hasSize(1);
+        assertThat(groups.getFirst().getAssertion()).isEqualTo("statement c1");
+        assertThat(groups.getFirst().getBestTier()).isEqualTo(SourceTier.A);
+    }
+
+    @Test
+    void keepsADerivativeSourceAsIndependentWhenItsOriginalIsNotInTheGroup() {
+        var copy = Sources.derivativeOf("src-news", "src-elsewhere");
+        var claims = List.of(claim("c1", "src-news"));
+        var output = new ReconciliationOutput(List.of(), List.of());
+
+        var group = EvidenceGroupAssembler.assemble(claims, List.of(copy), output).getGroups().getFirst();
+
+        assertThat(group.getIndependentSourceIds()).containsExactly("src-news");
+    }
+
+    @Test
+    void ignoresConflictsThatDoNotInvolveTwoKnownGroups() {
+        var sources = List.of(Sources.tierA("src-a"));
+        var claims = List.of(claim("c1", "src-a"));
+        var output = new ReconciliationOutput(
+                List.of(new ClaimGroupOutput("g1", "Known.", List.of("c1"))),
+                List.of(new ConflictOutput(List.of("g1", "g-invented"), "known vs invented")));
+
+        var group = EvidenceGroupAssembler.assemble(claims, sources, output).getGroups().getFirst();
+
+        assertThat(group.getConflictStatus()).isEqualTo(ConflictStatus.NONE);
+        assertThat(group.getConflict()).isEmpty();
+    }
 }
