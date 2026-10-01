@@ -13,6 +13,7 @@ Rules:
 - Evidence groups are formed per sub-question, so the same quantity can appear in one group without a conflict and in another group with an open conflict. Treat such a quantity as conflicted everywhere: do not state it as a key fact from the unconflicted group.
 - Every sub-question listed under "Gaps" must appear in uncertainties with a plain statement that no adequate evidence was found for it.
 - Use only numbers, dates, and names that appear in the evidence. Do not round, extrapolate, or add context from memory.
+- Never write about the briefing itself, its sections, its evidence groups or what is "shown above"; write only about the subject matter.
 - Write in plain English for a reader without technical or domain background. Short sentences. No jargon without a short explanation.
 - Suggest 3 to 5 follow-up questions an analyst could pursue next, focused on the gaps and conflicts.
 - If you are given a previous draft and review findings, produce a corrected draft that resolves every finding. Keep what was not criticised.

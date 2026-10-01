@@ -29,7 +29,7 @@ class CriticTest {
     private static final SubQuestion GAP = new SubQuestion("q3", "Emissions rules?", List.of("imo"));
 
     private final FakePromptTemplates prompts =
-            new FakePromptTemplates("{{query}}|D:{{draft}}|E:{{evidence}}|G:{{gaps}}");
+            new FakePromptTemplates("{{query}}|D:{{draft}}|E:{{evidence}}|G:{{gaps}}|P:{{previousFindings}}");
 
     @Test
     void sendsDraftEvidenceAndGapsAndLabelsByRoundAndPass() {
@@ -48,6 +48,21 @@ class CriticTest {
         assertThat(request.getUserPrompt())
                 .contains("- Fleet growth is certain. (groups: q1-g1)")
                 .contains("[q1-g1] confidence MEDIUM (0.60)")
-                .contains("[q3] Emissions rules?");
+                .contains("[q3] Emissions rules?")
+                .contains(CritiqueConstants.NO_PREVIOUS_FINDINGS);
+    }
+
+    @Test
+    void passesPreviousFindingsToTheReviewer() {
+        var draft = new BriefingDraft(List.of(new GroundedStatement("Fleet grew.", List.of("q1-g1"))),
+                List.of(), List.of(), List.of(), List.of(), List.of());
+        var previous = new CriticFinding(FindingType.READABILITY, FindingSeverity.MINOR, "Fleet grew.",
+                "Too terse.", List.of("q1-g1"), List.of());
+        var llm = FakeLLMPort.returning(CritiqueOutput.clean());
+
+        new Critic(llm, prompts).critique(new CritiqueInput(QUERY, draft, List.of(GROUP), List.of(CONFIDENCE),
+                List.of(), List.of(previous)), 1, 2);
+
+        assertThat(llm.getLastRequest().getUserPrompt()).contains("MINOR READABILITY on \"Fleet grew.\": Too terse.");
     }
 }

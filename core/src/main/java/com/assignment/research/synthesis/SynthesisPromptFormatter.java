@@ -69,7 +69,7 @@ public final class SynthesisPromptFormatter {
         return SynthesisConstants.SECTION_FORMAT.formatted(heading, joinOrNone(lines));
     }
 
-    private static String formatFindings(List<CriticFinding> findings) {
+    public static String formatFindings(List<CriticFinding> findings) {
         return joinOrNone(findings.stream()
                 .map(finding -> SynthesisConstants.FINDING_LINE.formatted(finding.getSeverity(), finding.getType(),
                         finding.getQuotedText(), finding.getDetail()))

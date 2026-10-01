@@ -9,6 +9,8 @@ public final class CritiqueConstants {
     public static final String DRAFT_VARIABLE = "draft";
     public static final String EVIDENCE_VARIABLE = "evidence";
     public static final String GAPS_VARIABLE = "gaps";
+    public static final String PREVIOUS_FINDINGS_VARIABLE = "previousFindings";
+    public static final String NO_PREVIOUS_FINDINGS = "(first review of this briefing)";
 
     public static final String UNGROUNDED_STATEMENT_DETAIL =
             "The statement cites no evidence group, so nothing in the collected evidence supports it.";

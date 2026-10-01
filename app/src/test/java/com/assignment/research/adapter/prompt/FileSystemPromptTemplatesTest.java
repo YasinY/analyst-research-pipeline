@@ -35,13 +35,15 @@ class FileSystemPromptTemplatesTest {
         assertPlaceholders(AgentName.RECONCILER, "questions", "claims");
         assertPlaceholders(AgentName.SYNTHESIZER, "query", "interpretation", "evidence", "weakEvidence", "gaps",
                 "revision");
-        assertPlaceholders(AgentName.CRITIC, "query", "draft", "evidence", "gaps");
+        assertPlaceholders(AgentName.CRITIC, "query", "draft", "evidence", "gaps", "previousFindings");
     }
 
     @Test
-    void synthesizerAndCriticPutTheStableEvidenceBeforeTheCacheBoundary() {
+    void synthesizerPutsTheStableEvidenceBeforeTheCacheBoundaryAndTheCriticSeesTheDraftFirst() {
         assertStableBeforeBoundary(AgentName.SYNTHESIZER, "{{weakEvidence}}", "{{gaps}}");
-        assertStableBeforeBoundary(AgentName.CRITIC, "{{evidence}}", "{{draft}}");
+        assertThat(templates.forAgent(AgentName.CRITIC).getUserPromptTemplate())
+                .doesNotContain(LLMAdapterConstants.CACHE_BOUNDARY)
+                .containsSubsequence("{{draft}}", "{{evidence}}", "{{previousFindings}}");
     }
 
     @Test

@@ -24,6 +24,13 @@ public final class Critic {
         return CritiqueAssembler.assemble(input.getDraft(), output, confidences.keySet());
     }
 
+    private static String previousFindings(CritiqueInput input) {
+        if (input.getPreviousFindings().isEmpty()) {
+            return CritiqueConstants.NO_PREVIOUS_FINDINGS;
+        }
+        return SynthesisPromptFormatter.formatFindings(input.getPreviousFindings());
+    }
+
     private LLMRequest buildRequest(CritiqueInput input, Map<String, GroupConfidence> confidences, int round,
             int pass) {
         var template = prompts.forAgent(AgentName.CRITIC);
@@ -32,7 +39,8 @@ public final class Critic {
                 CritiqueConstants.DRAFT_VARIABLE, SynthesisPromptFormatter.formatDraft(input.getDraft()),
                 CritiqueConstants.EVIDENCE_VARIABLE,
                 SynthesisPromptFormatter.formatEvidence(input.getGroups(), confidences),
-                CritiqueConstants.GAPS_VARIABLE, SynthesisPromptFormatter.formatGaps(input.getGaps())));
+                CritiqueConstants.GAPS_VARIABLE, SynthesisPromptFormatter.formatGaps(input.getGaps()),
+                CritiqueConstants.PREVIOUS_FINDINGS_VARIABLE, previousFindings(input)));
         var label = CritiqueConstants.TRACE_LABEL_FORMAT.formatted(round, pass);
         return new LLMRequest(label, template.getSystemPrompt(), userPrompt, CritiqueConstants.MAX_OUTPUT_TOKENS);
     }

@@ -15,6 +15,7 @@ Rules:
 - Severity is MAJOR when an analyst could make a wrong decision because of it: a wrong or unsupported number, date, direction, or causal claim, or a hidden conflict. Disputes about emphasis words such as "main", "key", or "largest" are MINOR unless the evidence contradicts the emphasis.
 - Do not invent evidence and do not propose new facts. You only compare the briefing with the evidence you were given.
 - Do not report a gap that is already named as a gap in the briefing.
+- If you receive findings from your previous review, check those first: a finding that the revised draft has resolved is not reported again, and a finding that is still open is reported again with the same type and severity. New findings on a revised draft are limited to factual problems the revision introduced (UNSUPPORTED, CONTRADICTS_EVIDENCE, SMOOTHED_CONFLICT). Do not raise the bar between passes.
 - Report at most 8 findings, the most severe first. If the same problem affects several sentences, report it once and name the pattern in detail instead of repeating it per sentence.
 - If you find nothing wrong, return an empty findings list. An empty list is a valid and welcome result.
 

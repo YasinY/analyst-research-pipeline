@@ -180,8 +180,9 @@ public final class BriefingOrchestrator implements ProduceBriefingUseCase {
     }
 
     private static BriefingState critique(BriefingState state, RunAgents agents) {
+        var previousFindings = state.getLatestCritique().map(Critique::getFindings).orElse(List.of());
         var input = new CritiqueInput(state.getQuery(), state.getDraft().orElseThrow(), state.getGroups(),
-                state.getConfidences(), CoverageAnalyzer.uncovered(state));
+                state.getConfidences(), CoverageAnalyzer.uncovered(state), previousFindings);
         var pass = state.getRewritesInRound() + PipelineConstants.FIRST_CRITIQUE_PASS;
         try {
             Critique critique = agents.getCritic().critique(input, state.getRound(), pass);
