@@ -1,6 +1,6 @@
 package com.assignment.research.adapter.llm;
 
-import com.assignment.research.llm.LlmUsage;
+import com.assignment.research.llm.LLMUsage;
 import lombok.NonNull;
 import lombok.Value;
 
@@ -12,5 +12,6 @@ public class ChatReply {
     @NonNull
     private final String model;
     @NonNull
-    private final LlmUsage usage;
+    private final LLMUsage usage;
+    private final boolean truncated;
 }

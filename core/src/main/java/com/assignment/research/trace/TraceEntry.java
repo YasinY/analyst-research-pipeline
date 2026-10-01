@@ -1,7 +1,7 @@
 package com.assignment.research.trace;
 
-import com.assignment.research.llm.LlmCallStatus;
-import com.assignment.research.llm.LlmUsage;
+import com.assignment.research.llm.LLMCallStatus;
+import com.assignment.research.llm.LLMUsage;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Optional;
@@ -27,9 +27,9 @@ public class TraceEntry {
     @NonNull
     private final String rawResponse;
     @NonNull
-    private final LlmUsage usage;
+    private final LLMUsage usage;
     @NonNull
-    private final LlmCallStatus status;
+    private final LLMCallStatus status;
     private final String failureReason;
 
     public Optional<String> getFailure() {

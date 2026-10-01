@@ -2,7 +2,7 @@ package com.assignment.research.adapter.llm;
 
 import java.time.Duration;
 
-public final class LlmAdapterConstants {
+public final class LLMAdapterConstants {
 
     public static final Duration CONNECT_TIMEOUT = Duration.ofSeconds(10);
     public static final Duration REQUEST_TIMEOUT = Duration.ofSeconds(120);
@@ -28,6 +28,9 @@ public final class LlmAdapterConstants {
             Reply again with only the JSON object in the required shape. No prose, no markdown fences.
             """;
     public static final String MALFORMED_AFTER_REPAIR = "model returned malformed JSON twice: %s";
+    public static final String MALFORMED_AFTER_TRUNCATION =
+            "model output was truncated and still unusable after retrying with %d tokens: %s";
+    public static final int TRUNCATION_BUDGET_FACTOR = 2;
     public static final String TRANSPORT_FAILURE = "LLM request to %s failed: %s";
     public static final String HTTP_FAILURE = "LLM provider at %s answered HTTP %d: %s";
     public static final String MISSING_FIELD = "LLM provider response is missing field '%s'";
@@ -38,6 +41,6 @@ public final class LlmAdapterConstants {
     public static final String PARSE_FAILED = "JSON did not match the expected shape: %s";
     public static final String PATH_SEPARATOR = ".";
 
-    private LlmAdapterConstants() {
+    private LLMAdapterConstants() {
     }
 }

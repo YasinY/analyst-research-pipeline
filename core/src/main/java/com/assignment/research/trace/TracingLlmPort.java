@@ -1,12 +1,12 @@
 package com.assignment.research.trace;
 
-import com.assignment.research.llm.LlmCallStatus;
-import com.assignment.research.llm.LlmException;
-import com.assignment.research.llm.LlmPort;
-import com.assignment.research.llm.LlmRequest;
-import com.assignment.research.llm.LlmResult;
-import com.assignment.research.llm.LlmUsage;
-import com.assignment.research.llm.MalformedLlmResponseException;
+import com.assignment.research.llm.LLMCallStatus;
+import com.assignment.research.llm.LLMException;
+import com.assignment.research.llm.LLMPort;
+import com.assignment.research.llm.LLMRequest;
+import com.assignment.research.llm.LLMResult;
+import com.assignment.research.llm.LLMUsage;
+import com.assignment.research.llm.MalformedLLMResponseException;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
@@ -14,31 +14,31 @@ import java.util.concurrent.atomic.AtomicInteger;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public final class TracingLlmPort implements LlmPort {
+public final class TracingLLMPort implements LLMPort {
 
-    private final LlmPort delegate;
+    private final LLMPort delegate;
     private final TraceSink sink;
     private final Clock clock;
     private final AtomicInteger sequence = new AtomicInteger(TraceConstants.FIRST_SEQUENCE);
 
     @Override
-    public <T> LlmResult<T> complete(LlmRequest request, Class<T> responseType) {
+    public <T> LLMResult<T> complete(LLMRequest request, Class<T> responseType) {
         var startedAt = clock.instant();
         var entrySequence = sequence.getAndIncrement();
         try {
             var result = delegate.complete(request, responseType);
             sink.accept(successEntry(entrySequence, request, startedAt, result));
             return result;
-        } catch (MalformedLlmResponseException malformed) {
+        } catch (MalformedLLMResponseException malformed) {
             sink.accept(failureEntry(entrySequence, request, startedAt, malformed.getRawText(), malformed));
             throw malformed;
-        } catch (LlmException failure) {
+        } catch (LLMException failure) {
             sink.accept(failureEntry(entrySequence, request, startedAt, TraceConstants.NO_RESPONSE, failure));
             throw failure;
         }
     }
 
-    private TraceEntry successEntry(int entrySequence, LlmRequest request, Instant startedAt, LlmResult<?> result) {
+    private TraceEntry successEntry(int entrySequence, LLMRequest request, Instant startedAt, LLMResult<?> result) {
         return new TraceEntry(
                 entrySequence,
                 request.getLabel(),
@@ -54,7 +54,7 @@ public final class TracingLlmPort implements LlmPort {
     }
 
     private TraceEntry failureEntry(
-            int entrySequence, LlmRequest request, Instant startedAt, String rawText, LlmException failure) {
+            int entrySequence, LLMRequest request, Instant startedAt, String rawText, LLMException failure) {
         return new TraceEntry(
                 entrySequence,
                 request.getLabel(),
@@ -64,8 +64,8 @@ public final class TracingLlmPort implements LlmPort {
                 request.getSystemPrompt(),
                 request.getUserPrompt(),
                 rawText,
-                LlmUsage.NONE,
-                LlmCallStatus.FAILED,
+                LLMUsage.NONE,
+                LLMCallStatus.FAILED,
                 failure.getMessage());
     }
 

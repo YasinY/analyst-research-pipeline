@@ -1,10 +1,13 @@
 package com.assignment.research.critique;
 
 import java.util.List;
+import java.util.Optional;
+import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.Value;
 
 @Value
+@AllArgsConstructor
 public class CriticFinding {
 
     @NonNull
@@ -19,6 +22,16 @@ public class CriticFinding {
     private final List<String> groupIds;
     @NonNull
     private final List<String> suggestedKeywords;
+    private final String suggestedQuestion;
+
+    public CriticFinding(FindingType type, FindingSeverity severity, String quotedText, String detail,
+            List<String> groupIds, List<String> suggestedKeywords) {
+        this(type, severity, quotedText, detail, groupIds, suggestedKeywords, null);
+    }
+
+    public Optional<String> getSuggestedQuestion() {
+        return Optional.ofNullable(suggestedQuestion);
+    }
 
     public boolean requiresResearch() {
         return type.getConsequence() == FindingConsequence.RESEARCH;

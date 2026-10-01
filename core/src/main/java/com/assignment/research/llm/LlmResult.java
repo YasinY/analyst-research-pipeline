@@ -8,17 +8,17 @@ import lombok.ToString;
 @Getter
 @EqualsAndHashCode
 @ToString
-public final class LlmResult<T> {
+public final class LLMResult<T> {
 
     private final T value;
     private final String rawText;
     private final String model;
-    private final LlmUsage usage;
-    private final LlmCallStatus status;
+    private final LLMUsage usage;
+    private final LLMCallStatus status;
 
-    public LlmResult(@NonNull T value, @NonNull String rawText, @NonNull String model, @NonNull LlmUsage usage,
-            @NonNull LlmCallStatus status) {
-        if (status == LlmCallStatus.FAILED) {
+    public LLMResult(@NonNull T value, @NonNull String rawText, @NonNull String model, @NonNull LLMUsage usage,
+            @NonNull LLMCallStatus status) {
+        if (status == LLMCallStatus.FAILED) {
             throw new IllegalArgumentException("a failed call is reported as an exception, not as a result");
         }
         this.value = value;

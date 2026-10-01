@@ -8,7 +8,7 @@ import com.assignment.research.critique.CriticFinding;
 import com.assignment.research.critique.FindingSeverity;
 import com.assignment.research.critique.FindingType;
 import com.assignment.research.evidence.SourceTier;
-import com.assignment.research.llm.FakeLlmPort;
+import com.assignment.research.llm.FakeLLMPort;
 import com.assignment.research.planning.SubQuestion;
 import com.assignment.research.prompt.FakePromptTemplates;
 import com.assignment.research.query.AnalystQuery;
@@ -46,7 +46,7 @@ class SynthesizerTest {
         var input = SynthesisInput.firstDraft(QUERY, INTERPRETATION, List.of(strong, weak),
                 List.of(confidence("q1-g1", 0.9, ConfidenceLevel.HIGH), confidence("q2-g1", 0.3, ConfidenceLevel.LOW)),
                 List.of(GAP));
-        var llm = FakeLlmPort.returning(new SynthesisOutput(List.of(), List.of(), List.of(), List.of()));
+        var llm = FakeLLMPort.returning(new SynthesisOutput(List.of(), List.of(), List.of(), List.of()));
 
         new Synthesizer(llm, prompts).synthesize(input, 1);
 
@@ -70,7 +70,7 @@ class SynthesizerTest {
         var input = SynthesisInput.firstDraft(QUERY, INTERPRETATION, List.of(strong),
                 List.of(confidence("q1-g1", 0.6, ConfidenceLevel.MEDIUM)), List.of()).revisedWith(previous,
                 List.of(finding));
-        var llm = FakeLlmPort.returning(new SynthesisOutput(List.of(), List.of(), List.of(), List.of()));
+        var llm = FakeLLMPort.returning(new SynthesisOutput(List.of(), List.of(), List.of(), List.of()));
 
         new Synthesizer(llm, prompts).synthesize(input, 2);
 

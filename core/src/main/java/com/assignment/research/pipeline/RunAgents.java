@@ -4,7 +4,7 @@ import com.assignment.research.confidence.ConfidenceCalculator;
 import com.assignment.research.critique.Critic;
 import com.assignment.research.evidence.Researcher;
 import com.assignment.research.evidence.SourceSearchPort;
-import com.assignment.research.llm.LlmPort;
+import com.assignment.research.llm.LLMPort;
 import com.assignment.research.planning.Planner;
 import com.assignment.research.prompt.PromptTemplates;
 import com.assignment.research.reconciliation.Reconciler;
@@ -22,7 +22,7 @@ final class RunAgents {
     private final Synthesizer synthesizer;
     private final Critic critic;
 
-    RunAgents(LlmPort llm, SourceSearchPort search, PromptTemplates prompts, Clock clock) {
+    RunAgents(LLMPort llm, SourceSearchPort search, PromptTemplates prompts, Clock clock) {
         this.planner = new Planner(llm, prompts);
         this.researcher = new Researcher(llm, search, prompts);
         this.reconciler = new Reconciler(llm, prompts);

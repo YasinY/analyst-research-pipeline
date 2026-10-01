@@ -1,7 +1,7 @@
 package com.assignment.research.evidence;
 
-import com.assignment.research.llm.LlmPort;
-import com.assignment.research.llm.LlmRequest;
+import com.assignment.research.llm.LLMPort;
+import com.assignment.research.llm.LLMRequest;
 import com.assignment.research.planning.SubQuestion;
 import com.assignment.research.prompt.AgentName;
 import com.assignment.research.prompt.PromptTemplates;
@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public final class Researcher {
 
-    private final LlmPort llm;
+    private final LLMPort llm;
     private final SourceSearchPort search;
     private final PromptTemplates prompts;
 
@@ -31,13 +31,13 @@ public final class Researcher {
         return toResult(question.getId(), sources, output.getClaims());
     }
 
-    private LlmRequest buildRequest(SubQuestion question, List<Source> sources, int round) {
+    private LLMRequest buildRequest(SubQuestion question, List<Source> sources, int round) {
         var template = prompts.forAgent(AgentName.RESEARCHER);
         var userPrompt = template.renderUserPrompt(Map.of(
                 EvidenceConstants.QUESTION_VARIABLE, question.getQuestion(),
                 EvidenceConstants.SOURCES_VARIABLE, SourcePromptFormatter.format(sources)));
         var label = EvidenceConstants.TRACE_LABEL_FORMAT.formatted(question.getId(), round);
-        return new LlmRequest(label, template.getSystemPrompt(), userPrompt,
+        return new LLMRequest(label, template.getSystemPrompt(), userPrompt,
                 EvidenceConstants.MAX_OUTPUT_TOKENS);
     }
 

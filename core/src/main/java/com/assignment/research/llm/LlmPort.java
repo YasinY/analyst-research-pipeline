@@ -1,6 +1,6 @@
 package com.assignment.research.llm;
 
-public interface LlmPort {
+public interface LLMPort {
 
-    <T> LlmResult<T> complete(LlmRequest request, Class<T> responseType);
+    <T> LLMResult<T> complete(LLMRequest request, Class<T> responseType);
 }

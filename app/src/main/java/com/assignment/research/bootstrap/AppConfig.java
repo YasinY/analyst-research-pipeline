@@ -9,7 +9,7 @@ import lombok.Value;
 public class AppConfig {
 
     @NonNull
-    private final LlmProvider provider;
+    private final LLMProvider provider;
     @NonNull
     private final String apiKey;
     @NonNull
@@ -24,7 +24,7 @@ public class AppConfig {
     private final String corpusFile;
 
     public static AppConfig fromEnvironment(Map<String, String> env) {
-        var provider = LlmProvider.valueOf(
+        var provider = LLMProvider.valueOf(
                 env.getOrDefault(BootstrapConstants.ENV_PROVIDER, BootstrapConstants.DEFAULT_PROVIDER).toUpperCase());
         return new AppConfig(
                 provider,

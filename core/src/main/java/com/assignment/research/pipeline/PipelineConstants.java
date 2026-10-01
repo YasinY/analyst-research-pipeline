@@ -8,6 +8,8 @@ public final class PipelineConstants {
     public static final int MAX_LLM_CALLS = 30;
     public static final int FIRST_CRITIQUE_PASS = 1;
     public static final String FOLLOW_UP_QUESTION_ID_FORMAT = "q%d";
+    public static final String FOLLOW_UP_QUESTION_FALLBACK = "What does the evidence say about: %s?";
+    public static final String KEYWORD_SEPARATOR = ", ";
 
     public static final String EXPLANATION_APPROVED =
             "The reviewer approved the briefing and no sub-question that could still be researched remained open.";

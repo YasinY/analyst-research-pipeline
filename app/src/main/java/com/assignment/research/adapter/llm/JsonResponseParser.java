@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public final class JsonResponseParser {
+public final class JSONResponseParser {
 
     private final ObjectMapper mapper;
 
@@ -14,16 +14,16 @@ public final class JsonResponseParser {
             return mapper.readValue(json, type);
         } catch (Exception failure) {
             throw new ResponseParseException(
-                    LlmAdapterConstants.PARSE_FAILED.formatted(rootMessage(failure)), failure);
+                    LLMAdapterConstants.PARSE_FAILED.formatted(rootMessage(failure)), failure);
         }
     }
 
     private static String extractJsonObject(String rawText) {
-        var withoutFences = rawText.replace(LlmAdapterConstants.CODE_FENCE, "");
-        var start = withoutFences.indexOf(LlmAdapterConstants.JSON_START);
-        var end = withoutFences.lastIndexOf(LlmAdapterConstants.JSON_END);
+        var withoutFences = rawText.replace(LLMAdapterConstants.CODE_FENCE, "");
+        var start = withoutFences.indexOf(LLMAdapterConstants.JSON_START);
+        var end = withoutFences.lastIndexOf(LLMAdapterConstants.JSON_END);
         if (start < 0 || end < start) {
-            throw new ResponseParseException(LlmAdapterConstants.NO_JSON_OBJECT);
+            throw new ResponseParseException(LLMAdapterConstants.NO_JSON_OBJECT);
         }
         return withoutFences.substring(start, end + 1);
     }

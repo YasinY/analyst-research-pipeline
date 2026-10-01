@@ -3,7 +3,7 @@ package com.assignment.research.bootstrap;
 public final class BootstrapConstants {
 
     public static final String ENV_PROVIDER = "LLM_PROVIDER";
-    public static final String DEFAULT_PROVIDER = "openai";
+    public static final String DEFAULT_PROVIDER = "anthropic";
     public static final String ENV_DATA_DIR = "DATA_DIR";
     public static final String DEFAULT_DATA_DIR = "data";
     public static final String ENV_RUNS_DIR = "RUNS_DIR";

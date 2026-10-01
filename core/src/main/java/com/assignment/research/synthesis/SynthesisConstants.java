@@ -4,7 +4,7 @@ public final class SynthesisConstants {
 
     public static final String FIRST_DRAFT_LABEL_FORMAT = "synthesizer/round%d";
     public static final String REVISION_LABEL_FORMAT = "synthesizer/round%d/revision";
-    public static final int MAX_OUTPUT_TOKENS = 3072;
+    public static final int MAX_OUTPUT_TOKENS = 6144;
 
     public static final String QUERY_VARIABLE = "query";
     public static final String INTERPRETATION_VARIABLE = "interpretation";

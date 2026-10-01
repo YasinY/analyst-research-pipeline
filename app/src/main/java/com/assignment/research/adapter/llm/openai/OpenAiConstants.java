@@ -17,6 +17,8 @@ public final class OpenAiConstants {
     public static final String FIELD_MAX_COMPLETION_TOKENS = "max_completion_tokens";
     public static final String FIELD_CHOICES = "choices";
     public static final String FIELD_MESSAGE = "message";
+    public static final String FIELD_FINISH_REASON = "finish_reason";
+    public static final String FINISH_REASON_LENGTH = "length";
     public static final String FIELD_USAGE = "usage";
     public static final String FIELD_PROMPT_TOKENS = "prompt_tokens";
     public static final String FIELD_COMPLETION_TOKENS = "completion_tokens";

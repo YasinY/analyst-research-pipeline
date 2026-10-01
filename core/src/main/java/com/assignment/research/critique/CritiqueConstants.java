@@ -3,7 +3,7 @@ package com.assignment.research.critique;
 public final class CritiqueConstants {
 
     public static final String TRACE_LABEL_FORMAT = "critic/round%d/pass%d";
-    public static final int MAX_OUTPUT_TOKENS = 2048;
+    public static final int MAX_OUTPUT_TOKENS = 4096;
 
     public static final String QUERY_VARIABLE = "query";
     public static final String DRAFT_VARIABLE = "draft";

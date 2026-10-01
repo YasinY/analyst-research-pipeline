@@ -8,14 +8,14 @@ import lombok.ToString;
 @Getter
 @EqualsAndHashCode
 @ToString
-public final class LlmRequest {
+public final class LLMRequest {
 
     private final String label;
     private final String systemPrompt;
     private final String userPrompt;
     private final int maxOutputTokens;
 
-    public LlmRequest(@NonNull String label, @NonNull String systemPrompt, @NonNull String userPrompt,
+    public LLMRequest(@NonNull String label, @NonNull String systemPrompt, @NonNull String userPrompt,
             int maxOutputTokens) {
         if (maxOutputTokens <= 0) {
             throw new IllegalArgumentException("maxOutputTokens must be positive");

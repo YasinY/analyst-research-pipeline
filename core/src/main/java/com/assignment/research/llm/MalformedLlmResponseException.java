@@ -3,11 +3,11 @@ package com.assignment.research.llm;
 import lombok.Getter;
 
 @Getter
-public class MalformedLlmResponseException extends LlmException {
+public class MalformedLLMResponseException extends LLMException {
 
     private final String rawText;
 
-    public MalformedLlmResponseException(String message, String rawText) {
+    public MalformedLLMResponseException(String message, String rawText) {
         super(message);
         this.rawText = rawText;
     }

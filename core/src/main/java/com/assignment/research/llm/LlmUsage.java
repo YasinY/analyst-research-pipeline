@@ -3,15 +3,15 @@ package com.assignment.research.llm;
 import lombok.Value;
 
 @Value
-public class LlmUsage {
+public class LLMUsage {
 
-    public static final LlmUsage NONE = new LlmUsage(0, 0);
+    public static final LLMUsage NONE = new LLMUsage(0, 0);
 
     private final int inputTokens;
     private final int outputTokens;
 
-    public LlmUsage plus(LlmUsage other) {
-        return new LlmUsage(inputTokens + other.inputTokens, outputTokens + other.outputTokens);
+    public LLMUsage plus(LLMUsage other) {
+        return new LLMUsage(inputTokens + other.inputTokens, outputTokens + other.outputTokens);
     }
 
     public int getTotalTokens() {

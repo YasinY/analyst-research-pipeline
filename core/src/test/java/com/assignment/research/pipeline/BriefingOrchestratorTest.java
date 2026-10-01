@@ -12,8 +12,8 @@ import com.assignment.research.evidence.ExtractedClaim;
 import com.assignment.research.evidence.FakeSourceSearchPort;
 import com.assignment.research.evidence.ResearchOutput;
 import com.assignment.research.evidence.Sources;
-import com.assignment.research.llm.LlmException;
-import com.assignment.research.llm.ScriptedLlmPort;
+import com.assignment.research.llm.LLMException;
+import com.assignment.research.llm.ScriptedLLMPort;
 import com.assignment.research.planning.PlanOutput;
 import com.assignment.research.planning.PlannedQuestion;
 import com.assignment.research.prompt.FakePromptTemplates;
@@ -67,7 +67,7 @@ class BriefingOrchestratorTest {
 
     @Test
     void happyPathFinishesApprovedAfterOneRoundAndSnapshotsEveryStep() {
-        var llm = new ScriptedLlmPort()
+        var llm = new ScriptedLLMPort()
                 .on("planner", TWO_QUESTIONS)
                 .on("researcher", TWO_CLAIMS)
                 .on("reconciler", ONE_GROUP)
@@ -93,7 +93,7 @@ class BriefingOrchestratorTest {
     void missingEvidenceFindingTriggersTargetedSecondRoundThenRevisionAndApproval() {
         var searchWithoutFollowUpHits = FakeSourceSearchPort.returningOnlyFor(Set.of("demand", "supply"),
                 Sources.tierA("src-a"), Sources.tierB("src-b", Sources.RECENT));
-        var llm = new ScriptedLlmPort()
+        var llm = new ScriptedLLMPort()
                 .on("planner", TWO_QUESTIONS)
                 .on("researcher", TWO_CLAIMS)
                 .on("reconciler", ONE_GROUP)
@@ -114,7 +114,7 @@ class BriefingOrchestratorTest {
 
     @Test
     void persistentMajorFindingHitsRewriteLimitAndCapsConfidenceLow() {
-        var llm = new ScriptedLlmPort()
+        var llm = new ScriptedLLMPort()
                 .on("planner", TWO_QUESTIONS)
                 .on("researcher", TWO_CLAIMS)
                 .on("reconciler", ONE_GROUP)
@@ -132,12 +132,12 @@ class BriefingOrchestratorTest {
 
     @Test
     void criticFailureDeliversUnverifiedBriefingWithLowConfidence() {
-        var llm = new ScriptedLlmPort()
+        var llm = new ScriptedLLMPort()
                 .on("planner", TWO_QUESTIONS)
                 .on("researcher", TWO_CLAIMS)
                 .on("reconciler", ONE_GROUP)
                 .on("synthesizer", groundedDraft("q1-g1"))
-                .on("critic", new LlmException("provider down"));
+                .on("critic", new LLMException("provider down"));
 
         var result = new BriefingOrchestrator(llm, search, prompts, CLOCK).produce(QUERY, observer);
 
@@ -149,7 +149,7 @@ class BriefingOrchestratorTest {
 
     @Test
     void plannerFailureAbortsTheRun() {
-        var llm = new ScriptedLlmPort().on("planner", new LlmException("provider down"));
+        var llm = new ScriptedLLMPort().on("planner", new LLMException("provider down"));
 
         assertThatThrownBy(() -> new BriefingOrchestrator(llm, search, prompts, CLOCK).produce(QUERY, observer))
                 .isInstanceOf(PipelineAbortedException.class);
@@ -157,10 +157,10 @@ class BriefingOrchestratorTest {
 
     @Test
     void researcherFailureBecomesAVisibleGapInsteadOfAbortingTheRun() {
-        var llm = new ScriptedLlmPort()
+        var llm = new ScriptedLLMPort()
                 .on("planner", TWO_QUESTIONS)
                 .on("researcher/q1", TWO_CLAIMS)
-                .on("researcher/q2", new LlmException("timeout"))
+                .on("researcher/q2", new LLMException("timeout"))
                 .on("reconciler", ONE_GROUP)
                 .on("synthesizer", groundedDraft("q1-g1"))
                 .on("critic", CLEAN);

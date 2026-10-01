@@ -32,6 +32,8 @@ public final class MarkdownBriefingRenderer {
     private static final String SOURCE_LINE = "- `%s` %s, %s (%s, tier %s), %s%s";
     private static final String CITES_SUFFIX = ", cites `%s`";
     private static final String FAILURE_LINE = "- round %d, %s: %s";
+    private static final String COVERAGE_OK = " (adequate evidence found)";
+    private static final String COVERAGE_GAP = " (no adequate evidence found)";
 
     private final Clock clock;
 
@@ -51,6 +53,7 @@ public final class MarkdownBriefingRenderer {
         out.append("> **Scope as understood by the system:** ").append(state.getInterpretation().orElse(""))
                 .append(NEWLINE).append(NEWLINE);
 
+        subQuestions(out, state, result);
         section(out, "Summary", draft.getSummary(), groupsById, confidenceById, false);
         section(out, "Key facts", draft.getKeyFacts(), groupsById, confidenceById, true);
         section(out, "Identified uncertainties", draft.getUncertainties(), groupsById, confidenceById, false);
@@ -86,6 +89,17 @@ public final class MarkdownBriefingRenderer {
     private static String evidenceNote(EvidenceGroup group, GroupConfidence confidence) {
         return String.format(Locale.ROOT, EVIDENCE_NOTE, group.getIndependentSourceCount(), group.getBestTier(),
                 group.getNewestSourceDate(), group.getConflictStatus(), confidence.getLevel(), confidence.getScore());
+    }
+
+    private static void subQuestions(StringBuilder out, BriefingState state, BriefingResult result) {
+        var gapIds = result.getGaps().stream().map(gap -> gap.getId()).collect(Collectors.toSet());
+        out.append("## Sub-questions investigated").append(NEWLINE).append(NEWLINE);
+        for (var question : state.getSubQuestions()) {
+            var status = gapIds.contains(question.getId()) ? COVERAGE_GAP : COVERAGE_OK;
+            out.append(BULLET).append(question.getId()).append(": ").append(question.getQuestion()).append(status)
+                    .append(NEWLINE);
+        }
+        out.append(NEWLINE);
     }
 
     private static void gaps(StringBuilder out, BriefingResult result) {

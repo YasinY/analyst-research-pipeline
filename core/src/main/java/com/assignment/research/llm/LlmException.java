@@ -1,12 +1,12 @@
 package com.assignment.research.llm;
 
-public class LlmException extends RuntimeException {
+public class LLMException extends RuntimeException {
 
-    public LlmException(String message) {
+    public LLMException(String message) {
         super(message);
     }
 
-    public LlmException(String message, Throwable cause) {
+    public LLMException(String message, Throwable cause) {
         super(message, cause);
     }
 }

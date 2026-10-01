@@ -42,7 +42,9 @@ public final class ResearchScheduler {
                 continue;
             }
             var id = PipelineConstants.FOLLOW_UP_QUESTION_ID_FORMAT.formatted(nextNumber++);
-            questions.add(new SubQuestion(id, finding.getDetail(), keywords));
+            var fallback = PipelineConstants.FOLLOW_UP_QUESTION_FALLBACK.formatted(
+                    String.join(PipelineConstants.KEYWORD_SEPARATOR, keywords));
+            questions.add(new SubQuestion(id, finding.getSuggestedQuestion().orElse(fallback), keywords));
         }
         return questions;
     }

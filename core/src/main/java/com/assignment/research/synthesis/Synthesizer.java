@@ -2,8 +2,8 @@ package com.assignment.research.synthesis;
 
 import com.assignment.research.confidence.ConfidenceLevel;
 import com.assignment.research.confidence.GroupConfidence;
-import com.assignment.research.llm.LlmPort;
-import com.assignment.research.llm.LlmRequest;
+import com.assignment.research.llm.LLMPort;
+import com.assignment.research.llm.LLMRequest;
 import com.assignment.research.prompt.AgentName;
 import com.assignment.research.prompt.PromptTemplates;
 import com.assignment.research.reconciliation.EvidenceGroup;
@@ -18,7 +18,7 @@ public final class Synthesizer {
 
     private static final ConfidenceLevel KEY_FACT_MINIMUM = ConfidenceLevel.MEDIUM;
 
-    private final LlmPort llm;
+    private final LLMPort llm;
     private final PromptTemplates prompts;
 
     public BriefingDraft synthesize(SynthesisInput input, int round) {
@@ -28,7 +28,7 @@ public final class Synthesizer {
         return BriefingDraftAssembler.assemble(output, confidences);
     }
 
-    private LlmRequest buildRequest(SynthesisInput input, Map<String, GroupConfidence> confidences, int round) {
+    private LLMRequest buildRequest(SynthesisInput input, Map<String, GroupConfidence> confidences, int round) {
         var template = prompts.forAgent(AgentName.SYNTHESIZER);
         var eligible = groupsAtLeast(input.getGroups(), confidences, true);
         var weak = groupsAtLeast(input.getGroups(), confidences, false);
@@ -42,7 +42,7 @@ public final class Synthesizer {
         var labelFormat = input.isRevision()
                 ? SynthesisConstants.REVISION_LABEL_FORMAT
                 : SynthesisConstants.FIRST_DRAFT_LABEL_FORMAT;
-        return new LlmRequest(labelFormat.formatted(round), template.getSystemPrompt(), userPrompt,
+        return new LLMRequest(labelFormat.formatted(round), template.getSystemPrompt(), userPrompt,
                 SynthesisConstants.MAX_OUTPUT_TOKENS);
     }
 

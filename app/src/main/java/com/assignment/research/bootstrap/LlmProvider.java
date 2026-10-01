@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum LlmProvider {
+public enum LLMProvider {
     OPENAI(OpenAiConstants.ENV_API_KEY, OpenAiConstants.ENV_API_URL, OpenAiConstants.ENV_MODEL,
             OpenAiConstants.DEFAULT_URL, OpenAiConstants.DEFAULT_MODEL),
     ANTHROPIC(AnthropicConstants.ENV_API_KEY, AnthropicConstants.ENV_API_URL, AnthropicConstants.ENV_MODEL,

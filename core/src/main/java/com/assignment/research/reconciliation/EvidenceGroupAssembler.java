@@ -22,7 +22,8 @@ public final class EvidenceGroupAssembler {
     }
 
     public static Reconciliation assemble(
-            String subQuestionId, List<Claim> claims, List<Source> sources, ReconciliationOutput output) {
+            String subQuestionId, List<Claim> claims, List<Source> sources, ReconciliationOutput rawOutput) {
+        var output = IntraGroupConflictSplitter.split(rawOutput);
         var claimsById = claims.stream().collect(Collectors.toMap(Claim::getId, Function.identity()));
         var sourcesById = sources.stream().collect(Collectors.toMap(Source::getId, Function.identity()));
 

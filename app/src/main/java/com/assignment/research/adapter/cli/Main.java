@@ -1,6 +1,6 @@
 package com.assignment.research.adapter.cli;
 
-import com.assignment.research.adapter.output.JsonMapperFactory;
+import com.assignment.research.adapter.output.JSONMapperFactory;
 import com.assignment.research.adapter.output.MarkdownBriefingRenderer;
 import com.assignment.research.adapter.output.RunArchive;
 import com.assignment.research.bootstrap.AppConfig;
@@ -17,12 +17,12 @@ public final class Main {
             Usage: java -jar app/target/research-pipeline.jar --query "<analyst question>"
 
             Environment:
-              LLM_PROVIDER        openai (default) or anthropic
+              LLM_PROVIDER        anthropic (default) or openai
+              ANTHROPIC_API_KEY   key for the Anthropic Messages API
+              ANTHROPIC_MODEL     default claude-sonnet-5-5
               OPENAI_API_KEY      key for the OpenAI-compatible endpoint (empty allowed for local servers)
               OPENAI_API_URL      default https://api.openai.com/v1/chat/completions
               OPENAI_MODEL        default gpt-5.4-mini
-              ANTHROPIC_API_KEY   key for the Anthropic Messages API
-              ANTHROPIC_MODEL     default claude-haiku-4-5
               DATA_DIR            default ./data (prompts and corpus)
               RUNS_DIR            default ./runs (one folder per run)
             """;
@@ -41,7 +41,7 @@ public final class Main {
             return;
         }
         var clock = Clock.systemDefaultZone();
-        var mapper = JsonMapperFactory.create();
+        var mapper = JSONMapperFactory.create();
         var config = AppConfig.fromEnvironment(System.getenv());
         var archive = new RunArchive(config.getRunsDirectory(), clock, mapper, System.out);
         var useCase = new PipelineFactory(config, mapper, clock).createUseCase();

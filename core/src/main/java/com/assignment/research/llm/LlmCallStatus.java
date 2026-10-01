@@ -1,6 +1,6 @@
 package com.assignment.research.llm;
 
-public enum LlmCallStatus {
+public enum LLMCallStatus {
     OK,
     REPAIRED,
     FAILED

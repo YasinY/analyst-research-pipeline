@@ -1,6 +1,6 @@
 package com.assignment.research.adapter.llm;
 
-import com.assignment.research.llm.LlmException;
+import com.assignment.research.llm.LLMException;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -14,9 +14,9 @@ public final class RetryingChatClient implements ChatClient {
         while (true) {
             try {
                 return delegate.chat(systemPrompt, userPrompt, maxOutputTokens);
-            } catch (LlmException failure) {
+            } catch (LLMException failure) {
                 attempt++;
-                if (!isRetryable(failure) || attempt > LlmAdapterConstants.MAX_TRANSPORT_RETRIES) {
+                if (!isRetryable(failure) || attempt > LLMAdapterConstants.MAX_TRANSPORT_RETRIES) {
                     throw failure;
                 }
                 pause();
@@ -24,7 +24,7 @@ public final class RetryingChatClient implements ChatClient {
         }
     }
 
-    private static boolean isRetryable(LlmException failure) {
+    private static boolean isRetryable(LLMException failure) {
         if (failure instanceof HttpStatusException httpFailure) {
             return httpFailure.isRetryable();
         }
@@ -33,7 +33,7 @@ public final class RetryingChatClient implements ChatClient {
 
     private static void pause() {
         try {
-            Thread.sleep(LlmAdapterConstants.RETRY_BACKOFF);
+            Thread.sleep(LLMAdapterConstants.RETRY_BACKOFF);
         } catch (InterruptedException interrupted) {
             Thread.currentThread().interrupt();
         }

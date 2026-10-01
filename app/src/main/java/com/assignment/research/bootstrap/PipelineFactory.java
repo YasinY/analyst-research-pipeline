@@ -1,15 +1,15 @@
 package com.assignment.research.bootstrap;
 
 import com.assignment.research.adapter.llm.ChatClient;
-import com.assignment.research.adapter.llm.HttpJsonPoster;
-import com.assignment.research.adapter.llm.JsonResponseParser;
+import com.assignment.research.adapter.llm.HttpJSONPoster;
+import com.assignment.research.adapter.llm.JSONResponseParser;
 import com.assignment.research.adapter.llm.RetryingChatClient;
-import com.assignment.research.adapter.llm.StructuredOutputLlmPort;
+import com.assignment.research.adapter.llm.StructuredOutputLLMPort;
 import com.assignment.research.adapter.llm.anthropic.AnthropicChatClient;
 import com.assignment.research.adapter.llm.openai.OpenAiCompatibleChatClient;
 import com.assignment.research.adapter.prompt.FileSystemPromptTemplates;
-import com.assignment.research.adapter.search.JsonCorpusSearchAdapter;
-import com.assignment.research.llm.LlmPort;
+import com.assignment.research.adapter.search.JSONCorpusSearchAdapter;
+import com.assignment.research.llm.LLMPort;
 import com.assignment.research.pipeline.BriefingOrchestrator;
 import com.assignment.research.pipeline.ProduceBriefingUseCase;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,18 +24,18 @@ public final class PipelineFactory {
     private final Clock clock;
 
     public ProduceBriefingUseCase createUseCase() {
-        var search = JsonCorpusSearchAdapter.load(config.getCorpusPath(), mapper);
+        var search = JSONCorpusSearchAdapter.load(config.getCorpusPath(), mapper);
         var prompts = new FileSystemPromptTemplates(config.getPromptsDirectory());
-        return new BriefingOrchestrator(createLlmPort(), search, prompts, clock);
+        return new BriefingOrchestrator(createLLMPort(), search, prompts, clock);
     }
 
-    public LlmPort createLlmPort() {
+    public LLMPort createLLMPort() {
         var chat = new RetryingChatClient(createChatClient());
-        return new StructuredOutputLlmPort(chat, new JsonResponseParser(mapper));
+        return new StructuredOutputLLMPort(chat, new JSONResponseParser(mapper));
     }
 
     private ChatClient createChatClient() {
-        var poster = new HttpJsonPoster(mapper);
+        var poster = new HttpJSONPoster(mapper);
         return switch (config.getProvider()) {
             case OPENAI -> new OpenAiCompatibleChatClient(poster, config.getApiUrl(), config.getApiKey(),
                     config.getModel());

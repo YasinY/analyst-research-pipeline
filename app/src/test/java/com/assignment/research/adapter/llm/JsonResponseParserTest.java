@@ -3,15 +3,15 @@ package com.assignment.research.adapter.llm;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.assignment.research.adapter.output.JsonMapperFactory;
+import com.assignment.research.adapter.output.JSONMapperFactory;
 import com.assignment.research.critique.CritiqueOutput;
 import com.assignment.research.critique.FindingType;
 import com.assignment.research.planning.PlanOutput;
 import org.junit.jupiter.api.Test;
 
-class JsonResponseParserTest {
+class JSONResponseParserTest {
 
-    private final JsonResponseParser parser = new JsonResponseParser(JsonMapperFactory.create());
+    private final JSONResponseParser parser = new JSONResponseParser(JSONMapperFactory.create());
 
     @Test
     void parsesLombokValueClassesWrappedInProseAndCodeFences() {

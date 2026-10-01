@@ -1,10 +1,10 @@
 package com.assignment.research.adapter.llm;
 
-import com.assignment.research.llm.LlmException;
+import com.assignment.research.llm.LLMException;
 import lombok.Getter;
 
 @Getter
-public class HttpStatusException extends LlmException {
+public class HttpStatusException extends LLMException {
 
     private final int status;
 
@@ -14,7 +14,7 @@ public class HttpStatusException extends LlmException {
     }
 
     public boolean isRetryable() {
-        return status == LlmAdapterConstants.HTTP_TOO_MANY_REQUESTS
-                || status >= LlmAdapterConstants.HTTP_SERVER_ERROR_MIN;
+        return status == LLMAdapterConstants.HTTP_TOO_MANY_REQUESTS
+                || status >= LLMAdapterConstants.HTTP_SERVER_ERROR_MIN;
     }
 }

@@ -39,7 +39,9 @@ public final class CritiqueAssembler {
         var keywords = output.getType() == FindingType.MISSING_EVIDENCE
                 ? Keywords.normalizeOrDerive(output.getSuggestedKeywords(), output.getDetail())
                 : List.<String>of();
+        var suggested = output.getSuggestedQuestion();
+        var question = suggested == null || suggested.isBlank() ? null : suggested.strip();
         return new CriticFinding(output.getType(), output.getSeverity(), output.getQuotedText().strip(),
-                output.getDetail().strip(), groupIds, keywords);
+                output.getDetail().strip(), groupIds, keywords, question);
     }
 }

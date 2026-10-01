@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.assignment.research.confidence.ConfidenceLevel;
 import com.assignment.research.confidence.GroupConfidence;
 import com.assignment.research.evidence.SourceTier;
-import com.assignment.research.llm.FakeLlmPort;
+import com.assignment.research.llm.FakeLLMPort;
 import com.assignment.research.planning.SubQuestion;
 import com.assignment.research.prompt.FakePromptTemplates;
 import com.assignment.research.query.AnalystQuery;
@@ -36,7 +36,7 @@ class CriticTest {
                 List.of(), List.of(), List.of("Next?"), List.of(), List.of());
         var output = new CritiqueOutput(List.of(new FindingOutput(FindingType.OVERSTATED_CERTAINTY,
                 FindingSeverity.MAJOR, "Fleet growth is certain.", "MEDIUM evidence.", List.of("q1-g1"), List.of())));
-        var llm = FakeLlmPort.returning(output);
+        var llm = FakeLLMPort.returning(output);
 
         var critique = new Critic(llm, prompts).critique(
                 new CritiqueInput(QUERY, draft, List.of(GROUP), List.of(CONFIDENCE), List.of(GAP)), 1, 2);

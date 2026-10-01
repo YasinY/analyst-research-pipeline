@@ -1,6 +1,6 @@
 package com.assignment.research.trace;
 
-import com.assignment.research.llm.LlmUsage;
+import com.assignment.research.llm.LLMUsage;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +17,7 @@ public final class InMemoryTraceSink implements TraceSink {
         return List.copyOf(entries);
     }
 
-    public synchronized LlmUsage getTotalUsage() {
-        return entries.stream().map(TraceEntry::getUsage).reduce(LlmUsage.NONE, LlmUsage::plus);
+    public synchronized LLMUsage getTotalUsage() {
+        return entries.stream().map(TraceEntry::getUsage).reduce(LLMUsage.NONE, LLMUsage::plus);
     }
 }

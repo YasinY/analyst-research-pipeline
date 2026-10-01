@@ -3,6 +3,7 @@ package com.assignment.research.adapter.search;
 import com.assignment.research.evidence.SearchHit;
 import com.assignment.research.evidence.Source;
 import com.assignment.research.evidence.SourceSearchPort;
+import com.assignment.research.planning.Keywords;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
@@ -12,22 +13,22 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
-public final class JsonCorpusSearchAdapter implements SourceSearchPort {
+public final class JSONCorpusSearchAdapter implements SourceSearchPort {
 
     private static final String FIELD_SEPARATOR = " ";
     private static final int NO_MATCH = 0;
 
     private final List<Source> sources;
 
-    public JsonCorpusSearchAdapter(List<Source> sources) {
+    public JSONCorpusSearchAdapter(List<Source> sources) {
         this.sources = List.copyOf(sources);
     }
 
-    public static JsonCorpusSearchAdapter load(Path corpusFile, ObjectMapper mapper) {
+    public static JSONCorpusSearchAdapter load(Path corpusFile, ObjectMapper mapper) {
         try {
             List<CorpusDocument> documents = mapper.readValue(corpusFile.toFile(), new TypeReference<>() {
             });
-            return new JsonCorpusSearchAdapter(documents.stream().map(CorpusDocument::toSource).toList());
+            return new JSONCorpusSearchAdapter(documents.stream().map(CorpusDocument::toSource).toList());
         } catch (IOException failure) {
             throw new UncheckedIOException("cannot read corpus " + corpusFile.toAbsolutePath(), failure);
         }
@@ -52,6 +53,14 @@ public final class JsonCorpusSearchAdapter implements SourceSearchPort {
     private static int score(Source source, List<String> keywords) {
         var haystack = String.join(FIELD_SEPARATOR, source.getTitle(), String.join(FIELD_SEPARATOR,
                 source.getKeywords()), source.getExcerpt()).toLowerCase(Locale.ROOT);
-        return (int) keywords.stream().filter(haystack::contains).count();
+        return (int) keywords.stream().filter(keyword -> matches(haystack, keyword)).count();
+    }
+
+    private static boolean matches(String haystack, String keyword) {
+        if (haystack.contains(keyword)) {
+            return true;
+        }
+        var words = Keywords.fromText(keyword);
+        return !words.isEmpty() && words.stream().allMatch(haystack::contains);
     }
 }

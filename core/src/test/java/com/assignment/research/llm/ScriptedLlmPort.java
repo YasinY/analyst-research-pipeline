@@ -7,16 +7,16 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public final class ScriptedLlmPort implements LlmPort {
+public final class ScriptedLLMPort implements LLMPort {
 
     private static final String MODEL = "scripted-model";
     private static final String RAW = "{}";
-    private static final LlmUsage USAGE_PER_CALL = new LlmUsage(100, 50);
+    private static final LLMUsage USAGE_PER_CALL = new LLMUsage(100, 50);
 
     private final Map<String, Deque<Object>> responsesByLabelPrefix = new LinkedHashMap<>();
-    private final List<LlmRequest> requests = new ArrayList<>();
+    private final List<LLMRequest> requests = new ArrayList<>();
 
-    public ScriptedLlmPort on(String labelPrefix, Object... responsesInOrder) {
+    public ScriptedLLMPort on(String labelPrefix, Object... responsesInOrder) {
         var queue = responsesByLabelPrefix.computeIfAbsent(labelPrefix, key -> new ArrayDeque<>());
         for (var response : responsesInOrder) {
             queue.add(response);
@@ -25,21 +25,21 @@ public final class ScriptedLlmPort implements LlmPort {
     }
 
     @Override
-    public <T> LlmResult<T> complete(LlmRequest request, Class<T> responseType) {
+    public <T> LLMResult<T> complete(LLMRequest request, Class<T> responseType) {
         requests.add(request);
         var response = nextResponse(request.getLabel());
-        if (response instanceof LlmException failure) {
+        if (response instanceof LLMException failure) {
             throw failure;
         }
-        return new LlmResult<>(responseType.cast(response), RAW, MODEL, USAGE_PER_CALL, LlmCallStatus.OK);
+        return new LLMResult<>(responseType.cast(response), RAW, MODEL, USAGE_PER_CALL, LLMCallStatus.OK);
     }
 
-    public List<LlmRequest> getRequests() {
+    public List<LLMRequest> getRequests() {
         return List.copyOf(requests);
     }
 
     public List<String> getLabels() {
-        return requests.stream().map(LlmRequest::getLabel).toList();
+        return requests.stream().map(LLMRequest::getLabel).toList();
     }
 
     private Object nextResponse(String label) {

@@ -2,7 +2,7 @@ package com.assignment.research.evidence;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.assignment.research.llm.FakeLlmPort;
+import com.assignment.research.llm.FakeLLMPort;
 import com.assignment.research.planning.SubQuestion;
 import com.assignment.research.prompt.FakePromptTemplates;
 import java.util.List;
@@ -24,7 +24,7 @@ class ResearcherTest {
                 new ExtractedClaim("Fleet grew 3.1% in 2025.", "src-a"),
                 new ExtractedClaim("Rates will double.", "src-b"),
                 new ExtractedClaim("Made up.", "src-does-not-exist")));
-        var llm = FakeLlmPort.returning(output);
+        var llm = FakeLLMPort.returning(output);
         var researcher = new Researcher(llm, FakeSourceSearchPort.returning(SOURCE_A, SOURCE_B), prompts);
 
         var result = researcher.research(QUESTION, ROUND);
@@ -36,8 +36,8 @@ class ResearcherTest {
     }
 
     @Test
-    void skipsLlmEntirelyWhenSearchFindsNothing() {
-        var llm = FakeLlmPort.returning(new ResearchOutput(List.of()));
+    void skipsLLMEntirelyWhenSearchFindsNothing() {
+        var llm = FakeLLMPort.returning(new ResearchOutput(List.of()));
         var researcher = new Researcher(llm, FakeSourceSearchPort.empty(), prompts);
 
         var result = researcher.research(QUESTION, ROUND);
@@ -53,7 +53,7 @@ class ResearcherTest {
                 new ExtractedClaim("Fleet grew 3.1% in 2025.", "src-a"),
                 new ExtractedClaim("  Fleet grew 3.1% in 2025.  ", "src-a"),
                 new ExtractedClaim("   ", "src-a")));
-        var llm = FakeLlmPort.returning(output);
+        var llm = FakeLLMPort.returning(output);
         var researcher = new Researcher(llm, FakeSourceSearchPort.returning(SOURCE_A), prompts);
 
         var result = researcher.research(QUESTION, ROUND);
@@ -63,7 +63,7 @@ class ResearcherTest {
 
     @Test
     void labelsCallPerSubQuestionAndRoundAndEmbedsSourceExcerpts() {
-        var llm = FakeLlmPort.returning(new ResearchOutput(List.of()));
+        var llm = FakeLLMPort.returning(new ResearchOutput(List.of()));
         var researcher = new Researcher(llm, FakeSourceSearchPort.returning(SOURCE_A), prompts);
 
         researcher.research(QUESTION, 2);

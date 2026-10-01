@@ -1,7 +1,7 @@
 package com.assignment.research.pipeline;
 
 import com.assignment.research.critique.CriticFinding;
-import com.assignment.research.llm.LlmUsage;
+import com.assignment.research.llm.LLMUsage;
 import com.assignment.research.planning.SubQuestion;
 import com.assignment.research.synthesis.BriefingDraft;
 import com.assignment.research.trace.TraceEntry;
@@ -27,5 +27,5 @@ public class BriefingResult {
     @NonNull
     private final List<TraceEntry> trace;
     @NonNull
-    private final LlmUsage usage;
+    private final LLMUsage usage;
 }

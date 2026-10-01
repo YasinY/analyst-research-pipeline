@@ -1,43 +1,60 @@
 package com.assignment.research.adapter.llm;
 
-import com.assignment.research.llm.LlmCallStatus;
-import com.assignment.research.llm.LlmPort;
-import com.assignment.research.llm.LlmRequest;
-import com.assignment.research.llm.LlmResult;
-import com.assignment.research.llm.MalformedLlmResponseException;
+import com.assignment.research.llm.LLMCallStatus;
+import com.assignment.research.llm.LLMPort;
+import com.assignment.research.llm.LLMRequest;
+import com.assignment.research.llm.LLMResult;
+import com.assignment.research.llm.MalformedLLMResponseException;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public final class StructuredOutputLlmPort implements LlmPort {
+public final class StructuredOutputLLMPort implements LLMPort {
 
     private final ChatClient chat;
-    private final JsonResponseParser parser;
+    private final JSONResponseParser parser;
 
     @Override
-    public <T> LlmResult<T> complete(LlmRequest request, Class<T> responseType) {
+    public <T> LLMResult<T> complete(LLMRequest request, Class<T> responseType) {
         var systemPrompt = request.getSystemPrompt();
         var maxTokens = request.getMaxOutputTokens();
         var first = chat.chat(systemPrompt, request.getUserPrompt(), maxTokens);
         try {
             var value = parser.parse(first.getText(), responseType);
-            return new LlmResult<>(value, first.getText(), first.getModel(), first.getUsage(), LlmCallStatus.OK);
+            return new LLMResult<>(value, first.getText(), first.getModel(), first.getUsage(), LLMCallStatus.OK);
         } catch (ResponseParseException firstFailure) {
+            if (first.isTruncated()) {
+                return retryWithLargerBudget(request, responseType, first);
+            }
             return repair(request, responseType, first, firstFailure);
         }
     }
 
-    private <T> LlmResult<T> repair(LlmRequest request, Class<T> responseType, ChatReply first,
+    private <T> LLMResult<T> retryWithLargerBudget(LLMRequest request, Class<T> responseType, ChatReply first) {
+        var budget = request.getMaxOutputTokens() * LLMAdapterConstants.TRUNCATION_BUDGET_FACTOR;
+        var second = chat.chat(request.getSystemPrompt(), request.getUserPrompt(), budget);
+        var usage = first.getUsage().plus(second.getUsage());
+        try {
+            var value = parser.parse(second.getText(), responseType);
+            return new LLMResult<>(value, second.getText(), second.getModel(), usage, LLMCallStatus.REPAIRED);
+        } catch (ResponseParseException secondFailure) {
+            throw new MalformedLLMResponseException(
+                    LLMAdapterConstants.MALFORMED_AFTER_TRUNCATION.formatted(budget, secondFailure.getMessage()),
+                    second.getText());
+        }
+    }
+
+    private <T> LLMResult<T> repair(LLMRequest request, Class<T> responseType, ChatReply first,
             ResponseParseException firstFailure) {
         var repairPrompt = request.getUserPrompt()
-                + LlmAdapterConstants.REPAIR_INSTRUCTION.formatted(firstFailure.getMessage(), first.getText());
+                + LLMAdapterConstants.REPAIR_INSTRUCTION.formatted(firstFailure.getMessage(), first.getText());
         var second = chat.chat(request.getSystemPrompt(), repairPrompt, request.getMaxOutputTokens());
         var usage = first.getUsage().plus(second.getUsage());
         try {
             var value = parser.parse(second.getText(), responseType);
-            return new LlmResult<>(value, second.getText(), second.getModel(), usage, LlmCallStatus.REPAIRED);
+            return new LLMResult<>(value, second.getText(), second.getModel(), usage, LLMCallStatus.REPAIRED);
         } catch (ResponseParseException secondFailure) {
-            throw new MalformedLlmResponseException(
-                    LlmAdapterConstants.MALFORMED_AFTER_REPAIR.formatted(secondFailure.getMessage()),
+            throw new MalformedLLMResponseException(
+                    LLMAdapterConstants.MALFORMED_AFTER_REPAIR.formatted(secondFailure.getMessage()),
                     second.getText());
         }
     }

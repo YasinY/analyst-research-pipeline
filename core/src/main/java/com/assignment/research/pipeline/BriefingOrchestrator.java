@@ -4,16 +4,17 @@ import com.assignment.research.critique.Critique;
 import com.assignment.research.critique.CritiqueInput;
 import com.assignment.research.evidence.ResearchResult;
 import com.assignment.research.evidence.SourceSearchPort;
-import com.assignment.research.llm.LlmException;
-import com.assignment.research.llm.LlmPort;
+import com.assignment.research.llm.LLMException;
+import com.assignment.research.llm.LLMPort;
 import com.assignment.research.planning.SubQuestion;
 import com.assignment.research.prompt.PromptTemplates;
 import com.assignment.research.query.AnalystQuery;
-import com.assignment.research.reconciliation.Reconciliation;
+import com.assignment.research.reconciliation.EvidenceGroupAssembler;
+import com.assignment.research.reconciliation.ReconciliationOutput;
 import com.assignment.research.synthesis.SynthesisInput;
 import com.assignment.research.trace.InMemoryTraceSink;
 import com.assignment.research.trace.TraceEntry;
-import com.assignment.research.trace.TracingLlmPort;
+import com.assignment.research.trace.TracingLLMPort;
 import java.time.Clock;
 import java.util.HashSet;
 import java.util.List;
@@ -24,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public final class BriefingOrchestrator implements ProduceBriefingUseCase {
 
-    private final LlmPort llm;
+    private final LLMPort llm;
     private final SourceSearchPort search;
     private final PromptTemplates prompts;
     private final Clock clock;
@@ -32,8 +33,8 @@ public final class BriefingOrchestrator implements ProduceBriefingUseCase {
     @Override
     public BriefingResult produce(AnalystQuery query, PipelineObserver observer) {
         var trace = new InMemoryTraceSink();
-        var tracingLlm = new TracingLlmPort(llm, entry -> record(trace, observer, entry), clock);
-        var agents = new RunAgents(tracingLlm, search, prompts, clock);
+        var tracingLLM = new TracingLLMPort(llm, entry -> record(trace, observer, entry), clock);
+        var agents = new RunAgents(tracingLLM, search, prompts, clock);
 
         var state = BriefingState.initial(query);
         while (true) {
@@ -99,7 +100,7 @@ public final class BriefingOrchestrator implements ProduceBriefingUseCase {
         ResearchResult result;
         try {
             result = agents.getResearcher().research(question, round);
-        } catch (LlmException failure) {
+        } catch (LLMException failure) {
             exhausted.add(question.getId());
             return state.withFailure(new AgentFailure(
                     PipelineConstants.FAILURE_RESEARCHER_FORMAT.formatted(question.getId()), round,
@@ -119,12 +120,13 @@ public final class BriefingOrchestrator implements ProduceBriefingUseCase {
             var reconciliation = agents.getReconciler().reconcile(question, result.getClaims(),
                     result.getConsultedSources(), state.getRound());
             return new ReconciledResearch(state, reconciliation.getGroups());
-        } catch (LlmException failure) {
-            var fallback = Reconciliation.empty(question.getId());
+        } catch (LLMException failure) {
+            var singletons = EvidenceGroupAssembler.assemble(question.getId(), result.getClaims(),
+                    result.getConsultedSources(), ReconciliationOutput.empty());
             var degraded = state.withFailure(new AgentFailure(
                     PipelineConstants.FAILURE_RECONCILER_FORMAT.formatted(question.getId()), state.getRound(),
                     failure.getMessage()));
-            return new ReconciledResearch(degraded, fallback.getGroups());
+            return new ReconciledResearch(degraded, singletons.getGroups());
         }
     }
 
@@ -146,7 +148,7 @@ public final class BriefingOrchestrator implements ProduceBriefingUseCase {
                     .draftStale(false)
                     .rewritesInRound(rewrites)
                     .build();
-        } catch (LlmException failure) {
+        } catch (LLMException failure) {
             if (!state.hasDraft()) {
                 throw new PipelineAbortedException(PipelineConstants.FAILURE_SYNTHESIZER, failure);
             }
@@ -168,7 +170,7 @@ public final class BriefingOrchestrator implements ProduceBriefingUseCase {
         try {
             Critique critique = agents.getCritic().critique(input, state.getRound(), pass);
             return state.withCritiqueAppended(critique);
-        } catch (LlmException failure) {
+        } catch (LLMException failure) {
             return state.withFailure(new AgentFailure(PipelineConstants.FAILURE_CRITIC, state.getRound(),
                             failure.getMessage()))
                     .toBuilder()

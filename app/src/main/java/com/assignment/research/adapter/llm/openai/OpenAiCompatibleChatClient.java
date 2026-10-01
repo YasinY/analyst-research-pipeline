@@ -2,9 +2,9 @@ package com.assignment.research.adapter.llm.openai;
 
 import com.assignment.research.adapter.llm.ChatClient;
 import com.assignment.research.adapter.llm.ChatReply;
-import com.assignment.research.adapter.llm.HttpJsonPoster;
-import com.assignment.research.adapter.llm.LlmAdapterConstants;
-import com.assignment.research.llm.LlmUsage;
+import com.assignment.research.adapter.llm.HttpJSONPoster;
+import com.assignment.research.adapter.llm.LLMAdapterConstants;
+import com.assignment.research.llm.LLMUsage;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public final class OpenAiCompatibleChatClient implements ChatClient {
 
-    private final HttpJsonPoster poster;
+    private final HttpJSONPoster poster;
     private final String url;
     private final String apiKey;
     private final String model;
@@ -27,18 +27,20 @@ public final class OpenAiCompatibleChatClient implements ChatClient {
                         message(OpenAiConstants.ROLE_USER, userPrompt)));
         var headers = apiKey.isBlank()
                 ? Map.<String, String>of()
-                : Map.of(LlmAdapterConstants.HEADER_AUTHORIZATION, LlmAdapterConstants.BEARER_PREFIX + apiKey);
+                : Map.of(LLMAdapterConstants.HEADER_AUTHORIZATION, LLMAdapterConstants.BEARER_PREFIX + apiKey);
 
         var response = poster.post(url, headers, body);
         var firstChoice = response.path(OpenAiConstants.FIELD_CHOICES).path(OpenAiConstants.FIRST_CHOICE);
-        var text = HttpJsonPoster.requiredText(firstChoice, OpenAiConstants.FIELD_MESSAGE,
+        var text = HttpJSONPoster.requiredText(firstChoice, OpenAiConstants.FIELD_MESSAGE,
                 OpenAiConstants.FIELD_CONTENT);
-        var usage = new LlmUsage(
-                HttpJsonPoster.intOrZero(response, OpenAiConstants.FIELD_USAGE, OpenAiConstants.FIELD_PROMPT_TOKENS),
-                HttpJsonPoster.intOrZero(response, OpenAiConstants.FIELD_USAGE,
+        var usage = new LLMUsage(
+                HttpJSONPoster.intOrZero(response, OpenAiConstants.FIELD_USAGE, OpenAiConstants.FIELD_PROMPT_TOKENS),
+                HttpJSONPoster.intOrZero(response, OpenAiConstants.FIELD_USAGE,
                         OpenAiConstants.FIELD_COMPLETION_TOKENS));
         var reportedModel = response.path(OpenAiConstants.FIELD_MODEL).asText(model);
-        return new ChatReply(text, reportedModel, usage);
+        var truncated = OpenAiConstants.FINISH_REASON_LENGTH.equals(
+                firstChoice.path(OpenAiConstants.FIELD_FINISH_REASON).asText());
+        return new ChatReply(text, reportedModel, usage, truncated);
     }
 
     private static Map<String, String> message(String role, String content) {

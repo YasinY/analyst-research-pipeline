@@ -1,7 +1,7 @@
 package com.assignment.research.planning;
 
-import com.assignment.research.llm.LlmPort;
-import com.assignment.research.llm.LlmRequest;
+import com.assignment.research.llm.LLMPort;
+import com.assignment.research.llm.LLMRequest;
 import com.assignment.research.prompt.AgentName;
 import com.assignment.research.prompt.PromptTemplates;
 import com.assignment.research.query.AnalystQuery;
@@ -13,13 +13,13 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public final class Planner {
 
-    private final LlmPort llm;
+    private final LLMPort llm;
     private final PromptTemplates prompts;
 
     public Plan plan(AnalystQuery query) {
         var template = prompts.forAgent(AgentName.PLANNER);
         var userPrompt = template.renderUserPrompt(Map.of(PlanningConstants.QUERY_VARIABLE, query.getText()));
-        var request = new LlmRequest(PlanningConstants.TRACE_LABEL, template.getSystemPrompt(), userPrompt,
+        var request = new LLMRequest(PlanningConstants.TRACE_LABEL, template.getSystemPrompt(), userPrompt,
                 PlanningConstants.MAX_OUTPUT_TOKENS);
 
         var output = llm.complete(request, PlanOutput.class).getValue();
