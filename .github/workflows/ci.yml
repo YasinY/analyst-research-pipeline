@@ -43,7 +43,7 @@ jobs:
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: |
           mkdir bundle
-          cp app/target/research-pipeline.jar bundle/
+          cp app/target/research-pipeline.jar start.bat start.sh bundle/
           cp -r data bundle/data
           cd bundle && zip -qr ../research-pipeline.zip .
       - name: Publish latest build as a GitHub release
@@ -52,7 +52,7 @@ jobs:
         with:
           tag_name: latest
           name: Latest build
-          body: "Built from ${{ github.sha }}. Download research-pipeline.zip, unzip it, run: java -jar research-pipeline.jar --serve and open http://127.0.0.1:8787. The zip contains the jar and the data folder (prompts, mock corpus, pricing) it reads at startup."
+          body: "Built from ${{ github.sha }}. Download research-pipeline.zip, unzip it, double-click start.bat (Windows) or run ./start.sh (macOS, Linux); the browser opens on http://127.0.0.1:8787. The zip contains the jar and the data folder (prompts, mock corpus, pricing) it reads at startup."
           prerelease: false
           files: |
             research-pipeline.zip
