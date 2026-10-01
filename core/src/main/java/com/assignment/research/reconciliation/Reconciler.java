@@ -1,11 +1,5 @@
 package com.assignment.research.reconciliation;
 
-import static com.assignment.research.reconciliation.ReconciliationConstants.CLAIMS_VARIABLE;
-import static com.assignment.research.reconciliation.ReconciliationConstants.MAX_OUTPUT_TOKENS;
-import static com.assignment.research.reconciliation.ReconciliationConstants.MIN_CLAIMS_WORTH_COMPARING;
-import static com.assignment.research.reconciliation.ReconciliationConstants.QUESTION_VARIABLE;
-import static com.assignment.research.reconciliation.ReconciliationConstants.TRACE_LABEL_FORMAT;
-
 import com.assignment.research.evidence.Claim;
 import com.assignment.research.evidence.Source;
 import com.assignment.research.llm.LlmPort;
@@ -28,7 +22,7 @@ public final class Reconciler {
         if (claims.isEmpty()) {
             return Reconciliation.empty(subQuestionId);
         }
-        if (claims.size() < MIN_CLAIMS_WORTH_COMPARING) {
+        if (claims.size() < ReconciliationConstants.MIN_CLAIMS_WORTH_COMPARING) {
             return EvidenceGroupAssembler.assemble(subQuestionId, claims, sources, ReconciliationOutput.empty());
         }
         var output = llm.complete(buildRequest(question, claims, sources, round), ReconciliationOutput.class)
@@ -39,9 +33,10 @@ public final class Reconciler {
     private LlmRequest buildRequest(SubQuestion question, List<Claim> claims, List<Source> sources, int round) {
         var template = prompts.forAgent(AgentName.RECONCILER);
         var userPrompt = template.renderUserPrompt(Map.of(
-                QUESTION_VARIABLE, question.getQuestion(),
-                CLAIMS_VARIABLE, ClaimPromptFormatter.format(claims, sources)));
-        var label = TRACE_LABEL_FORMAT.formatted(question.getId(), round);
-        return new LlmRequest(label, template.getSystemPrompt(), userPrompt, MAX_OUTPUT_TOKENS);
+                ReconciliationConstants.QUESTION_VARIABLE, question.getQuestion(),
+                ReconciliationConstants.CLAIMS_VARIABLE, ClaimPromptFormatter.format(claims, sources)));
+        var label = ReconciliationConstants.TRACE_LABEL_FORMAT.formatted(question.getId(), round);
+        return new LlmRequest(label, template.getSystemPrompt(), userPrompt,
+                ReconciliationConstants.MAX_OUTPUT_TOKENS);
     }
 }

@@ -1,9 +1,5 @@
 package com.assignment.research.reconciliation;
 
-import static com.assignment.research.reconciliation.ReconciliationConstants.CLAIM_LINE;
-import static com.assignment.research.reconciliation.ReconciliationConstants.LINE_SEPARATOR;
-import static com.assignment.research.reconciliation.ReconciliationConstants.UNKNOWN;
-
 import com.assignment.research.evidence.Claim;
 import com.assignment.research.evidence.Source;
 import java.util.List;
@@ -18,15 +14,17 @@ public final class ClaimPromptFormatter {
 
     public static String format(List<Claim> claims, List<Source> sources) {
         var sourcesById = sources.stream().collect(Collectors.toMap(Source::getId, Function.identity()));
-        return claims.stream().map(claim -> formatOne(claim, sourcesById)).collect(Collectors.joining(LINE_SEPARATOR));
+        return claims.stream()
+                .map(claim -> formatOne(claim, sourcesById))
+                .collect(Collectors.joining(ReconciliationConstants.LINE_SEPARATOR));
     }
 
     private static String formatOne(Claim claim, Map<String, Source> sourcesById) {
         var source = sourcesById.get(claim.getSourceId());
-        var publisher = source == null ? UNKNOWN : source.getPublisher();
-        var type = source == null ? UNKNOWN : source.getType().toString();
-        var published = source == null ? UNKNOWN : source.getPublishedAt().toString();
-        return CLAIM_LINE.formatted(claim.getId(), claim.getSourceId(), publisher, type, published,
-                claim.getStatement());
+        var publisher = source == null ? ReconciliationConstants.UNKNOWN : source.getPublisher();
+        var type = source == null ? ReconciliationConstants.UNKNOWN : source.getType().toString();
+        var published = source == null ? ReconciliationConstants.UNKNOWN : source.getPublishedAt().toString();
+        return ReconciliationConstants.CLAIM_LINE.formatted(claim.getId(), claim.getSourceId(), publisher, type,
+                published, claim.getStatement());
     }
 }

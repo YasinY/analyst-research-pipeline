@@ -1,14 +1,5 @@
 package com.assignment.research.planning;
 
-import static com.assignment.research.planning.PlanningConstants.FIRST_ID;
-import static com.assignment.research.planning.PlanningConstants.MAX_OUTPUT_TOKENS;
-import static com.assignment.research.planning.PlanningConstants.MAX_SUB_QUESTIONS;
-import static com.assignment.research.planning.PlanningConstants.MIN_FALLBACK_KEYWORD_LENGTH;
-import static com.assignment.research.planning.PlanningConstants.QUERY_VARIABLE;
-import static com.assignment.research.planning.PlanningConstants.SUB_QUESTION_ID_FORMAT;
-import static com.assignment.research.planning.PlanningConstants.TRACE_LABEL;
-import static com.assignment.research.planning.PlanningConstants.WORD_SEPARATOR;
-
 import com.assignment.research.llm.LlmPort;
 import com.assignment.research.llm.LlmRequest;
 import com.assignment.research.prompt.AgentName;
@@ -28,8 +19,9 @@ public final class Planner {
 
     public Plan plan(AnalystQuery query) {
         var template = prompts.forAgent(AgentName.PLANNER);
-        var userPrompt = template.renderUserPrompt(Map.of(QUERY_VARIABLE, query.getText()));
-        var request = new LlmRequest(TRACE_LABEL, template.getSystemPrompt(), userPrompt, MAX_OUTPUT_TOKENS);
+        var userPrompt = template.renderUserPrompt(Map.of(PlanningConstants.QUERY_VARIABLE, query.getText()));
+        var request = new LlmRequest(PlanningConstants.TRACE_LABEL, template.getSystemPrompt(), userPrompt,
+                PlanningConstants.MAX_OUTPUT_TOKENS);
 
         var output = llm.complete(request, PlanOutput.class).getValue();
         var subQuestions = toSubQuestions(output.getSubQuestions());
@@ -42,15 +34,15 @@ public final class Planner {
     private List<SubQuestion> toSubQuestions(List<PlannedQuestion> planned) {
         var usable = planned.stream()
                 .filter(question -> !question.getQuestion().isBlank())
-                .limit(MAX_SUB_QUESTIONS)
+                .limit(PlanningConstants.MAX_SUB_QUESTIONS)
                 .toList();
         return IntStream.range(0, usable.size())
-                .mapToObj(index -> toSubQuestion(index + FIRST_ID, usable.get(index)))
+                .mapToObj(index -> toSubQuestion(index + PlanningConstants.FIRST_ID, usable.get(index)))
                 .toList();
     }
 
     private SubQuestion toSubQuestion(int number, PlannedQuestion planned) {
-        var id = SUB_QUESTION_ID_FORMAT.formatted(number);
+        var id = PlanningConstants.SUB_QUESTION_ID_FORMAT.formatted(number);
         var question = planned.getQuestion().strip();
         var keywords = normalizeKeywords(planned.getSearchKeywords());
         if (keywords.isEmpty()) {
@@ -68,8 +60,8 @@ public final class Planner {
     }
 
     private static List<String> fallbackKeywords(String question) {
-        return WORD_SEPARATOR.splitAsStream(question.toLowerCase(Locale.ROOT))
-                .filter(word -> word.length() >= MIN_FALLBACK_KEYWORD_LENGTH)
+        return PlanningConstants.WORD_SEPARATOR.splitAsStream(question.toLowerCase(Locale.ROOT))
+                .filter(word -> word.length() >= PlanningConstants.MIN_FALLBACK_KEYWORD_LENGTH)
                 .distinct()
                 .toList();
     }

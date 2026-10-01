@@ -1,8 +1,5 @@
 package com.assignment.research.evidence;
 
-import static com.assignment.research.evidence.EvidenceConstants.BLOCK_SEPARATOR;
-import static com.assignment.research.evidence.EvidenceConstants.SOURCE_BLOCK;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -12,11 +9,13 @@ public final class SourcePromptFormatter {
     }
 
     public static String format(List<Source> sources) {
-        return sources.stream().map(SourcePromptFormatter::formatOne).collect(Collectors.joining(BLOCK_SEPARATOR));
+        return sources.stream()
+                .map(SourcePromptFormatter::formatOne)
+                .collect(Collectors.joining(EvidenceConstants.BLOCK_SEPARATOR));
     }
 
     private static String formatOne(Source source) {
-        return SOURCE_BLOCK.formatted(
+        return EvidenceConstants.SOURCE_BLOCK.formatted(
                 source.getId(),
                 source.getTitle(),
                 source.getPublisher(),

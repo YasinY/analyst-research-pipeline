@@ -1,10 +1,5 @@
 package com.assignment.research.reconciliation;
 
-import static com.assignment.research.reconciliation.ReconciliationConstants.FIRST_GROUP_NUMBER;
-import static com.assignment.research.reconciliation.ReconciliationConstants.GROUP_ID_FORMAT;
-import static com.assignment.research.reconciliation.ReconciliationConstants.MIN_GROUPS_IN_CONFLICT;
-import static com.assignment.research.reconciliation.ReconciliationConstants.RECENCY_THRESHOLD_YEARS;
-
 import com.assignment.research.evidence.Claim;
 import com.assignment.research.evidence.Source;
 import com.assignment.research.evidence.SourceTier;
@@ -93,7 +88,7 @@ public final class EvidenceGroupAssembler {
         var index = new HashMap<String, List<ConflictOutput>>();
         for (var conflict : conflicts) {
             var involved = conflict.getGroupIds().stream().filter(knownGroupIds::contains).distinct().toList();
-            if (involved.size() < MIN_GROUPS_IN_CONFLICT) {
+            if (involved.size() < ReconciliationConstants.MIN_GROUPS_IN_CONFLICT) {
                 continue;
             }
             var normalized = new ConflictOutput(involved, conflict.getDescription());
@@ -104,9 +99,9 @@ public final class EvidenceGroupAssembler {
 
     private static Map<String, String> assignFinalIds(String subQuestionId, List<GroupDraft> drafts) {
         var finalIds = new LinkedHashMap<String, String>();
-        var number = FIRST_GROUP_NUMBER;
+        var number = ReconciliationConstants.FIRST_GROUP_NUMBER;
         for (var draft : drafts) {
-            finalIds.put(draft.getModelGroupId(), GROUP_ID_FORMAT.formatted(subQuestionId, number++));
+            finalIds.put(draft.getModelGroupId(), ReconciliationConstants.GROUP_ID_FORMAT.formatted(subQuestionId, number++));
         }
         return finalIds;
     }
@@ -152,10 +147,10 @@ public final class EvidenceGroupAssembler {
     }
 
     private static ConflictStatus statusAgainst(LocalDate own, LocalDate othersNewest) {
-        if (own.minusYears(RECENCY_THRESHOLD_YEARS).isAfter(othersNewest)) {
+        if (own.minusYears(ReconciliationConstants.RECENCY_THRESHOLD_YEARS).isAfter(othersNewest)) {
             return ConflictStatus.RESOLVED_BY_RECENCY;
         }
-        if (othersNewest.minusYears(RECENCY_THRESHOLD_YEARS).isAfter(own)) {
+        if (othersNewest.minusYears(ReconciliationConstants.RECENCY_THRESHOLD_YEARS).isAfter(own)) {
             return ConflictStatus.SUPERSEDED;
         }
         return ConflictStatus.OPEN;

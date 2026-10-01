@@ -1,9 +1,5 @@
 package com.assignment.research.trace;
 
-import static com.assignment.research.trace.TraceConstants.FIRST_SEQUENCE;
-import static com.assignment.research.trace.TraceConstants.NO_RESPONSE;
-import static com.assignment.research.trace.TraceConstants.UNKNOWN_MODEL;
-
 import com.assignment.research.llm.LlmCallStatus;
 import com.assignment.research.llm.LlmException;
 import com.assignment.research.llm.LlmPort;
@@ -23,7 +19,7 @@ public final class TracingLlmPort implements LlmPort {
     private final LlmPort delegate;
     private final TraceSink sink;
     private final Clock clock;
-    private final AtomicInteger sequence = new AtomicInteger(FIRST_SEQUENCE);
+    private final AtomicInteger sequence = new AtomicInteger(TraceConstants.FIRST_SEQUENCE);
 
     @Override
     public <T> LlmResult<T> complete(LlmRequest request, Class<T> responseType) {
@@ -37,7 +33,7 @@ public final class TracingLlmPort implements LlmPort {
             sink.accept(failureEntry(entrySequence, request, startedAt, malformed.getRawText(), malformed));
             throw malformed;
         } catch (LlmException failure) {
-            sink.accept(failureEntry(entrySequence, request, startedAt, NO_RESPONSE, failure));
+            sink.accept(failureEntry(entrySequence, request, startedAt, TraceConstants.NO_RESPONSE, failure));
             throw failure;
         }
     }
@@ -64,7 +60,7 @@ public final class TracingLlmPort implements LlmPort {
                 request.getLabel(),
                 startedAt,
                 elapsedSince(startedAt),
-                UNKNOWN_MODEL,
+                TraceConstants.UNKNOWN_MODEL,
                 request.getSystemPrompt(),
                 request.getUserPrompt(),
                 rawText,
