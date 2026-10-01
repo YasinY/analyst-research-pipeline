@@ -26,7 +26,7 @@ public final class AnthropicChatClient implements ChatClient {
                 AnthropicConstants.FIELD_MAX_TOKENS, maxOutputTokens,
                 AnthropicConstants.FIELD_SYSTEM, systemPrompt,
                 AnthropicConstants.FIELD_THINKING, Map.of(AnthropicConstants.FIELD_TYPE,
-                        AnthropicConstants.THINKING_OFF_TYPE),
+                        AnthropicConstants.THINKING_BETWEEN_TOOLS_ONLY),
                 AnthropicConstants.FIELD_MESSAGES, List.of(Map.of(
                         AnthropicConstants.FIELD_ROLE, AnthropicConstants.ROLE_USER,
                         AnthropicConstants.FIELD_CONTENT, userPrompt)));

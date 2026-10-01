@@ -13,22 +13,21 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public final class FileSystemPromptTemplates implements PromptTemplates {
 
-    private static final String SYSTEM_FILE = "system.md";
-    private static final String USER_FILE = "user.md";
-
     private final Path promptsDirectory;
 
     @Override
     public PromptTemplate forAgent(AgentName agent) {
         var directory = promptsDirectory.resolve(agent.getDirectoryName());
-        return new PromptTemplate(read(directory.resolve(SYSTEM_FILE)), read(directory.resolve(USER_FILE)));
+        return new PromptTemplate(read(directory.resolve(PromptFileConstants.SYSTEM_FILE)),
+                read(directory.resolve(PromptFileConstants.USER_FILE)));
     }
 
     private static String read(Path file) {
         try {
             return Files.readString(file, StandardCharsets.UTF_8);
         } catch (IOException failure) {
-            throw new UncheckedIOException("cannot read prompt file " + file.toAbsolutePath(), failure);
+            throw new UncheckedIOException(PromptFileConstants.READ_FAILURE.formatted(file.toAbsolutePath()),
+                    failure);
         }
     }
 }

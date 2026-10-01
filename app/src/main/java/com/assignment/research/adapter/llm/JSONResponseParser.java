@@ -19,7 +19,7 @@ public final class JSONResponseParser {
     }
 
     private static String extractJsonObject(String rawText) {
-        var withoutFences = rawText.replace(LLMAdapterConstants.CODE_FENCE, "");
+        var withoutFences = rawText.replace(LLMAdapterConstants.CODE_FENCE, LLMAdapterConstants.EMPTY);
         var start = withoutFences.indexOf(LLMAdapterConstants.JSON_START);
         var end = withoutFences.lastIndexOf(LLMAdapterConstants.JSON_END);
         if (start < 0 || end < start) {

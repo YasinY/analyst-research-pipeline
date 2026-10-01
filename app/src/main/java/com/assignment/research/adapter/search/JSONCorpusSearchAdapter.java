@@ -3,43 +3,37 @@ package com.assignment.research.adapter.search;
 import com.assignment.research.evidence.SearchHit;
 import com.assignment.research.evidence.Source;
 import com.assignment.research.evidence.SourceSearchPort;
-import com.assignment.research.planning.Keywords;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Locale;
 
 public final class JSONCorpusSearchAdapter implements SourceSearchPort {
 
-    private static final String FIELD_SEPARATOR = " ";
-    private static final int NO_MATCH = 0;
-
-    private final List<Source> sources;
+    private final List<IndexedSource> sources;
 
     public JSONCorpusSearchAdapter(List<Source> sources) {
-        this.sources = List.copyOf(sources);
+        this.sources = sources.stream().map(IndexedSource::of).toList();
     }
 
     public static JSONCorpusSearchAdapter load(Path corpusFile, ObjectMapper mapper) {
         try {
-            List<CorpusDocument> documents = mapper.readValue(corpusFile.toFile(), new TypeReference<>() {
-            });
-            return new JSONCorpusSearchAdapter(documents.stream().map(CorpusDocument::toSource).toList());
+            var documents = mapper.readValue(corpusFile.toFile(), CorpusDocument[].class);
+            return new JSONCorpusSearchAdapter(Arrays.stream(documents).map(CorpusDocument::toSource).toList());
         } catch (IOException failure) {
-            throw new UncheckedIOException("cannot read corpus " + corpusFile.toAbsolutePath(), failure);
+            throw new UncheckedIOException(
+                    SearchConstants.CORPUS_READ_FAILURE.formatted(corpusFile.toAbsolutePath()), failure);
         }
     }
 
     @Override
     public List<SearchHit> search(List<String> keywords, int maxResults) {
-        var normalized = keywords.stream().map(keyword -> keyword.toLowerCase(Locale.ROOT)).toList();
         return sources.stream()
-                .map(source -> new SearchHit(source, score(source, normalized)))
-                .filter(hit -> hit.getScore() > NO_MATCH)
+                .map(indexed -> new SearchHit(indexed.getSource(), score(indexed, keywords)))
+                .filter(hit -> hit.getScore() > SearchConstants.NO_MATCH)
                 .sorted(Comparator.comparingInt(SearchHit::getScore).reversed()
                         .thenComparing(hit -> hit.getSource().getPublishedAt(), Comparator.reverseOrder()))
                 .limit(maxResults)
@@ -50,17 +44,7 @@ public final class JSONCorpusSearchAdapter implements SourceSearchPort {
         return sources.size();
     }
 
-    private static int score(Source source, List<String> keywords) {
-        var haystack = String.join(FIELD_SEPARATOR, source.getTitle(), String.join(FIELD_SEPARATOR,
-                source.getKeywords()), source.getExcerpt()).toLowerCase(Locale.ROOT);
-        return (int) keywords.stream().filter(keyword -> matches(haystack, keyword)).count();
-    }
-
-    private static boolean matches(String haystack, String keyword) {
-        if (haystack.contains(keyword)) {
-            return true;
-        }
-        var words = Keywords.fromText(keyword);
-        return !words.isEmpty() && words.stream().allMatch(haystack::contains);
+    private static int score(IndexedSource source, List<String> keywords) {
+        return (int) keywords.stream().filter(source::matches).count();
     }
 }

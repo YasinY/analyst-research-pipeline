@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Clock;
@@ -20,19 +21,17 @@ import lombok.Getter;
 
 public final class RunArchive implements PipelineObserver {
 
-    private static final int FIRST_SNAPSHOT = 1;
-
     @Getter
     private final Path directory;
     private final ObjectMapper mapper;
     private final PrintStream console;
-    private final AtomicInteger snapshotCounter = new AtomicInteger(FIRST_SNAPSHOT);
+    private final AtomicInteger snapshotCounter = new AtomicInteger(OutputConstants.FIRST_SNAPSHOT);
 
     public RunArchive(Path runsRoot, Clock clock, ObjectMapper mapper, PrintStream console) {
         this.mapper = mapper;
         this.console = console;
         var folder = LocalDateTime.now(clock).format(OutputConstants.RUN_FOLDER_FORMAT);
-        this.directory = createDirectories(runsRoot.resolve(folder));
+        this.directory = createUniqueDirectory(createDirectories(runsRoot), folder);
         createDirectories(directory.resolve(OutputConstants.CALLS_DIRECTORY));
         createDirectories(directory.resolve(OutputConstants.SNAPSHOTS_DIRECTORY));
     }
@@ -89,7 +88,7 @@ public final class RunArchive implements PipelineObserver {
         try {
             mapper.writeValue(file.toFile(), value);
         } catch (IOException failure) {
-            throw new UncheckedIOException("cannot write " + file, failure);
+            throw new UncheckedIOException(OutputConstants.WRITE_FAILURE.formatted(file), failure);
         }
     }
 
@@ -97,7 +96,28 @@ public final class RunArchive implements PipelineObserver {
         try {
             Files.writeString(file, content, StandardCharsets.UTF_8);
         } catch (IOException failure) {
-            throw new UncheckedIOException("cannot write " + file, failure);
+            throw new UncheckedIOException(OutputConstants.WRITE_FAILURE.formatted(file), failure);
+        }
+    }
+
+    private static Path createUniqueDirectory(Path parent, String folder) {
+        var candidate = parent.resolve(folder);
+        var suffix = OutputConstants.FIRST_RUN_FOLDER_SUFFIX;
+        while (!createIfAbsent(candidate)) {
+            candidate = parent.resolve(OutputConstants.RUN_FOLDER_WITH_SUFFIX.formatted(folder, suffix));
+            suffix++;
+        }
+        return candidate;
+    }
+
+    private static boolean createIfAbsent(Path path) {
+        try {
+            Files.createDirectory(path);
+            return true;
+        } catch (FileAlreadyExistsException taken) {
+            return false;
+        } catch (IOException failure) {
+            throw new UncheckedIOException(OutputConstants.CREATE_FAILURE.formatted(path), failure);
         }
     }
 
@@ -105,7 +125,7 @@ public final class RunArchive implements PipelineObserver {
         try {
             return Files.createDirectories(path);
         } catch (IOException failure) {
-            throw new UncheckedIOException("cannot create " + path, failure);
+            throw new UncheckedIOException(OutputConstants.CREATE_FAILURE.formatted(path), failure);
         }
     }
 }

@@ -17,7 +17,7 @@ public final class AnthropicConstants {
     public static final String FIELD_SYSTEM = "system";
     public static final String FIELD_MESSAGES = "messages";
     public static final String FIELD_THINKING = "thinking";
-    public static final String THINKING_OFF_TYPE = "between_tools";
+    public static final String THINKING_BETWEEN_TOOLS_ONLY = "between_tools";
     public static final String FIELD_ROLE = "role";
     public static final String FIELD_CONTENT = "content";
     public static final String FIELD_TEXT = "text";

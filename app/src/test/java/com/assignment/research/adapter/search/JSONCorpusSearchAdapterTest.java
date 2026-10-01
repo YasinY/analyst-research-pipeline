@@ -4,8 +4,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.assignment.research.adapter.output.JSONMapperFactory;
 import com.assignment.research.evidence.SearchHit;
+import com.assignment.research.evidence.Source;
 import com.assignment.research.evidence.SourceTier;
+import com.assignment.research.evidence.SourceType;
 import java.nio.file.Path;
+import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
@@ -14,6 +17,9 @@ class JSONCorpusSearchAdapterTest {
     private static final Path CORPUS = Path.of(System.getProperty("basedir", "app")).resolveSibling("data")
             .resolve("corpus").resolve("dry-bulk-shipping.json");
     private static final int MAX_RESULTS = 5;
+    private static final Source REPORT_ONLY = new Source("src-report", "Quarterly market report", "Broker",
+            SourceType.BROKER_NOTE, LocalDate.of(2026, 1, 15), null, List.of("freight"),
+            "Analysts report weaker freight demand.");
 
     private final JSONCorpusSearchAdapter search = JSONCorpusSearchAdapter.load(CORPUS, JSONMapperFactory.create());
 
@@ -59,5 +65,14 @@ class JSONCorpusSearchAdapterTest {
     @Test
     void unrelatedTopicFindsNothing() {
         assertThat(search.search(List.of("pharmaceutical", "biotech"), MAX_RESULTS)).isEmpty();
+    }
+
+    @Test
+    void keywordMatchesWholeWordsOnlyNotSubstringsOfLongerWords() {
+        var reportOnly = new JSONCorpusSearchAdapter(List.of(REPORT_ONLY));
+
+        assertThat(reportOnly.search(List.of("port"), MAX_RESULTS)).isEmpty();
+        assertThat(reportOnly.search(List.of("report"), MAX_RESULTS)).hasSize(1);
+        assertThat(reportOnly.search(List.of("weaker freight"), MAX_RESULTS)).hasSize(1);
     }
 }
