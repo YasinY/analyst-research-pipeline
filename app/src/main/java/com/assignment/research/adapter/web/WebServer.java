@@ -170,8 +170,18 @@ public final class WebServer {
             respondError(exchange, WebConstants.HTTP_BAD_REQUEST, WebConstants.ERROR_UNKNOWN_PROVIDER);
             return;
         }
+        if (missingApiKey(settings.get())) {
+            respondError(exchange, WebConstants.HTTP_BAD_REQUEST, WebConstants.ERROR_MISSING_API_KEY);
+            return;
+        }
         var run = registry.start(query, settings.get());
         respond(exchange, WebConstants.HTTP_ACCEPTED, WebConstants.CONTENT_TYPE_JSON, json(run.toResponse()));
+    }
+
+    private static boolean missingApiKey(RunSettings settings) {
+        var provider = settings.getProvider();
+        var requiresKey = provider == null || provider.requiresApiKey();
+        return requiresKey && settings.getApiKey().isEmpty();
     }
 
     private static Optional<RunSettings> settingsFrom(JsonNode body) {

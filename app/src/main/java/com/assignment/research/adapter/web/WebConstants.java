@@ -53,6 +53,7 @@ public final class WebConstants {
     public static final String ERROR_FORBIDDEN = "forbidden";
     public static final String ERROR_EMPTY_QUERY = "query must not be blank";
     public static final String ERROR_UNKNOWN_PROVIDER = "provider must be anthropic, openai or local";
+    public static final String ERROR_MISSING_API_KEY = "apiKey is required for anthropic and openai";
     public static final String ERROR_MALFORMED_JSON = "request body is not valid JSON";
     public static final String ERROR_INDEX_MISSING = "web page resource is missing";
     public static final String ERROR_INTERNAL = "internal server error";

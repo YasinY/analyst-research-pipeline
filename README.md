@@ -16,10 +16,13 @@ Turns a free-text analyst question into a structured briefing with a confidence 
 
 Requirements: JDK 25 and an API key for Anthropic or for any OpenAI-compatible endpoint.
 
-- `LLM_PROVIDER`: `anthropic` (default) or `openai`
+- `LLM_PROVIDER`: `anthropic` (default), `openai` or `local`
 - `ANTHROPIC_API_KEY`, `ANTHROPIC_MODEL` (default `claude-sonnet-5-5`), `ANTHROPIC_API_URL`
-- `OPENAI_API_KEY` (may be empty for local servers), `OPENAI_MODEL` (default `gpt-5.4-mini`), `OPENAI_API_URL` (default OpenAI chat completions)
-- `DATA_DIR` (default `./data`, prompts and corpus), `RUNS_DIR` (default `./runs`), `PORT` (default `8787`)
+- `OPENAI_API_KEY`, `OPENAI_MODEL` (default `gpt-5.4-mini`), `OPENAI_API_URL` (default OpenAI chat completions)
+- `LOCAL_API_URL` (default Ollama, `http://localhost:11434/v1/chat/completions`), `LOCAL_MODEL` (default `llama3.1`); the local provider uses the OpenAI-compatible client without a key
+- `DATA_DIR` (default `./data`: prompts, corpus, `pricing.json`), `RUNS_DIR` (default `./runs`), `PORT` (default `8787`)
+
+In the web UI the provider, model and API key can also be chosen per run; a key entered there is used for that run only and never stored or returned. Alternatively download `research-pipeline.jar` from the [latest release](../../releases/latest) and run it with the same variables.
 
 ```bash
 ./mvnw -B package                                           # build and test, produces app/target/research-pipeline.jar
@@ -28,7 +31,7 @@ java -jar app/target/research-pipeline.jar --serve          # web UI on http://1
 ./mvnw -B test                                              # tests only; JaCoCo enforces 100% line and branch coverage, report under core|app/target/site/jacoco
 ```
 
-Every run writes a folder under `runs/` with `briefing.md`, `result.json`, `state.json`, `trace.json`, every prompt and raw response under `calls/`, and a state snapshot after each step under `state/`.
+Every run writes a folder under `runs/` with `briefing.md`, `result.json`, `state.json`, `trace.json`, every prompt and raw response under `calls/`, and a state snapshot after each step under `state/`. The web UI shows the run live: every model call with duration, tokens in, tokens served from the provider's prompt cache, tokens out and estimated cost (from `data/pricing.json`), a per-role table, a timeline, and each call expandable to its prompt and raw response.
 
 ## Example output
 

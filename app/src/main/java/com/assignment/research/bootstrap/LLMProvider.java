@@ -26,6 +26,10 @@ public enum LLMProvider {
     private final String defaultUrl;
     private final String defaultModel;
 
+    public boolean requiresApiKey() {
+        return this != LOCAL;
+    }
+
     public static Optional<LLMProvider> fromWireName(String wireName) {
         var normalized = wireName.strip().toLowerCase(Locale.ROOT);
         return Arrays.stream(values()).filter(provider -> provider.getWireName().equals(normalized)).findFirst();

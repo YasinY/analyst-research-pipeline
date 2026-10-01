@@ -45,7 +45,9 @@ class WebServerTest {
     private static final String UNKNOWN_SEQUENCE = "99";
     private static final String NON_NUMERIC_SEQUENCE = "abc";
     private static final String MISSING_RESOURCE = "web/missing.html";
-    private static final String VALID_BODY = "{\"query\":\"dry bulk outlook\"}";
+    private static final String VALID_BODY = "{\"query\":\"dry bulk outlook\",\"provider\":\"local\"}";
+    private static final String KEYLESS_BODY = "{\"query\":\"dry bulk outlook\",\"provider\":\"anthropic\"}";
+    private static final String DEFAULT_PROVIDER_KEYLESS_BODY = "{\"query\":\"dry bulk outlook\"}";
     private static final String BLANK_BODY = "{\"query\":\"   \"}";
     private static final String MALFORMED_BODY = "{\"query\":";
     private static final String TEXT_PLAIN = "text/plain";
@@ -170,6 +172,18 @@ class WebServerTest {
 
         assertThat(response.statusCode()).isEqualTo(WebConstants.HTTP_BAD_REQUEST);
         assertThat(response.body()).contains(WebConstants.ERROR_EMPTY_QUERY);
+    }
+
+    @Test
+    void postWithoutApiKeyForACloudProviderAnswers400() throws Exception {
+        start(Runnable::run);
+
+        var explicit = postJson(RESEARCHES, KEYLESS_BODY);
+        var implicit = postJson(RESEARCHES, DEFAULT_PROVIDER_KEYLESS_BODY);
+
+        assertThat(explicit.statusCode()).isEqualTo(WebConstants.HTTP_BAD_REQUEST);
+        assertThat(explicit.body()).contains(WebConstants.ERROR_MISSING_API_KEY);
+        assertThat(implicit.statusCode()).isEqualTo(WebConstants.HTTP_BAD_REQUEST);
     }
 
     @Test

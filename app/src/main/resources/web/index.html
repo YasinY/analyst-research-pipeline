@@ -149,14 +149,13 @@
         </label>
         <label class="field" id="key-field">
           <span class="caption">API-Key</span>
-          <input type="password" id="api-key" autocomplete="new-password" spellcheck="false" placeholder="optional">
+          <input type="password" id="api-key" autocomplete="new-password" spellcheck="false" required>
           <span class="hint">nur für diesen Lauf, wird nicht gespeichert</span>
         </label>
         <label class="field" id="url-field" hidden>
           <span class="caption">API-URL</span>
           <input type="text" id="api-url" autocomplete="off" spellcheck="false">
         </label>
-        <p class="hint note" id="key-note">Server-Konfiguration wird geladen.</p>
       </div>
       <button id="run" class="cta" type="submit"><span class="dot">&#8250;</span>Recherche starten</button>
     </form>
@@ -258,7 +257,6 @@
   var urlInput = document.getElementById('api-url');
   var keyField = document.getElementById('key-field');
   var urlField = document.getElementById('url-field');
-  var keyNote = document.getElementById('key-note');
   var providerInputs = Array.prototype.slice.call(document.querySelectorAll('input[name="provider"]'));
   var log = document.getElementById('log');
   var logEmpty = document.getElementById('log-empty');
@@ -305,7 +303,7 @@
         checkProvider(config.provider);
         applyProvider(config.provider);
       })
-      .catch(function () { keyNote.textContent = 'Die Server-Konfiguration konnte nicht geladen werden. Model und API-Key bitte selbst eintragen.'; });
+      .catch(function () { });
   }
 
   function selectedProvider() {
@@ -320,22 +318,11 @@
   function applyProvider(provider) {
     var isLocal = provider === LOCAL_PROVIDER;
     keyField.hidden = isLocal;
+    keyInput.required = !isLocal;
     urlField.hidden = !isLocal;
     if (!serverDefaults) { return; }
     modelInput.value = serverDefaults.models[provider] || '';
     urlInput.value = serverDefaults.apiUrls[provider] || '';
-    keyNote.innerHTML = keyNoteFor(provider);
-  }
-
-  function keyNoteFor(provider) {
-    if (provider === LOCAL_PROVIDER) {
-      return 'Lokal nutzt die OpenAI-kompatible Schnittstelle ohne API-Key, zum Beispiel Ollama oder LM Studio.';
-    }
-    var present = provider === 'anthropic' ? serverDefaults.anthropicKeyPresent : serverDefaults.openaiKeyPresent;
-    var name = PROVIDER_LABELS[provider];
-    return present
-      ? 'Auf dem Server ist bereits ein API-Key für ' + name + ' hinterlegt. Ein Key hier ersetzt ihn <b>nur für diesen Lauf</b>.'
-      : 'Auf dem Server ist <b>kein</b> API-Key für ' + name + ' hinterlegt. Bitte oben eintragen.';
   }
 
   function requestBody(query) {
@@ -345,7 +332,7 @@
       body.apiUrl = urlInput.value.trim();
       return body;
     }
-    if (keyInput.value.trim()) { body.apiKey = keyInput.value.trim(); }
+    body.apiKey = keyInput.value.trim();
     return body;
   }
 
