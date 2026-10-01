@@ -1,5 +1,6 @@
 package com.assignment.research.adapter.llm.openai;
 
+import com.assignment.research.adapter.llm.CacheablePrompt;
 import com.assignment.research.adapter.llm.ChatClient;
 import com.assignment.research.adapter.llm.ChatReply;
 import com.assignment.research.adapter.llm.HttpJSONPoster;
@@ -24,7 +25,7 @@ public final class OpenAiCompatibleChatClient implements ChatClient {
                 OpenAiConstants.FIELD_MAX_COMPLETION_TOKENS, maxOutputTokens,
                 OpenAiConstants.FIELD_MESSAGES, List.of(
                         message(OpenAiConstants.ROLE_SYSTEM, systemPrompt),
-                        message(OpenAiConstants.ROLE_USER, userPrompt)));
+                        message(OpenAiConstants.ROLE_USER, CacheablePrompt.withoutBoundary(userPrompt))));
         var headers = apiKey.isBlank()
                 ? Map.<String, String>of()
                 : Map.of(LLMAdapterConstants.HEADER_AUTHORIZATION, LLMAdapterConstants.BEARER_PREFIX + apiKey);
@@ -36,7 +37,9 @@ public final class OpenAiCompatibleChatClient implements ChatClient {
         var usage = new LLMUsage(
                 HttpJSONPoster.intOrZero(response, OpenAiConstants.FIELD_USAGE, OpenAiConstants.FIELD_PROMPT_TOKENS),
                 HttpJSONPoster.intOrZero(response, OpenAiConstants.FIELD_USAGE,
-                        OpenAiConstants.FIELD_COMPLETION_TOKENS));
+                        OpenAiConstants.FIELD_COMPLETION_TOKENS),
+                HttpJSONPoster.intOrZero(response, OpenAiConstants.FIELD_USAGE,
+                        OpenAiConstants.FIELD_PROMPT_TOKENS_DETAILS, OpenAiConstants.FIELD_CACHED_TOKENS));
         var reportedModel = response.path(OpenAiConstants.FIELD_MODEL).asText(model);
         var truncated = OpenAiConstants.FINISH_REASON_LENGTH.equals(
                 firstChoice.path(OpenAiConstants.FIELD_FINISH_REASON).asText());

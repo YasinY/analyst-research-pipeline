@@ -44,6 +44,9 @@ public final class LLMAdapterConstants {
     public static final String NO_JSON_OBJECT = "no JSON object found in reply";
     public static final String PARSE_FAILED = "JSON did not match the expected shape: %s";
     public static final String PATH_SEPARATOR = ".";
+    public static final String CACHE_BOUNDARY = "<!-- cache-boundary -->";
+    public static final int PROMPT_START = 0;
+    public static final int NO_CACHE_BOUNDARY = -1;
 
     private LLMAdapterConstants() {
     }

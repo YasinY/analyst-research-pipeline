@@ -14,6 +14,8 @@ Weak evidence (may only appear in uncertainties):
 
 {{weakEvidence}}
 
+<!-- cache-boundary -->
+
 Gaps (sub-questions without adequate evidence):
 
 {{gaps}}

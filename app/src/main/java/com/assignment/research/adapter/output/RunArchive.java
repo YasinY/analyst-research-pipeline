@@ -1,5 +1,6 @@
 package com.assignment.research.adapter.output;
 
+import com.assignment.research.adapter.pricing.CostEstimator;
 import com.assignment.research.pipeline.BriefingResult;
 import com.assignment.research.pipeline.BriefingState;
 import com.assignment.research.pipeline.PipelineObserver;
@@ -25,11 +26,18 @@ public final class RunArchive implements PipelineObserver {
     private final Path directory;
     private final ObjectMapper mapper;
     private final PrintStream console;
+    private final CostEstimator costEstimator;
     private final AtomicInteger snapshotCounter = new AtomicInteger(OutputConstants.FIRST_SNAPSHOT);
 
     public RunArchive(Path runsRoot, Clock clock, ObjectMapper mapper, PrintStream console) {
+        this(runsRoot, clock, mapper, console, CostEstimator.free());
+    }
+
+    public RunArchive(Path runsRoot, Clock clock, ObjectMapper mapper, PrintStream console,
+            CostEstimator costEstimator) {
         this.mapper = mapper;
         this.console = console;
+        this.costEstimator = costEstimator;
         var folder = LocalDateTime.now(clock).format(OutputConstants.RUN_FOLDER_FORMAT);
         this.directory = createUniqueDirectory(createDirectories(runsRoot), folder);
         createDirectories(directory.resolve(OutputConstants.CALLS_DIRECTORY));
@@ -63,23 +71,36 @@ public final class RunArchive implements PipelineObserver {
         writeJson(directory.resolve(OutputConstants.STATE_FILE), result.getFinalState());
         writeJson(directory.resolve(OutputConstants.TRACE_FILE), result.getTrace());
         writeJson(directory.resolve(OutputConstants.RESULT_FILE), result);
+        var stopDecision = result.getStopDecision();
+        var usage = result.getUsage();
         console.println(OutputConstants.CONSOLE_SUMMARY.formatted(
-                result.getStopDecision().getReason(),
-                result.getStopDecision().getExplanation(),
+                stopDecision.getReason(),
+                stopDecision.getExplanation(),
                 result.getFinalState().getRound(),
                 result.getTrace().size(),
-                result.getUsage().getInputTokens(),
-                result.getUsage().getOutputTokens(),
+                usage.getInputTokens(),
+                usage.getCachedInputTokens(),
+                usage.getOutputTokens(),
                 result.getConfidence().getLevel(),
                 directory.toAbsolutePath()));
+        printCost(result);
         return directory;
+    }
+
+    private void printCost(BriefingResult result) {
+        if (costEstimator.isFree()) {
+            return;
+        }
+        var total = costEstimator.estimateRun(result.getTrace()).getTotal();
+        console.println(String.format(Locale.ROOT, OutputConstants.CONSOLE_COST_LINE, total));
     }
 
     private static String consoleLine(TraceEntry entry) {
         var seconds = entry.getDuration().toMillis() / OutputConstants.MILLIS_PER_SECOND;
+        var usage = entry.getUsage();
         var line = String.format(Locale.ROOT, OutputConstants.CONSOLE_LINE, entry.getSequence(), entry.getLabel(),
-                entry.getModel(), entry.getUsage().getInputTokens(), entry.getUsage().getOutputTokens(), seconds,
-                entry.getStatus());
+                entry.getModel(), usage.getInputTokens(), usage.getCachedInputTokens(), usage.getOutputTokens(),
+                seconds, entry.getStatus());
         return entry.getFailure().map(reason -> line + OutputConstants.CONSOLE_FAILURE_SUFFIX.formatted(reason))
                 .orElse(line);
     }

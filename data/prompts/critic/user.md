@@ -2,13 +2,15 @@ Analyst query:
 
 {{query}}
 
-Briefing draft under review:
-
-{{draft}}
-
 Evidence groups the briefing was allowed to use:
 
 {{evidence}}
+
+<!-- cache-boundary -->
+
+Briefing draft under review:
+
+{{draft}}
 
 Sub-questions already declared as gaps:
 
