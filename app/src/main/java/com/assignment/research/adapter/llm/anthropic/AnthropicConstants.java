@@ -31,6 +31,10 @@ public final class AnthropicConstants {
     public static final String FIELD_USAGE = "usage";
     public static final String FIELD_INPUT_TOKENS = "input_tokens";
     public static final String FIELD_OUTPUT_TOKENS = "output_tokens";
+    public static final String FIELD_CACHE_CREATION_INPUT_TOKENS = "cache_creation_input_tokens";
+    public static final String FIELD_CACHE_READ_INPUT_TOKENS = "cache_read_input_tokens";
+    public static final String FIELD_CACHE_CONTROL = "cache_control";
+    public static final String CACHE_TYPE_EPHEMERAL = "ephemeral";
 
     private AnthropicConstants() {
     }

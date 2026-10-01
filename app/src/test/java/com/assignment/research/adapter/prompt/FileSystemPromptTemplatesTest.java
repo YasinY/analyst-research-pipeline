@@ -3,6 +3,7 @@ package com.assignment.research.adapter.prompt;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.assignment.research.adapter.llm.LLMAdapterConstants;
 import com.assignment.research.prompt.AgentName;
 import java.io.UncheckedIOException;
 import java.nio.file.Path;
@@ -38,6 +39,12 @@ class FileSystemPromptTemplatesTest {
     }
 
     @Test
+    void synthesizerAndCriticPutTheStableEvidenceBeforeTheCacheBoundary() {
+        assertStableBeforeBoundary(AgentName.SYNTHESIZER, "{{weakEvidence}}", "{{gaps}}");
+        assertStableBeforeBoundary(AgentName.CRITIC, "{{evidence}}", "{{draft}}");
+    }
+
+    @Test
     void missingPromptDirectoryFailsNamingTheFile() {
         var missing = new FileSystemPromptTemplates(MISSING_PROMPTS);
         var expectedFile = MISSING_PROMPTS.resolve(AgentName.PLANNER.getDirectoryName())
@@ -46,6 +53,11 @@ class FileSystemPromptTemplatesTest {
         assertThatThrownBy(() -> missing.forAgent(AgentName.PLANNER))
                 .isInstanceOf(UncheckedIOException.class)
                 .hasMessageContaining(expectedFile);
+    }
+
+    private void assertStableBeforeBoundary(AgentName agent, String lastStable, String firstVariable) {
+        assertThat(templates.forAgent(agent).getUserPromptTemplate()).as(agent + " cache boundary")
+                .containsSubsequence(lastStable, LLMAdapterConstants.CACHE_BOUNDARY, firstVariable);
     }
 
     private void assertPlaceholders(AgentName agent, String... expected) {

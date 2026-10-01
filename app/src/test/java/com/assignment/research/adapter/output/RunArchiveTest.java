@@ -4,6 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assumptions.assumeThat;
 
+import com.assignment.research.adapter.pricing.CostEstimator;
+import com.assignment.research.adapter.pricing.ModelPrice;
+import com.assignment.research.adapter.pricing.PricingTable;
 import com.assignment.research.confidence.ConfidenceLevel;
 import com.assignment.research.llm.LLMCallStatus;
 import com.assignment.research.llm.LLMUsage;
@@ -49,7 +52,8 @@ class RunArchiveTest {
     private static final String FAILURE_REASON = "provider timed out";
     private static final String FAILURE_SUFFIX = "  (provider timed out)";
     private static final Duration DURATION = Duration.ofMillis(1500);
-    private static final LLMUsage USAGE = new LLMUsage(120, 30);
+    private static final LLMUsage USAGE = new LLMUsage(120, 30, 80);
+    private static final PricingTable PRICING = new PricingTable(List.of(new ModelPrice(MODEL, 2.0, 0.2, 10.0)));
     private static final String QUERY = "How is dry bulk supply developing?";
     private static final String BRIEFING_MARKDOWN = "# Analyst briefing";
     private static final String STOP_EXPLANATION = "The round limit was reached.";
@@ -118,8 +122,21 @@ class RunArchiveTest {
         assertThat(directory.resolve(OutputConstants.TRACE_FILE)).content().contains(LABEL, MODEL);
         assertThat(directory.resolve(OutputConstants.RESULT_FILE)).content().contains(STOP_EXPLANATION);
         assertThat(console()).contains("Run finished: ROUND_LIMIT_REACHED", STOP_EXPLANATION,
-                "LLM calls: 1 | tokens in: 120 | tokens out: 30 | confidence: LOW",
+                "LLM calls: 1 | tokens in: 120 (cached 80) | tokens out: 30 | confidence: LOW",
                 directory.toAbsolutePath().toString());
+        assertThat(console()).doesNotContain("Estimated cost");
+    }
+
+    @Test
+    void pricedArchivePrintsTheEstimatedRunCostAndCachedTokensPerCall() {
+        var archive = new RunArchive(runsRoot, FIXED_CLOCK, JSONMapperFactory.create(),
+                new PrintStream(consoleBytes, true, StandardCharsets.UTF_8), new CostEstimator(PRICING));
+
+        archive.onTrace(traceEntry(LLMCallStatus.OK, null));
+        archive.writeResult(result(), BRIEFING_MARKDOWN);
+
+        assertThat(console()).contains("in=120    cached=80     out=30",
+                "Estimated cost: USD 0.0004 (indicative list prices)");
     }
 
     @Test

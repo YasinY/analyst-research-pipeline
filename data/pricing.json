@@ -1,0 +1,35 @@
+{
+  "note": "Indicative list prices in USD per million tokens, used only for the cost estimate in the briefing. Edit them to match your contract. The longest modelPrefix matching the model name the provider reported wins; the empty prefix catches every other model (local servers) at zero cost.",
+  "models": [
+    {
+      "modelPrefix": "claude-sonnet-5-5",
+      "inputPerMillion": 2.00,
+      "cachedInputPerMillion": 0.20,
+      "outputPerMillion": 10.00
+    },
+    {
+      "modelPrefix": "claude-haiku-4-5",
+      "inputPerMillion": 1.00,
+      "cachedInputPerMillion": 0.10,
+      "outputPerMillion": 5.00
+    },
+    {
+      "modelPrefix": "gpt-5.4-mini",
+      "inputPerMillion": 0.75,
+      "cachedInputPerMillion": 0.075,
+      "outputPerMillion": 4.50
+    },
+    {
+      "modelPrefix": "gpt-5.4",
+      "inputPerMillion": 2.50,
+      "cachedInputPerMillion": 0.25,
+      "outputPerMillion": 15.00
+    },
+    {
+      "modelPrefix": "",
+      "inputPerMillion": 0.0,
+      "cachedInputPerMillion": 0.0,
+      "outputPerMillion": 0.0
+    }
+  ]
+}

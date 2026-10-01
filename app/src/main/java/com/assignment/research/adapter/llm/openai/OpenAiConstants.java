@@ -22,6 +22,8 @@ public final class OpenAiConstants {
     public static final String FIELD_USAGE = "usage";
     public static final String FIELD_PROMPT_TOKENS = "prompt_tokens";
     public static final String FIELD_COMPLETION_TOKENS = "completion_tokens";
+    public static final String FIELD_PROMPT_TOKENS_DETAILS = "prompt_tokens_details";
+    public static final String FIELD_CACHED_TOKENS = "cached_tokens";
     public static final int FIRST_CHOICE = 0;
 
     private OpenAiConstants() {

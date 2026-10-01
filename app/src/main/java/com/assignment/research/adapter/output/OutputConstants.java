@@ -33,16 +33,17 @@ public final class OutputConstants {
 
             %s
             """;
-    public static final String CONSOLE_LINE = "[%02d] %-32s %-22s in=%-6d out=%-6d %5.1fs  %s";
+    public static final String CONSOLE_LINE = "[%02d] %-32s %-22s in=%-6d cached=%-6d out=%-6d %5.1fs  %s";
     public static final String CONSOLE_FAILURE_SUFFIX = "  (%s)";
     public static final String CONSOLE_STEP_LINE = "---- %s -> round %d, %d sub-question(s), %d claim(s), %d group(s)";
     public static final String CONSOLE_SUMMARY = """
 
             Run finished: %s
             Reason: %s
-            Rounds: %d | LLM calls: %d | tokens in: %d | tokens out: %d | confidence: %s
+            Rounds: %d | LLM calls: %d | tokens in: %d (cached %d) | tokens out: %d | confidence: %s
             Output: %s
             """;
+    public static final String CONSOLE_COST_LINE = "Estimated cost: USD %.4f (indicative list prices)";
     public static final double MILLIS_PER_SECOND = 1000.0;
 
     public static final DateTimeFormatter GENERATED_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
@@ -78,7 +79,13 @@ public final class OutputConstants {
     public static final String FINDING_LINE = "- **%s / %s** on \"%s\": %s";
     public static final String STOP_REASON_LINE = "- Stop reason: %s. %s";
     public static final String ROUNDS_LINE = "- Research rounds: %d";
-    public static final String MODEL_CALLS_LINE = "- Model calls: %d, tokens in: %d, tokens out: %d";
+    public static final String MODEL_CALLS_LINE =
+            "- Model calls: %d, tokens in: %d (of which cached: %d), tokens out: %d";
+    public static final String COST_LINE =
+            "- Estimated cost: USD %.4f (fresh input %.4f, cached input %.4f, output %.4f; indicative list prices)";
+    public static final String ROLE_TABLE_HEADER = "| Agent role | Calls | Tokens in | Cached | Tokens out | Seconds |";
+    public static final String ROLE_TABLE_DIVIDER = "|---|---:|---:|---:|---:|---:|";
+    public static final String ROLE_TABLE_ROW = "| %s | %d | %d | %d | %d | %.1f |";
     public static final String CLAIMS_LINE = "- Claims extracted: %d, evidence groups: %d";
     public static final String DROPPED_STATEMENTS_LINE = "- Statements removed for lacking evidence: %d";
     public static final String DEMOTED_KEY_FACTS_LINE = "- Key facts demoted to uncertainties for weak evidence: %d";

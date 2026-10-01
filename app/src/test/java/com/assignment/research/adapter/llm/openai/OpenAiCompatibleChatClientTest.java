@@ -22,10 +22,16 @@ class OpenAiCompatibleChatClientTest {
     private static final int BUDGET = 128;
     private static final int PROMPT_TOKENS = 11;
     private static final int COMPLETION_TOKENS = 7;
+    private static final int CACHED_TOKENS = 8;
+    private static final String STABLE_PART = "stable part";
+    private static final String VARIABLE_PART = "variable part";
+    private static final String LINE_BREAK = "\n";
+    private static final String USER_WITH_BOUNDARY = STABLE_PART + LINE_BREAK + LLMAdapterConstants.CACHE_BOUNDARY
+            + LINE_BREAK + VARIABLE_PART;
     private static final String COMPLETED = """
             {"model": "reported-model",
              "choices": [{"message": {"role": "assistant", "content": "the answer"}, "finish_reason": "stop"}],
-             "usage": {"prompt_tokens": 11, "completion_tokens": 7}}
+             "usage": {"prompt_tokens": 11, "completion_tokens": 7, "prompt_tokens_details": {"cached_tokens": 8}}}
             """;
     private static final String CUT_OFF = """
             {"choices": [{"message": {"content": "the ans"}, "finish_reason": "length"}]}
@@ -43,6 +49,7 @@ class OpenAiCompatibleChatClientTest {
             assertThat(reply.getModel()).isEqualTo("reported-model");
             assertThat(reply.getUsage().getInputTokens()).isEqualTo(PROMPT_TOKENS);
             assertThat(reply.getUsage().getOutputTokens()).isEqualTo(COMPLETION_TOKENS);
+            assertThat(reply.getUsage().getCachedInputTokens()).isEqualTo(CACHED_TOKENS);
             assertThat(reply.isTruncated()).isFalse();
             assertThat(provider.handler().header(LLMAdapterConstants.HEADER_AUTHORIZATION))
                     .contains(LLMAdapterConstants.BEARER_PREFIX + API_KEY);
@@ -68,6 +75,18 @@ class OpenAiCompatibleChatClientTest {
             assertThat(reply.isTruncated()).isTrue();
             assertThat(reply.getModel()).isEqualTo(CONFIGURED_MODEL);
             assertThat(reply.getUsage().getInputTokens()).isZero();
+            assertThat(reply.getUsage().getCachedInputTokens()).isZero();
+        }
+    }
+
+    @Test
+    void removesTheCacheBoundaryFromTheUserPrompt() {
+        try (var provider = StubProvider.answering(HTTP_OK, COMPLETED)) {
+            chat(provider, API_KEY, USER_WITH_BOUNDARY);
+
+            assertThat(provider.handler().getReceivedBody())
+                    .doesNotContain(LLMAdapterConstants.CACHE_BOUNDARY)
+                    .contains(STABLE_PART, VARIABLE_PART);
         }
     }
 
@@ -81,8 +100,12 @@ class OpenAiCompatibleChatClientTest {
     }
 
     private static ChatReply chat(StubProvider provider, String apiKey) {
+        return chat(provider, apiKey, USER);
+    }
+
+    private static ChatReply chat(StubProvider provider, String apiKey, String userPrompt) {
         var poster = new HttpJSONPoster(JSONMapperFactory.create());
         return new OpenAiCompatibleChatClient(poster, provider.url(), apiKey, CONFIGURED_MODEL)
-                .chat(SYSTEM, USER, BUDGET);
+                .chat(SYSTEM, userPrompt, BUDGET);
     }
 }
