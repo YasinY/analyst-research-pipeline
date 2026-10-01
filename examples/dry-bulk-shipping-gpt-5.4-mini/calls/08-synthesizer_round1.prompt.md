@@ -17,6 +17,7 @@ Rules:
 - Evidence groups are formed per sub-question, so the same quantity can appear in one group without a conflict and in another group with an open conflict. Treat such a quantity as conflicted everywhere: do not state it as a key fact from the unconflicted group.
 - Every sub-question listed under "Gaps" must appear in uncertainties with a plain statement that no adequate evidence was found for it.
 - Use only numbers, dates, and names that appear in the evidence. Do not round, extrapolate, or add context from memory.
+- Never write about the briefing itself, its sections, its evidence groups or what is "shown above"; write only about the subject matter.
 - Write in plain English for a reader without technical or domain background. Short sentences. No jargon without a short explanation.
 - Suggest 3 to 5 follow-up questions an analyst could pursue next, focused on the gaps and conflicts.
 - If you are given a previous draft and review findings, produce a corrected draft that resolves every finding. Keep what was not criticised.
@@ -49,35 +50,48 @@ Give me an overview of the dry bulk shipping market and its main risk drivers.
 
 How the planner understood the query:
 
-The analyst is asking for a factual overview of the dry bulk shipping market and the main factors that drive its risks and volatility.
+The analyst is asking for a factual overview of the dry bulk shipping market and the main identifiable drivers of risk affecting it.
 
 Evidence eligible for key facts:
 
-[g-q1-c6] confidence MEDIUM (0.60): The dry bulk orderbook was around 10.2 percent of the fleet and was concentrated in the Panamax and Supramax segments at year end. | 1 independent source(s), best tier A, newest 2026-02-10, conflict NONE
-[g-q1-c7] confidence HIGH (0.75): China took roughly 70 to 71 percent of seaborne iron ore imports in 2025, including 1.15 billion tonnes, while iron ore remained the largest dry bulk commodity. | 2 independent source(s), best tier A, newest 2026-04-09, conflict NONE
-[g-q1-c8] confidence MEDIUM (0.40): Chinese seaborne coal imports fell about 6 percent in 2025 and this weighed on Panamax demand in the Pacific. | 1 independent source(s), best tier B, newest 2026-04-09, conflict NONE
-[g-q1-c10] confidence MEDIUM (0.40): Indian coal imports grew 4 percent in 2025. | 1 independent source(s), best tier B, newest 2026-04-09, conflict NONE
-[g-q1-c11] confidence HIGH (0.75): The composite dry bulk freight index averaged about 1,650 points in 2025. | 2 independent source(s), best tier A, newest 2026-01-22, conflict NONE
-[g-q1-c12] confidence MEDIUM (0.40): One-year time charter rates for a modern Kamsarmax averaged 13,500 US dollars per day. | 1 independent source(s), best tier B, newest 2026-01-22, conflict NONE
-[g-q1-c14] confidence MEDIUM (0.60): Capesize earnings were highly volatile in 2025, swinging between 8,000 and 34,000 US dollars per day. | 1 independent source(s), best tier A, newest 2026-01-15, conflict NONE
-[g-q1-c15] confidence MEDIUM (0.60): Panamax and Supramax earnings averaged close to 12,000 US dollars per day and were steadier than Capesize earnings. | 1 independent source(s), best tier A, newest 2026-01-15, conflict NONE
-[g-q2-c4] confidence MEDIUM (0.60): Total seaborne dry bulk trade grew 1.1 percent to 5.5 billion tonnes in 2025, with iron ore and coal together making up 55 percent of volumes and grain and soybeans 10 percent. | 1 independent source(s), best tier A, newest 2026-03-05, conflict NONE
-[g-q2-c7] confidence MEDIUM (0.60): Grain trade shifted toward South American exporters after a weak North American harvest. | 1 independent source(s), best tier A, newest 2026-03-05, conflict NONE
-[g-q2-c12] confidence HIGH (0.75): Tonne-mile demand grew faster than tonnes because of longer Atlantic-to-Pacific routes, including a 2.3 percent rise in 2025. | 2 independent source(s), best tier A, newest 2026-05-20, conflict NONE
-[g-q2-c9] confidence MEDIUM (0.40): Chinese steel demand and property construction are identified as main risk drivers for dry bulk earnings in 2026. | 1 independent source(s), best tier B, newest 2026-05-20, conflict NONE
-[g-q2-c10] confidence MEDIUM (0.40): The ramp-up of the Simandou iron ore project in Guinea is identified as a main risk driver because it lengthens average haul distances. | 1 independent source(s), best tier B, newest 2026-05-20, conflict NONE
-[g-q2-c11] confidence MEDIUM (0.40): Shifts in grain trade flows between the Americas and Asia are identified as a main risk driver for dry bulk earnings in 2026. | 1 independent source(s), best tier B, newest 2026-05-20, conflict NONE
-[g-q3-c14] confidence MEDIUM (0.55): Industry participants expected deliveries to stay elevated in 2026 before easing in 2027, and the shipbroker expected net fleet growth of 2.0 to 2.5 percent in 2026. | 2 independent source(s), best tier B, newest 2026-03-18, conflict NONE
-[g-q4-c6] confidence MEDIUM (0.40): Continued diversions around the Cape of Good Hope added 1 to 2 percent to dry bulk tonne-mile demand in 2025, and a return to Suez routing would release the equivalent of roughly 2 percent of fleet capacity. | 1 independent source(s), best tier B, newest 2026-07-11, conflict NONE
-[g-q4-c9] confidence MEDIUM (0.40): The main risk drivers for dry bulk earnings in 2026 include Chinese steel demand and property construction, the Simandou ramp-up, grain flow shifts, port congestion, bunker fuel prices, and geopolitical disruption of routes including Red Sea diversions. | 1 independent source(s), best tier B, newest 2026-05-20, conflict NONE
-[g-q2-c15] confidence MEDIUM (0.40): Capesize volatility was driven by Brazilian iron ore timing and Chinese restocking. | 1 independent source(s), best tier B, newest 2026-01-22, conflict NONE
-[g-q2-c16] confidence MEDIUM (0.40): 2026 rates were expected to be capped by soft Chinese steel demand. | 1 independent source(s), best tier B, newest 2026-01-22, conflict NONE
+[g-q1-c1] confidence MEDIUM (0.60): Total seaborne dry bulk trade in 2025 was 5.5 billion tonnes and grew by 1.1 percent year on year. | 1 independent source(s), best tier A, newest 2026-03-05, conflict NONE
+[g-q1-c2] confidence MEDIUM (0.60): Iron ore and coal together accounted for 55 percent of seaborne dry bulk volumes in 2025. | 1 independent source(s), best tier A, newest 2026-03-05, conflict NONE
+[g-q1-c3] confidence MEDIUM (0.60): Grain and soybeans accounted for 10 percent of seaborne dry bulk volumes in 2025. | 1 independent source(s), best tier A, newest 2026-03-05, conflict NONE
+[g-q1-c4] confidence MEDIUM (0.60): Minor bulks made up the remaining share of seaborne dry bulk volumes in 2025. | 1 independent source(s), best tier A, newest 2026-03-05, conflict NONE
+[g-q1-c11] confidence HIGH (0.90): China accounted for about 71 percent of seaborne iron ore imports in 2025, importing 1.15 billion tonnes. | 3 independent source(s), best tier A, newest 2026-04-09, conflict NONE
+[g-q1-c6] confidence MEDIUM (0.60): Grain trade shifted toward South American exporters after a weak North American harvest. | 1 independent source(s), best tier A, newest 2026-03-05, conflict NONE
+[g-q1-c7] confidence HIGH (0.75): Tonne-mile demand grew faster than tonnes in 2025 because of longer Atlantic-to-Pacific routes, with tonne-miles up 2.3 percent. | 2 independent source(s), best tier A, newest 2026-05-20, conflict NONE
+[g-q1-c10] confidence MEDIUM (0.60): Seaborne iron ore trade reached 1.62 billion tonnes in 2025, up 1.3 percent year on year. | 1 independent source(s), best tier A, newest 2026-01-28, conflict NONE
+[g-q1-c12] confidence MEDIUM (0.60): Australia supplied 56 percent of seaborne iron ore volumes in 2025. | 1 independent source(s), best tier A, newest 2026-01-28, conflict NONE
+[g-q1-c13] confidence MEDIUM (0.60): Brazil supplied 24 percent of seaborne iron ore volumes in 2025. | 1 independent source(s), best tier A, newest 2026-01-28, conflict NONE
+[g-q1-c14] confidence MEDIUM (0.60): Iron ore was the single largest dry bulk commodity ahead of coal and grain in 2025. | 1 independent source(s), best tier A, newest 2026-01-28, conflict NONE
+[g-q2-c8] confidence MEDIUM (0.40): Chinese steel demand and property construction were identified as important 2026 risk drivers for dry bulk earnings. | 1 independent source(s), best tier B, newest 2026-05-20, conflict NONE
+[g-q2-c9] confidence MEDIUM (0.40): The ramp-up of the Simandou iron ore project in Guinea was identified as an important 2026 risk driver for dry bulk earnings. | 1 independent source(s), best tier B, newest 2026-05-20, conflict NONE
+[g-q2-c10] confidence MEDIUM (0.40): Shifts in grain trade flows between the Americas and Asia were identified as an important 2026 risk driver for dry bulk earnings. | 1 independent source(s), best tier B, newest 2026-05-20, conflict NONE
+[g-q3-c1] confidence MEDIUM (0.55): The dry bulk fleet grew in 2025 to about 1,020 million dwt, with fleet growth estimated at 2.4 to 3.1 percent. | 2 independent source(s), best tier B, newest 2026-03-18, conflict NONE
+[g-q3-c2] confidence MEDIUM (0.55): The dry bulk orderbook was about 9.8 to 10.2 percent of the fleet. | 2 independent source(s), best tier B, newest 2026-03-18, conflict NONE
+[g-q3-c3] confidence MEDIUM (0.55): Dry bulk deliveries in 2025 were around 30.1 to 31.6 million dwt, with removals or scrapping reported as very low. | 2 independent source(s), best tier B, newest 2026-03-18, conflict NONE
+[g-q3-c8] confidence MEDIUM (0.40): Net fleet growth in 2026 was expected to be about 2.0 to 2.5 percent. | 1 independent source(s), best tier B, newest 2026-03-18, conflict NONE
+[g-q3-c10] confidence MEDIUM (0.40): Cape of Good Hope diversions added 1 to 2 percent to dry bulk tonne-mile demand in 2025, and a return to Suez routing would release about 2 percent of fleet capacity. | 1 independent source(s), best tier B, newest 2026-07-11, conflict NONE
+[g-q3-c11] confidence MEDIUM (0.40): A return to Suez routing was described as a major downside risk to freight rates in 2026. | 1 independent source(s), best tier B, newest 2026-07-11, conflict NONE
+[g-q3-c12] confidence MEDIUM (0.40): Port congestion was identified as a main 2026 risk driver for dry bulk earnings. | 1 independent source(s), best tier B, newest 2026-05-20, conflict NONE
+[g-q4-c1] confidence MEDIUM (0.45): The composite dry bulk freight index averaged about 1,650 points in 2025, roughly 9 percent below 2024. | 2 independent source(s), best tier A, newest 2026-01-22, conflict OPEN | conflicts with g-q4-c4: The composite dry bulk freight index cannot both average about 1,650 points in 2025 and end 2025 at 1,480 points, because those are different values for the same index and period-end versus full-year average.
+[g-q4-c2] confidence MEDIUM (0.60): Capesize earnings ranged between 8,000 and 34,000 US dollars per day within 2025. | 1 independent source(s), best tier A, newest 2026-01-15, conflict NONE
+[g-q4-c3] confidence MEDIUM (0.60): Panamax and Supramax earnings averaged close to 12,000 US dollars per day in 2025. | 1 independent source(s), best tier A, newest 2026-01-15, conflict NONE
+[g-q5-c5] confidence MEDIUM (0.40): Bunker fuel prices were identified as a main 2026 risk driver for dry bulk earnings. | 1 independent source(s), best tier B, newest 2026-05-20, conflict NONE
+[g-q5-c6] confidence MEDIUM (0.40): Geopolitical disruption of routes including Red Sea diversions was identified as a main 2026 risk driver for dry bulk earnings. | 1 independent source(s), best tier B, newest 2026-05-20, conflict NONE
+[g-q1-c8] confidence MEDIUM (0.40): Dry bulk earnings in 2026 are affected by Chinese steel demand and property construction, the ramp-up of the Simandou iron ore project in Guinea, shifts in grain trade flows between the Americas and Asia, port congestion, bunker fuel prices, and geopolitical disruption of routes including Red Sea diversions. | 1 independent source(s), best tier B, newest 2026-05-20, conflict NONE
+[g-q2-c13] confidence MEDIUM (0.40): Chinese seaborne coal imports fell about 6 percent in 2025 as domestic production rose and hydro output recovered. | 1 independent source(s), best tier B, newest 2026-04-09, conflict NONE
+[g-q2-c14] confidence MEDIUM (0.40): Indian coal imports grew 4 percent and partly offset the Chinese decline. | 1 independent source(s), best tier B, newest 2026-04-09, conflict NONE
+[g-q2-c15] confidence MEDIUM (0.40): The dry bulk index averaged about 1,650 points in 2025, down roughly 9 percent year on year. | 1 independent source(s), best tier B, newest 2026-01-22, conflict NONE
+[g-q2-c16] confidence MEDIUM (0.40): Capesize volatility was driven by Brazilian iron ore timing and Chinese restocking. | 1 independent source(s), best tier B, newest 2026-01-22, conflict NONE
+[g-q2-c17] confidence MEDIUM (0.40): 2026 rates were expected to be supported by low fleet growth but capped by soft Chinese steel demand. | 1 independent source(s), best tier B, newest 2026-01-22, conflict NONE
 
 Weak evidence (may only appear in uncertainties):
 
-[g-q1-c1] confidence LOW (0.30): The world dry bulk fleet counted by the bureau covers vessels above 10,000 dwt and grew in 2025 to about 1,020 million dwt, with Capesize at 39 percent, Panamax at 25 percent, and Supramax and Handysize making up the rest. | 1 independent source(s), best tier A, newest 2026-02-10, conflict OPEN | conflicts with g-q3-c1: The dry bulk fleet growth rate in 2025 is given as 3.1 percent in g1 but 2.4 percent in g16.
-[g-q3-c1] confidence LOW (0.10): The shipbroker said the dry bulk fleet expanded by 2.4 percent in 2025, with deliveries of 30.1 million dwt, removals of 5.5 million dwt, and an orderbook of 9.8 percent of the fleet. | 1 independent source(s), best tier B, newest 2026-03-18, conflict OPEN | conflicts with g-q1-c1, g-q3-c11: The dry bulk fleet growth rate in 2025 is given as 3.1 percent in g1 but 2.4 percent in g16.
-[g-q3-c11] confidence LOW (0.30): The bureau said dry bulk fleet deliveries reached 31.6 million dwt in 2025 and demolition stayed low at 3.9 million dwt. | 1 independent source(s), best tier A, newest 2026-02-10, conflict OPEN | conflicts with g-q3-c1: 2025 deliveries are given as 30.1 million dwt in g16 but 31.6 million dwt in g17, and removals/demolition are given as 5.5 million dwt in g16 versus 3.9 million dwt in g17.
+[g-q4-c4] confidence LOW (0.30): The composite dry bulk freight index ended 2025 at 1,480 points. | 1 independent source(s), best tier A, newest 2026-01-15, conflict OPEN | conflicts with g-q4-c1: The composite dry bulk freight index cannot both average about 1,650 points in 2025 and end 2025 at 1,480 points, because those are different values for the same index and period-end versus full-year average.
+
+<!-- cache-boundary -->
 
 Gaps (sub-questions without adequate evidence):
 

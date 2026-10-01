@@ -30,7 +30,7 @@ Respond with a single JSON object and nothing else. No prose, no markdown fences
 
 Sub-question:
 
-How are fleet supply, newbuilding orderbook levels, scrapping rates, and vessel speed and port congestion shaping effective capacity in dry bulk shipping?
+How are fleet supply, newbuilding orderbook levels, vessel deliveries, and scrapping affecting the balance between supply and demand in dry bulk shipping?
 
 Sources:
 
@@ -51,6 +51,12 @@ Title: Bulk fleet grew 3.1 percent last year, Bureau says
 Publisher: Bulk Carrier Weekly (TRADE_PRESS)
 Published: 2026-02-12
 Excerpt: The Maritime Statistics Bureau reported this week that the dry bulk fleet grew 3.1 percent in 2025 to about 1,020 million dwt, with deliveries of 31.6 million dwt and very little scrapping. The Bureau put the orderbook at 10.2 percent of the fleet. Industry participants quoted in the report expect deliveries to stay elevated in 2026 before easing in 2027.
+
+[sourceId: src-broker-rates-2026]
+Title: Freight Market Recap 2025
+Publisher: Nordhaven Shipbrokers (BROKER_NOTE)
+Published: 2026-01-22
+Excerpt: The dry bulk index averaged about 1,650 points in 2025, down roughly 9 percent year on year, with Capesize volatility driven by Brazilian iron ore timing and Chinese restocking. One-year time charter rates for a modern Kamsarmax averaged 13,500 US dollars per day. We see 2026 rates supported by low fleet growth but capped by soft Chinese steel demand.
 
 
 Extract the factual claims that help answer the sub-question, following the rules you were given.

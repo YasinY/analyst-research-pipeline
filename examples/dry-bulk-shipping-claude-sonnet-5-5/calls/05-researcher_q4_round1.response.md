@@ -9,7 +9,7 @@
       "sourceId": "src-broker-rates-2026"
     },
     {
-      "statement": "One-year time charter rates for a modern Kamsarmax averaged 13,500 US dollars per day in 2025.",
+      "statement": "One-year time charter rates for a modern Kamsarmax averaged 13,500 US dollars per day.",
       "sourceId": "src-broker-rates-2026"
     },
     {
@@ -21,11 +21,11 @@
       "sourceId": "src-index-rates-2026"
     },
     {
-      "statement": "Capesize earnings were the most volatile segment in 2025, swinging between 8,000 and 34,000 US dollars per day within the year.",
+      "statement": "Capesize earnings were the most volatile segment, swinging between 8,000 and 34,000 US dollars per day within 2025.",
       "sourceId": "src-index-rates-2026"
     },
     {
-      "statement": "Panamax and Supramax earnings were steadier than Capesize in 2025 and averaged close to 12,000 US dollars per day.",
+      "statement": "Panamax and Supramax earnings were steadier than Capesize and averaged close to 12,000 US dollars per day in 2025.",
       "sourceId": "src-index-rates-2026"
     },
     {
@@ -37,12 +37,12 @@
       "sourceId": "src-news-redsea-2026"
     },
     {
-      "statement": "A return to Suez routing would release the equivalent of roughly 2 percent of fleet capacity.",
+      "statement": "A return to Suez routing would release the equivalent of roughly 2 percent of fleet capacity, which several brokers describe as the largest single downside risk to freight rates in 2026.",
       "sourceId": "src-news-redsea-2026"
     },
     {
-      "statement": "Several brokers describe a return to Suez routing as the largest single downside risk to freight rates in 2026.",
-      "sourceId": "src-news-redsea-2026"
+      "statement": "The FreightMoonshot Blog claims the Baltic Dry Index will double by 2027 and that every Capesize will be earning 60,000 dollars a day.",
+      "sourceId": "src-blog-rates-2026"
     }
   ]
 }

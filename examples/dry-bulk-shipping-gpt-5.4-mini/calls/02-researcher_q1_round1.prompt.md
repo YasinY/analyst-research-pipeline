@@ -30,39 +30,27 @@ Respond with a single JSON object and nothing else. No prose, no markdown fences
 
 Sub-question:
 
-What is the dry bulk shipping market, including its main vessel classes, cargo types, and principal trade routes?
+What is the current scope of the dry bulk shipping market, including the main vessel classes, cargo types, and trade routes?
 
 Sources:
 
-[sourceId: src-fleet-stats-2026]
-Title: World Dry Bulk Fleet Review 2025
+[sourceId: src-risk-report-2026]
+Title: Dry Bulk Shipping Risk Drivers 2026
+Publisher: Hanseatic Maritime Research (INDUSTRY_REPORT)
+Published: 2026-05-20
+Excerpt: We identify six main risk drivers for dry bulk earnings in 2026: Chinese steel demand and property construction, the ramp-up of the Simandou iron ore project in Guinea which lengthens average haul distances, shifts in grain trade flows between the Americas and Asia, port congestion, bunker fuel prices, and geopolitical disruption of routes including Red Sea diversions. Tonne-mile demand grew 2.3 percent in 2025, roughly double the growth in tonnes.
+
+[sourceId: src-industry-body-demand-2026]
+Title: Dry Bulk Trade Annual Report 2025
+Publisher: International Dry Cargo Association (INDUSTRY_BODY)
+Published: 2026-03-05
+Excerpt: Total seaborne dry bulk trade grew 1.1 percent to 5.5 billion tonnes in 2025. Iron ore and coal together made up 55 percent of volumes, grain and soybeans 10 percent, minor bulks the remainder. China accounted for 71 percent of seaborne iron ore imports in 2025. Grain trade shifted towards South American exporters after a weak North American harvest. Tonne-mile demand grew faster than tonnes because of longer Atlantic to Pacific routes.
+
+[sourceId: src-ironore-stats-2026]
+Title: Seaborne Iron Ore Trade Statistics 2025
 Publisher: Maritime Statistics Bureau (OFFICIAL_STATISTICS)
-Published: 2026-02-10
-Excerpt: The world dry bulk fleet grew by 3.1 percent in 2025 to 1,020 million deadweight tonnes (dwt), the fastest expansion since 2021. Deliveries reached 31.6 million dwt while demolition stayed low at 3.9 million dwt because earnings remained above scrapping thresholds. The orderbook stood at 10.2 percent of the fleet at year end, concentrated in the Panamax and Supramax segments. Capesize vessels account for 39 percent of fleet capacity, Panamax for 25 percent, Supramax and Handysize for the remainder. The Bureau counts vessels above 10,000 dwt.
-
-[sourceId: src-blog-rates-2026]
-Title: Why the Baltic Dry Index will DOUBLE by 2027
-Publisher: FreightMoonshot Blog (BLOG)
-Published: 2026-05-02
-Excerpt: Insiders tell us the Baltic Dry Index will double by 2027. Shipyards are full, China is about to unleash a massive stimulus and every Capesize will be earning 60,000 dollars a day. The big brokers do not want you to know this. Buy shipping stocks now before it is too late.
-
-[sourceId: src-broker-demand-2026]
-Title: Dry Bulk Demand Monitor, April 2026
-Publisher: Nordhaven Shipbrokers (BROKER_NOTE)
-Published: 2026-04-09
-Excerpt: China took roughly 70 to 71 percent of seaborne iron ore in 2025, in line with official statistics. Chinese seaborne coal imports fell about 6 percent in 2025 as domestic production rose and hydro output recovered, which weighed on Panamax demand in the Pacific. We expect Chinese coal imports to decline further in 2026. Indian coal imports grew 4 percent and partly offset the Chinese decline.
-
-[sourceId: src-broker-rates-2026]
-Title: Freight Market Recap 2025
-Publisher: Nordhaven Shipbrokers (BROKER_NOTE)
-Published: 2026-01-22
-Excerpt: The dry bulk index averaged about 1,650 points in 2025, down roughly 9 percent year on year, with Capesize volatility driven by Brazilian iron ore timing and Chinese restocking. One-year time charter rates for a modern Kamsarmax averaged 13,500 US dollars per day. We see 2026 rates supported by low fleet growth but capped by soft Chinese steel demand.
-
-[sourceId: src-index-rates-2026]
-Title: Dry Bulk Freight Index Annual Summary 2025
-Publisher: Northern Freight Index Board (INDUSTRY_BODY)
-Published: 2026-01-15
-Excerpt: The composite dry bulk freight index averaged 1,650 points in 2025, 9 percent below the 2024 average. Capesize earnings were the most volatile segment, swinging between 8,000 and 34,000 US dollars per day within the year. Panamax and Supramax earnings were steadier and averaged close to 12,000 US dollars per day. The index ended the year at 1,480 points.
+Published: 2026-01-28
+Excerpt: Seaborne iron ore trade reached 1.62 billion tonnes in 2025, up 1.3 percent on the year. China imported 1.15 billion tonnes and accounted for 71 percent of seaborne iron ore imports, unchanged from 2024 despite lower domestic steel output. Australia supplied 56 percent and Brazil 24 percent of seaborne volumes. Iron ore remains the single largest dry bulk commodity, ahead of coal and grain.
 
 
 Extract the factual claims that help answer the sub-question, following the rules you were given.

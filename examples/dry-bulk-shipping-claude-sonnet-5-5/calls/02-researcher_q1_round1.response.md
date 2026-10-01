@@ -17,15 +17,27 @@
       "sourceId": "src-industry-body-demand-2026"
     },
     {
-      "statement": "Grain trade shifted towards South American exporters in 2025 after a weak North American harvest.",
+      "statement": "Grain trade shifted towards South American exporters after a weak North American harvest.",
       "sourceId": "src-industry-body-demand-2026"
     },
     {
-      "statement": "Tonne-mile demand grew faster than tonnes in 2025 because of longer Atlantic to Pacific routes.",
+      "statement": "Tonne-mile demand grew faster than tonnes because of longer Atlantic to Pacific routes.",
       "sourceId": "src-industry-body-demand-2026"
     },
     {
-      "statement": "The world dry bulk fleet grew by 3.1 percent in 2025 to 1,020 million deadweight tonnes (dwt).",
+      "statement": "Dry bulk tonne-mile demand increased 2.3 percent in 2025 while tonnes carried rose 1.1 percent, reflecting longer average voyage distances.",
+      "sourceId": "src-tonnemile-stats-2026"
+    },
+    {
+      "statement": "Diversions away from the Red Sea and Suez Canal accounted for an estimated 1 percentage point of the tonne-mile growth in 2025.",
+      "sourceId": "src-tonnemile-stats-2026"
+    },
+    {
+      "statement": "Average laden voyage distance reached 5,200 nautical miles.",
+      "sourceId": "src-tonnemile-stats-2026"
+    },
+    {
+      "statement": "The world dry bulk fleet grew by 3.1 percent in 2025 to 1,020 million deadweight tonnes (dwt), the fastest expansion since 2021.",
       "sourceId": "src-fleet-stats-2026"
     },
     {
@@ -49,7 +61,7 @@
       "sourceId": "src-ironore-stats-2026"
     },
     {
-      "statement": "China imported 1.15 billion tonnes of seaborne iron ore in 2025, accounting for 71 percent of seaborne iron ore imports, unchanged from 2024.",
+      "statement": "China imported 1.15 billion tonnes of seaborne iron ore in 2025 and accounted for 71 percent of seaborne iron ore imports, unchanged from 2024.",
       "sourceId": "src-ironore-stats-2026"
     },
     {
@@ -59,30 +71,6 @@
     {
       "statement": "Iron ore remains the single largest dry bulk commodity, ahead of coal and grain.",
       "sourceId": "src-ironore-stats-2026"
-    },
-    {
-      "statement": "Hanseatic Maritime Research identifies the ramp-up of the Simandou iron ore project in Guinea as a factor that lengthens average haul distances.",
-      "sourceId": "src-risk-report-2026"
-    },
-    {
-      "statement": "Hanseatic Maritime Research lists shifts in grain trade flows between the Americas and Asia as a risk driver for dry bulk earnings in 2026.",
-      "sourceId": "src-risk-report-2026"
-    },
-    {
-      "statement": "Hanseatic Maritime Research lists geopolitical disruption of routes, including Red Sea diversions, as a risk driver for dry bulk earnings in 2026.",
-      "sourceId": "src-risk-report-2026"
-    },
-    {
-      "statement": "Tonne-mile demand grew 2.3 percent in 2025, roughly double the growth in tonnes.",
-      "sourceId": "src-risk-report-2026"
-    },
-    {
-      "statement": "Capesize earnings swung between 8,000 and 34,000 US dollars per day within 2025, making it the most volatile segment.",
-      "sourceId": "src-index-rates-2026"
-    },
-    {
-      "statement": "Panamax and Supramax earnings averaged close to 12,000 US dollars per day in 2025.",
-      "sourceId": "src-index-rates-2026"
     }
   ]
 }

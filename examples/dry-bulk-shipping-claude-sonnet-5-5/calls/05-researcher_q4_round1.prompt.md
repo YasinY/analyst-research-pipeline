@@ -30,21 +30,21 @@ Respond with a single JSON object and nothing else. No prose, no markdown fences
 
 Sub-question:
 
-How have freight rates and earnings in dry bulk shipping behaved recently, as measured by the Baltic Dry Index and time charter rates, and what explains their volatility?
+How have freight rates and earnings in dry bulk shipping behaved recently, and what does the Baltic Dry Index and related benchmark data show about volatility?
 
 Sources:
-
-[sourceId: src-blog-rates-2026]
-Title: Why the Baltic Dry Index will DOUBLE by 2027
-Publisher: FreightMoonshot Blog (BLOG)
-Published: 2026-05-02
-Excerpt: Insiders tell us the Baltic Dry Index will double by 2027. Shipyards are full, China is about to unleash a massive stimulus and every Capesize will be earning 60,000 dollars a day. The big brokers do not want you to know this. Buy shipping stocks now before it is too late.
 
 [sourceId: src-broker-rates-2026]
 Title: Freight Market Recap 2025
 Publisher: Nordhaven Shipbrokers (BROKER_NOTE)
 Published: 2026-01-22
 Excerpt: The dry bulk index averaged about 1,650 points in 2025, down roughly 9 percent year on year, with Capesize volatility driven by Brazilian iron ore timing and Chinese restocking. One-year time charter rates for a modern Kamsarmax averaged 13,500 US dollars per day. We see 2026 rates supported by low fleet growth but capped by soft Chinese steel demand.
+
+[sourceId: src-blog-rates-2026]
+Title: Why the Baltic Dry Index will DOUBLE by 2027
+Publisher: FreightMoonshot Blog (BLOG)
+Published: 2026-05-02
+Excerpt: Insiders tell us the Baltic Dry Index will double by 2027. Shipyards are full, China is about to unleash a massive stimulus and every Capesize will be earning 60,000 dollars a day. The big brokers do not want you to know this. Buy shipping stocks now before it is too late.
 
 [sourceId: src-index-rates-2026]
 Title: Dry Bulk Freight Index Annual Summary 2025

@@ -9,38 +9,47 @@ Turns a free-text analyst question into a structured briefing with a confidence 
 
 ---
 
-<img src="docs/web-ui.png" width="100%">
+<img src="docs/web-ui.png" width="49%"> <img src="docs/web-ui-stats.png" width="49%">
 
 ---
 ## Run it
 
-Requirements: JDK 25 and an API key for Anthropic or for any OpenAI-compatible endpoint.
+Requirements: JDK 25 and an API key for Anthropic or for an OpenAI-compatible endpoint (or a local model served by Ollama).
+
+The intended way is the web UI:
+
+1. Download `research-pipeline.zip` from the [latest release](../../releases/latest) and unzip it. It contains the jar and the `data/` folder (prompts, mock corpus, pricing) the jar reads at startup. Or build it yourself with `./mvnw -B package` and run from the repository root.
+2. Start the server and open [http://127.0.0.1:8787](http://127.0.0.1:8787):
+
+   ```bash
+   java -jar research-pipeline.jar --serve
+   ```
+
+3. Enter the analyst query, pick the provider (Anthropic, OpenAI or local), the model and your API key, and start the run. The key is used for that run only and is never stored or returned. The page follows the run live: every model call grouped by phase with start time, duration, tokens in, tokens served from the provider's prompt cache, tokens out and estimated cost (from `data/pricing.json`), a per-role table, a timeline, each call expandable to its prompt and raw response, and finally the briefing. The run id is kept in the URL (`?run=run-1`), so the page survives a reload.
+
+The CLI does the same without a browser and reads the key from the environment:
+
+```bash
+java -jar research-pipeline.jar --query "Give me an overview of the dry bulk shipping market and its main risk drivers."
+./mvnw -B test        # tests only; JaCoCo enforces 100% line and branch coverage, report under core|app/target/site/jacoco
+```
 
 - `LLM_PROVIDER`: `anthropic` (default), `openai` or `local`
 - `ANTHROPIC_API_KEY`, `ANTHROPIC_MODEL` (default `claude-sonnet-5-5`), `ANTHROPIC_API_URL`
 - `OPENAI_API_KEY`, `OPENAI_MODEL` (default `gpt-5.4-mini`), `OPENAI_API_URL` (default OpenAI chat completions)
 - `LOCAL_API_URL` (default Ollama, `http://localhost:11434/v1/chat/completions`), `LOCAL_MODEL` (default `llama3.1`); the local provider uses the OpenAI-compatible client without a key
-- `DATA_DIR` (default `./data`: prompts, corpus, `pricing.json`), `RUNS_DIR` (default `./runs`), `PORT` (default `8787`)
+- `DATA_DIR` (default `./data`), `RUNS_DIR` (default `./runs`), `PORT` (default `8787`)
 
-In the web UI the provider, model and API key can also be chosen per run; a key entered there is used for that run only and never stored or returned. Alternatively download `research-pipeline.jar` from the [latest release](../../releases/latest) and run it with the same variables.
-
-```bash
-./mvnw -B package                                           # build and test, produces app/target/research-pipeline.jar
-java -jar app/target/research-pipeline.jar --query "Give me an overview of the dry bulk shipping market and its main risk drivers."
-java -jar app/target/research-pipeline.jar --serve          # web UI on http://127.0.0.1:8787
-./mvnw -B test                                              # tests only; JaCoCo enforces 100% line and branch coverage, report under core|app/target/site/jacoco
-```
-
-Every run writes a folder under `runs/` with `briefing.md`, `result.json`, `state.json`, `trace.json`, every prompt and raw response under `calls/`, and a state snapshot after each step under `state/`. The web UI shows the run live: every model call with duration, tokens in, tokens served from the provider's prompt cache, tokens out and estimated cost (from `data/pricing.json`), a per-role table, a timeline, and each call expandable to its prompt and raw response.
+Every run writes a folder under `runs/` with `briefing.md`, `result.json`, `state.json`, `trace.json`, every prompt and raw response under `calls/`, and a state snapshot after each step under `state/`.
 
 ## Example output
 
-The same query, run once per provider:
+The same query, run once per provider after the final changes (prompt caching on, cost from `data/pricing.json`):
 
-- [`examples/dry-bulk-shipping-claude-sonnet-5-5`](examples/dry-bulk-shipping-claude-sonnet-5-5/briefing.md): MEDIUM confidence, 2 research rounds, 13 model calls
-- [`examples/dry-bulk-shipping-gpt-5.4-mini`](examples/dry-bulk-shipping-gpt-5.4-mini/briefing.md): LOW confidence
+- [`examples/dry-bulk-shipping-claude-sonnet-5-5`](examples/dry-bulk-shipping-claude-sonnet-5-5/briefing.md): 1 research round, 13 model calls, 71,092 tokens in of which 15,684 served from the prompt cache, estimated USD 0.33, confidence MEDIUM, approved by the critic after two revisions
+- [`examples/dry-bulk-shipping-gpt-5.4-mini`](examples/dry-bulk-shipping-gpt-5.4-mini/briefing.md): 1 research round, 13 model calls, 32,369 tokens in of which 5,632 cached, estimated USD 0.05, confidence LOW with 1 open major review finding (`REWRITE_LIMIT_REACHED`)
 
-Both stopped with `REWRITE_LIMIT_REACHED`; the briefing lists the open review findings instead of hiding them.
+The briefing lists open review findings instead of hiding them, and a single open major finding caps confidence at LOW by design. Outcomes vary between runs of the same query: with Sonnet, five of seven runs after the last prompt change ended MEDIUM and approved, the others LOW with the open findings printed.
 
 ## Architecture
 
@@ -50,7 +59,7 @@ Hexagonal, two modules. `core` holds the domain, the agents and the orchestratio
 - **Researcher** searches the corpus per sub-question and extracts claims with source references.
 - **Reconciler** groups claims that assert the same fact and lists conflicts between groups. It does not judge reliability.
 - **Synthesizer** writes summary, key facts and uncertainties. Every statement cites evidence group ids; unknown ids are dropped.
-- **Critic** reviews the draft against the evidence and returns typed findings, each either a rewrite (unsupported, overstated, smoothed conflict, ...) or a research request (missing evidence, with keywords).
+- **Critic** reviews the draft against the evidence and returns typed findings, each either a rewrite (unsupported, overstated, smoothed conflict, ...) or a research request (missing evidence, with keywords). On a revised draft it sees its previous findings, so it reports what is still open instead of raising the bar.
 
 Why this shape:
 
@@ -72,7 +81,7 @@ The run stops at the first of:
 - the critic returns no findings (`APPROVED`)
 - research is requested but every open sub-question was already searched without new evidence (`NO_NEW_EVIDENCE`)
 - 2 research rounds are used while sub-questions still lack adequate evidence (`ROUND_LIMIT_REACHED`)
-- one rewrite per round is used and findings remain (`REWRITE_LIMIT_REACHED`)
+- two rewrites per round are used and findings remain (`REWRITE_LIMIT_REACHED`)
 - 30 model calls are used (`CALL_BUDGET_EXHAUSTED`), or the critic or a revision fails (`AGENT_FAILURE`)
 
 A sub-question is covered when at least one evidence group for it scores MEDIUM or better. Before the first draft, uncovered and not yet exhausted sub-questions get another research round; after a critique, research findings become follow-up sub-questions.
@@ -105,7 +114,9 @@ Honest record of the time spent on this submission.
 | 1 | 2026-10-01 18:37 | 2026-10-01 19:50 | 73 min | 66 min | Skeleton, ports, five agents, confidence model, pipeline orchestration, tests. Paused at 19:50 for an appointment at 20:00. |
 | 2 | 2026-10-01 20:29 | 2026-10-01 21:18 | 49 min | 25 min | App module, LLM adapters for OpenAI-compatible and Anthropic endpoints, mock corpus, CLI, first real runs and prompt tuning. Includes a dinner break. |
 | 3 | 2026-10-01 21:31 | 2026-10-01 22:30 | 59 min | ca. 40 min | Beyond the required scope: global reconciliation, web UI, code review with fixes, coverage to 100 percent, CI, README. Agents working in parallel count as development time. |
-| **Total** | | | **181 min (3 h 01)** | **ca. 131 min (2 h 11)** | Blocks 1 and 2 cover everything the task asked for in 91 minutes net. |
+| 4 | 2026-10-01 22:33 | 2026-10-01 23:05 | 32 min | ca. 25 min | Statistics: cached tokens, Anthropic prompt caching, pricing and cost estimate, German web UI with timeline, role table and per-run provider selection, local provider via Ollama. |
+| 5 | 2026-10-01 23:05 | 2026-10-01 23:28 | 23 min | ca. 15 min | Critic sees its previous findings, two rewrites per round, pipeline view grouped by phase with start times, one evidence note per key fact, analyst-facing briefing wording. |
+| **Total** | | | **236 min (3 h 56)** | **ca. 171 min (2 h 51)** | Blocks 1 and 2 cover everything the task asked for in 91 minutes net. |
 
 Gross is wall-clock time. Net development excludes build times, pipeline runs, and reading their output.
 

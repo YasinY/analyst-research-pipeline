@@ -223,6 +223,7 @@
   var POLL_MS = 1000;
   var MILLIS_PER_SECOND = 1000;
   var LOCAL_PROVIDER = 'local';
+  var RUN_PARAMETER = 'run';
   var LOCALE = 'de-DE';
   var STATUS_LABELS = { RUNNING: 'läuft', FINISHED: 'fertig', FAILED: 'fehlgeschlagen' };
   var CONFIDENCE_LABELS = { HIGH: 'hoch', MEDIUM: 'mittel', LOW: 'niedrig' };
@@ -297,6 +298,7 @@
   });
 
   loadDefaults();
+  resumeRunFromUrl();
 
   function loadDefaults() {
     fetch('/config')
@@ -343,6 +345,24 @@
     if (!query) { showError(germanError('query must not be blank')); return; }
     var body = requestBody(query);
     keyInput.value = '';
+    clearRunView();
+    fetch('/researches', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+      .then(function (response) { return response.json().then(function (payload) { return { ok: response.ok, body: payload }; }); })
+      .then(function (result) {
+        if (!result.ok) { throw new Error(germanError(result.body.error)); }
+        followRun(result.body.id);
+      })
+      .catch(function (error) { showError('Der Lauf konnte nicht gestartet werden. ' + messageOf(error)); runButton.disabled = false; });
+  }
+
+  function resumeRunFromUrl() {
+    var runId = new URLSearchParams(window.location.search).get(RUN_PARAMETER);
+    if (!runId) { return; }
+    clearRunView();
+    followRun(runId);
+  }
+
+  function clearRunView() {
     runButton.disabled = true;
     log.innerHTML = '';
     logEmpty.style.display = 'none';
@@ -350,20 +370,19 @@
     renderedPhase = '';
     resetStatistics();
     briefingBox.innerHTML = '<p class="empty">Der Lauf ist gestartet. Das Briefing erscheint hier, sobald er abgeschlossen ist.</p>';
-    fetch('/researches', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
-      .then(function (response) { return response.json().then(function (payload) { return { ok: response.ok, body: payload }; }); })
-      .then(function (result) {
-        if (!result.ok) { throw new Error(germanError(result.body.error)); }
-        currentRunId = result.body.id;
-        poll();
-      })
-      .catch(function (error) { showError('Der Lauf konnte nicht gestartet werden. ' + messageOf(error)); runButton.disabled = false; });
+  }
+
+  function followRun(runId) {
+    currentRunId = runId;
+    window.history.replaceState(null, '', '?' + RUN_PARAMETER + '=' + encodeURIComponent(runId));
+    poll();
   }
 
   function poll() {
     fetch('/researches/' + currentRunId)
-      .then(function (response) { return response.json(); })
+      .then(function (response) { if (!response.ok) { throw new Error(germanError('not found')); } return response.json(); })
       .then(function (run) {
+        if (!queryInput.value) { queryInput.value = run.query; }
         render(run);
         if (run.status === 'RUNNING') { setTimeout(poll, POLL_MS); } else { runButton.disabled = false; }
       })

@@ -30,21 +30,21 @@ Respond with a single JSON object and nothing else. No prose, no markdown fences
 
 Sub-question:
 
-What are the main demand drivers for dry bulk shipping volumes, such as iron ore, coal, grain, and industrial commodity trade?
+What are the main demand drivers for dry bulk shipping volumes, such as global industrial production, iron ore, coal, grain, and bauxite trade?
 
 Sources:
-
-[sourceId: src-ironore-stats-2026]
-Title: Seaborne Iron Ore Trade Statistics 2025
-Publisher: Maritime Statistics Bureau (OFFICIAL_STATISTICS)
-Published: 2026-01-28
-Excerpt: Seaborne iron ore trade reached 1.62 billion tonnes in 2025, up 1.3 percent on the year. China imported 1.15 billion tonnes and accounted for 71 percent of seaborne iron ore imports, unchanged from 2024 despite lower domestic steel output. Australia supplied 56 percent and Brazil 24 percent of seaborne volumes. Iron ore remains the single largest dry bulk commodity, ahead of coal and grain.
 
 [sourceId: src-industry-body-demand-2026]
 Title: Dry Bulk Trade Annual Report 2025
 Publisher: International Dry Cargo Association (INDUSTRY_BODY)
 Published: 2026-03-05
 Excerpt: Total seaborne dry bulk trade grew 1.1 percent to 5.5 billion tonnes in 2025. Iron ore and coal together made up 55 percent of volumes, grain and soybeans 10 percent, minor bulks the remainder. China accounted for 71 percent of seaborne iron ore imports in 2025. Grain trade shifted towards South American exporters after a weak North American harvest. Tonne-mile demand grew faster than tonnes because of longer Atlantic to Pacific routes.
+
+[sourceId: src-ironore-stats-2026]
+Title: Seaborne Iron Ore Trade Statistics 2025
+Publisher: Maritime Statistics Bureau (OFFICIAL_STATISTICS)
+Published: 2026-01-28
+Excerpt: Seaborne iron ore trade reached 1.62 billion tonnes in 2025, up 1.3 percent on the year. China imported 1.15 billion tonnes and accounted for 71 percent of seaborne iron ore imports, unchanged from 2024 despite lower domestic steel output. Australia supplied 56 percent and Brazil 24 percent of seaborne volumes. Iron ore remains the single largest dry bulk commodity, ahead of coal and grain.
 
 [sourceId: src-risk-report-2026]
 Title: Dry Bulk Shipping Risk Drivers 2026
