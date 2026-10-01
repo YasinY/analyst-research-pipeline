@@ -2,9 +2,12 @@ package com.assignment.research.bootstrap;
 
 import com.assignment.research.adapter.web.WebConstants;
 import java.nio.file.Path;
+import java.util.EnumMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import lombok.NonNull;
+import lombok.ToString;
 import lombok.Value;
 
 @Value
@@ -13,6 +16,7 @@ public class AppConfig {
     @NonNull
     private final LLMProvider provider;
     @NonNull
+    @ToString.Exclude
     private final String apiKey;
     @NonNull
     private final String apiUrl;
@@ -25,19 +29,47 @@ public class AppConfig {
     @NonNull
     private final String corpusFile;
     private final int port;
+    @NonNull
+    @ToString.Exclude
+    private final Map<LLMProvider, ProviderSettings> providerDefaults;
 
     public static AppConfig fromEnvironment(Map<String, String> env) {
         var provider = LLMProvider.valueOf(env.getOrDefault(BootstrapConstants.ENV_PROVIDER,
                 BootstrapConstants.DEFAULT_PROVIDER).toUpperCase(Locale.ROOT));
+        var defaults = new EnumMap<LLMProvider, ProviderSettings>(LLMProvider.class);
+        for (var candidate : LLMProvider.values()) {
+            defaults.put(candidate, candidate.settingsFrom(env));
+        }
+        var active = defaults.get(provider);
         return new AppConfig(
                 provider,
-                env.getOrDefault(provider.getApiKeyVariable(), BootstrapConstants.DEFAULT_API_KEY),
-                env.getOrDefault(provider.getUrlVariable(), provider.getDefaultUrl()),
-                env.getOrDefault(provider.getModelVariable(), provider.getDefaultModel()),
+                active.getApiKey(),
+                active.getApiUrl(),
+                active.getModel(),
                 Path.of(env.getOrDefault(BootstrapConstants.ENV_DATA_DIR, BootstrapConstants.DEFAULT_DATA_DIR)),
                 Path.of(env.getOrDefault(BootstrapConstants.ENV_RUNS_DIR, BootstrapConstants.DEFAULT_RUNS_DIR)),
                 env.getOrDefault(BootstrapConstants.ENV_CORPUS_FILE, BootstrapConstants.DEFAULT_CORPUS_FILE),
-                parsePort(env.get(BootstrapConstants.ENV_PORT)));
+                parsePort(env.get(BootstrapConstants.ENV_PORT)),
+                Map.copyOf(defaults));
+    }
+
+    public AppConfig withRunSettings(RunSettings settings) {
+        var chosen = Objects.requireNonNullElse(settings.getProvider(), provider);
+        var base = defaultsFor(chosen);
+        return new AppConfig(
+                chosen,
+                override(settings.getApiKey(), base.getApiKey()),
+                override(settings.getApiUrl(), base.getApiUrl()),
+                override(settings.getModel(), base.getModel()),
+                dataDirectory,
+                runsDirectory,
+                corpusFile,
+                port,
+                providerDefaults);
+    }
+
+    public ProviderSettings defaultsFor(LLMProvider candidate) {
+        return providerDefaults.get(candidate);
     }
 
     public Path getPromptsDirectory() {
@@ -46,6 +78,10 @@ public class AppConfig {
 
     public Path getCorpusPath() {
         return dataDirectory.resolve(BootstrapConstants.CORPUS_SUBDIRECTORY).resolve(corpusFile);
+    }
+
+    private static String override(String requested, String fallback) {
+        return requested.isBlank() ? fallback : requested.strip();
     }
 
     private static int parsePort(String value) {

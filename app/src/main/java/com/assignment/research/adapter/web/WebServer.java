@@ -1,5 +1,7 @@
 package com.assignment.research.adapter.web;
 
+import com.assignment.research.bootstrap.LLMProvider;
+import com.assignment.research.bootstrap.RunSettings;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -46,6 +48,7 @@ public final class WebServer {
             var guard = new RequestGuard(boundPort);
             server.createContext(WebConstants.RESEARCHES_PATH,
                     exchange -> guarded(exchange, guard, this::handleResearches));
+            server.createContext(WebConstants.CONFIG_PATH, exchange -> guarded(exchange, guard, this::handleConfig));
             server.createContext(WebConstants.ROOT_PATH, exchange -> guarded(exchange, guard, this::handleIndex));
             executor = Executors.newVirtualThreadPerTaskExecutor();
             server.setExecutor(executor);
@@ -91,6 +94,18 @@ public final class WebServer {
         try (page) {
             respond(exchange, WebConstants.HTTP_OK, WebConstants.CONTENT_TYPE_HTML, page.readAllBytes());
         }
+    }
+
+    private void handleConfig(HttpExchange exchange) throws IOException {
+        if (!WebConstants.CONFIG_PATH.equals(exchange.getRequestURI().getPath())) {
+            respondError(exchange, WebConstants.HTTP_NOT_FOUND, WebConstants.ERROR_NOT_FOUND);
+            return;
+        }
+        if (!WebConstants.METHOD_GET.equals(exchange.getRequestMethod())) {
+            respondMethodNotAllowed(exchange, WebConstants.METHOD_GET);
+            return;
+        }
+        respond(exchange, WebConstants.HTTP_OK, WebConstants.CONTENT_TYPE_JSON, json(registry.describeDefaults()));
     }
 
     private void handleResearches(HttpExchange exchange) throws IOException {
@@ -145,13 +160,35 @@ public final class WebServer {
             respondError(exchange, WebConstants.HTTP_BAD_REQUEST, WebConstants.ERROR_MALFORMED_JSON);
             return;
         }
-        var query = body.get().path(WebConstants.JSON_KEY_QUERY).asText(WebConstants.EMPTY_TEXT).strip();
+        var query = text(body.get(), WebConstants.JSON_KEY_QUERY);
         if (query.isEmpty()) {
             respondError(exchange, WebConstants.HTTP_BAD_REQUEST, WebConstants.ERROR_EMPTY_QUERY);
             return;
         }
-        var run = registry.start(query);
+        var settings = settingsFrom(body.get());
+        if (settings.isEmpty()) {
+            respondError(exchange, WebConstants.HTTP_BAD_REQUEST, WebConstants.ERROR_UNKNOWN_PROVIDER);
+            return;
+        }
+        var run = registry.start(query, settings.get());
         respond(exchange, WebConstants.HTTP_ACCEPTED, WebConstants.CONTENT_TYPE_JSON, json(run.toResponse()));
+    }
+
+    private static Optional<RunSettings> settingsFrom(JsonNode body) {
+        var providerName = text(body, WebConstants.JSON_KEY_PROVIDER);
+        if (providerName.isEmpty()) {
+            return Optional.of(settings(null, body));
+        }
+        return LLMProvider.fromWireName(providerName).map(provider -> settings(provider, body));
+    }
+
+    private static RunSettings settings(LLMProvider provider, JsonNode body) {
+        return new RunSettings(provider, text(body, WebConstants.JSON_KEY_MODEL),
+                text(body, WebConstants.JSON_KEY_API_KEY), text(body, WebConstants.JSON_KEY_API_URL));
+    }
+
+    private static String text(JsonNode body, String key) {
+        return body.path(key).asText(WebConstants.EMPTY_TEXT).strip();
     }
 
     private Optional<JsonNode> readBody(HttpExchange exchange) throws IOException {

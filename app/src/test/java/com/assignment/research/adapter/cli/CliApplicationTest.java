@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.assignment.research.adapter.output.JSONMapperFactory;
 import com.assignment.research.adapter.output.OutputConstants;
+import com.assignment.research.adapter.pricing.PricingConstants;
 import com.assignment.research.adapter.web.BriefingFixtures;
 import com.assignment.research.adapter.web.ObservingBriefingUseCase;
 import com.assignment.research.adapter.web.WebConstants;
@@ -38,6 +39,9 @@ class CliApplicationTest {
     private static final String SECOND_QUERY_WORD = "bulk";
     private static final String LISTENING_MARKER = "listening on";
     private static final int EPHEMERAL_PORT = 0;
+    private static final String MISSING_DATA_DIR = "no-data";
+    private static final String COST_MARKER = "Estimated cost: USD";
+    private static final String PRICING_MISSING_MARKER = "No pricing table at";
 
     private final ByteArrayOutputStream outBuffer = new ByteArrayOutputStream();
     private final ByteArrayOutputStream errBuffer = new ByteArrayOutputStream();
@@ -88,6 +92,33 @@ class CliApplicationTest {
     }
 
     @Test
+    void estimatesCostFromThePricingTableInTheDataDirectory() throws IOException {
+        application = application(new ObservingBriefingUseCase());
+        var env = Map.of(
+                BootstrapConstants.ENV_DATA_DIR, DATA.toString(),
+                BootstrapConstants.ENV_RUNS_DIR, runsRoot.toString());
+
+        var exitCode = application.run(List.of(CliConstants.QUERY_FLAG, QUERY_WORD), env, out, err);
+
+        assertThat(exitCode).isEqualTo(CliConstants.EXIT_OK);
+        assertThat(out()).contains(COST_MARKER).doesNotContain(PRICING_MISSING_MARKER);
+        assertThat(singleRunDirectory().resolve(OutputConstants.BRIEFING_FILE)).content().contains(COST_MARKER);
+    }
+
+    @Test
+    void fallsBackToFreeEstimatesWithoutPricingTable() throws IOException {
+        application = application(new ObservingBriefingUseCase());
+
+        var exitCode = application.run(List.of(CliConstants.QUERY_FLAG, QUERY_WORD), env(), out, err);
+
+        assertThat(exitCode).isEqualTo(CliConstants.EXIT_OK);
+        assertThat(out()).contains(PRICING_MISSING_MARKER).contains(PricingConstants.PRICING_FILE)
+                .doesNotContain(COST_MARKER);
+        assertThat(singleRunDirectory().resolve(OutputConstants.BRIEFING_FILE)).content()
+                .doesNotContain(COST_MARKER);
+    }
+
+    @Test
     void reportsAbortedRunWithItsCause() {
         ProduceBriefingUseCase aborting = (query, observer) -> {
             throw new PipelineAbortedException(STEP, new IllegalStateException(CAUSE));
@@ -111,8 +142,8 @@ class CliApplicationTest {
         var exitCode = application.run(List.of(CliConstants.SERVE_FLAG), env, out, err);
 
         assertThat(exitCode).isEqualTo(CliConstants.EXIT_OK);
-        assertThat(outBuffer.toString(StandardCharsets.UTF_8)).contains(LISTENING_MARKER)
-                .contains(WebConstants.BIND_HOST);
+        assertThat(out()).contains(LISTENING_MARKER).contains(WebConstants.BIND_HOST)
+                .doesNotContain(PRICING_MISSING_MARKER);
     }
 
     private CliApplication application(ProduceBriefingUseCase useCase) {
@@ -120,7 +151,13 @@ class CliApplicationTest {
     }
 
     private Map<String, String> env() {
-        return Map.of(BootstrapConstants.ENV_RUNS_DIR, runsRoot.toString());
+        return Map.of(
+                BootstrapConstants.ENV_DATA_DIR, runsRoot.resolve(MISSING_DATA_DIR).toString(),
+                BootstrapConstants.ENV_RUNS_DIR, runsRoot.toString());
+    }
+
+    private String out() {
+        return outBuffer.toString(StandardCharsets.UTF_8);
     }
 
     private String err() {

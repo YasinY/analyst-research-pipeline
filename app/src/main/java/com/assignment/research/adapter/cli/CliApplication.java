@@ -3,11 +3,13 @@ package com.assignment.research.adapter.cli;
 import com.assignment.research.adapter.output.JSONMapperFactory;
 import com.assignment.research.adapter.output.MarkdownBriefingRenderer;
 import com.assignment.research.adapter.output.RunArchive;
+import com.assignment.research.adapter.pricing.CostEstimator;
 import com.assignment.research.adapter.web.ResearchRunRegistry;
 import com.assignment.research.adapter.web.WebConstants;
 import com.assignment.research.adapter.web.WebServer;
 import com.assignment.research.bootstrap.AppConfig;
 import com.assignment.research.bootstrap.BootstrapConstants;
+import com.assignment.research.bootstrap.CostEstimatorLoader;
 import com.assignment.research.bootstrap.PipelineFactory;
 import com.assignment.research.pipeline.PipelineAbortedException;
 import com.assignment.research.pipeline.ProduceBriefingUseCase;
@@ -33,21 +35,23 @@ public final class CliApplication implements AutoCloseable {
     public static CliApplication standard() {
         var clock = Clock.systemDefaultZone();
         var mapper = JSONMapperFactory.create();
-        return new CliApplication(clock, mapper, config -> new PipelineFactory(config, mapper, clock).createUseCase());
+        return new CliApplication(clock, mapper, PipelineFactory.useCasesFor(mapper, clock));
     }
 
     public int run(List<String> arguments, Map<String, String> env, PrintStream out, PrintStream err) {
         var config = AppConfig.fromEnvironment(env);
-        if (arguments.contains(CliConstants.SERVE_FLAG)) {
-            serve(config, out);
-            return CliConstants.EXIT_OK;
-        }
+        var serveRequested = arguments.contains(CliConstants.SERVE_FLAG);
         var queryText = queryFrom(arguments);
-        if (queryText.isEmpty()) {
+        if (!serveRequested && queryText.isEmpty()) {
             err.println(CliConstants.USAGE.formatted(WebConstants.BIND_HOST, WebConstants.DEFAULT_PORT));
             return CliConstants.EXIT_USAGE;
         }
-        return research(config, queryText.get(), out, err);
+        var costEstimator = CostEstimatorLoader.load(config, out);
+        if (serveRequested) {
+            serve(config, costEstimator, out);
+            return CliConstants.EXIT_OK;
+        }
+        return research(config, costEstimator, queryText.get(), out, err);
     }
 
     @Override
@@ -55,12 +59,13 @@ public final class CliApplication implements AutoCloseable {
         Optional.ofNullable(server.getAndSet(null)).ifPresent(WebServer::stop);
     }
 
-    private int research(AppConfig config, String queryText, PrintStream out, PrintStream err) {
-        var archive = new RunArchive(config.getRunsDirectory(), clock, mapper, out);
+    private int research(AppConfig config, CostEstimator costEstimator, String queryText, PrintStream out,
+            PrintStream err) {
+        var archive = new RunArchive(config.getRunsDirectory(), clock, mapper, out, costEstimator);
         var useCase = useCaseFactory.apply(config);
         try {
             var result = useCase.produce(new AnalystQuery(queryText), archive);
-            archive.writeResult(result, new MarkdownBriefingRenderer(clock).render(result));
+            archive.writeResult(result, new MarkdownBriefingRenderer(clock, costEstimator).render(result));
             return CliConstants.EXIT_OK;
         } catch (PipelineAbortedException aborted) {
             err.println(BootstrapConstants.ABORTED_MESSAGE.formatted(aborted.getMessage(),
@@ -69,8 +74,8 @@ public final class CliApplication implements AutoCloseable {
         }
     }
 
-    private void serve(AppConfig config, PrintStream out) {
-        var registry = new ResearchRunRegistry(useCaseFactory.apply(config), config, mapper, clock, out);
+    private void serve(AppConfig config, CostEstimator costEstimator, PrintStream out) {
+        var registry = new ResearchRunRegistry(useCaseFactory, config, costEstimator, mapper, clock, out);
         var webServer = new WebServer(registry, mapper, config.getPort(), out);
         webServer.start();
         server.set(webServer);

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="de">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -35,7 +35,23 @@
   .hero-text p { margin: 0 0 28px; max-width: 520px; font-size: 16px; line-height: 1.6; }
   .hero-form { display: flex; flex-direction: column; gap: 12px; }
   .hero-form textarea { font: inherit; font-size: 16px; line-height: 1.5; padding: 14px 16px; border: 1px solid var(--white); background: var(--white); color: var(--ink); resize: vertical; min-height: 92px; }
-  .hero-form textarea:focus { outline: 2px solid var(--brand); outline-offset: 0; }
+  .hero-form textarea:focus, .settings input[type="text"]:focus, .settings input[type="password"]:focus { outline: 2px solid var(--brand); outline-offset: 0; }
+  .settings { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 18px; padding: 16px 0 4px; border-top: 1px solid rgba(0, 0, 0, 0.18); }
+  .settings .field { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+  .settings .field.wide { grid-column: 1 / -1; }
+  .settings .field[hidden] { display: none; }
+  .settings .caption { font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--ink); }
+  .settings input[type="text"], .settings input[type="password"] { font: inherit; font-size: 14px; line-height: 1.4; padding: 9px 12px; border: 1px solid var(--white); background: var(--white); color: var(--ink); width: 100%; }
+  .settings .hint { font-size: 12px; line-height: 1.45; color: var(--muted); }
+  .settings .hint b { color: var(--ink); font-weight: 700; }
+  .settings .note { grid-column: 1 / -1; margin: 0; }
+  .segments { display: flex; flex-wrap: wrap; gap: 0; border: 1px solid var(--ink); align-self: flex-start; }
+  .segments label { position: relative; cursor: pointer; }
+  .segments input { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; }
+  .segments span { display: inline-block; padding: 7px 16px; font-size: 13px; font-weight: 700; letter-spacing: .04em; color: var(--ink); background: rgba(255, 255, 255, 0.35); }
+  .segments label + label span { border-left: 1px solid var(--ink); }
+  .segments input:checked + span { background: var(--ink); color: var(--white); }
+  .segments input:focus-visible + span { outline: 2px solid var(--brand); outline-offset: -2px; }
   .cta { display: inline-flex; align-items: center; gap: 12px; align-self: flex-start; font-size: 13px; font-weight: 700; letter-spacing: .04em; background: none; border: 0; cursor: pointer; color: var(--ink); padding: 6px 0; }
   .cta .dot { width: 26px; height: 26px; border-radius: 50%; background: var(--brand); color: var(--white); display: inline-flex; align-items: center; justify-content: center; font-size: 14px; }
   .cta:disabled { opacity: .45; cursor: default; }
@@ -43,13 +59,42 @@
   .eyebrow { font-size: 11px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: var(--brand); margin: 0 0 6px; }
   .stat { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: baseline; border-bottom: 1px solid var(--hairline); padding: 10px 0; font-size: 14px; }
   .stat b { font-size: 22px; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .stat .value { text-align: right; color: var(--ink); font-size: 14px; }
   .pill { display: inline-block; padding: 2px 10px; font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--white); background: var(--muted); }
   .pill.RUNNING { background: var(--brand); } .pill.FINISHED { background: var(--teal); } .pill.FAILED { background: var(--ink); }
   .pill.HIGH { background: var(--teal); } .pill.MEDIUM { background: var(--muted); } .pill.LOW { background: var(--brand); }
-  main { max-width: 1280px; margin: 24px auto 64px; padding: 0 40px; display: grid; grid-template-columns: 1fr 1.25fr; gap: 24px; }
-  @media (max-width: 1000px) { .hero, main { grid-template-columns: 1fr; } .hero-text h1 { font-size: 36px; } }
-  .card { background: var(--panel); padding: 32px 36px; min-height: 320px; }
+  main, .stats { max-width: 1280px; margin: 24px auto 0; padding: 0 40px; display: grid; grid-template-columns: 1fr 1.25fr; gap: 24px; }
+  main { margin-bottom: 64px; }
+  .stats { grid-template-columns: 1.3fr 1fr; }
+  @media (max-width: 1000px) { .hero, main, .stats { grid-template-columns: 1fr; } .hero-text h1 { font-size: 36px; } }
+  @media (max-width: 640px) { header, .hero, main, .stats, footer { padding-left: 16px; padding-right: 16px; } .hero-text { padding: 36px 24px 32px; } .hero-side, .card { padding: 28px 22px; } .settings { grid-template-columns: 1fr; } header nav { gap: 14px; } }
+  .card { background: var(--panel); padding: 32px 36px; min-height: 320px; min-width: 0; }
   .card h2 { font-size: 22px; font-weight: 700; letter-spacing: -.01em; margin: 0 0 18px; color: var(--ink); }
+  .tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--hairline); border: 1px solid var(--hairline); margin: 0 0 24px; }
+  .tile { background: var(--white); padding: 14px 16px; min-width: 0; }
+  .tile span { display: block; font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+  .tile b { display: block; margin-top: 4px; font-size: 20px; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .tile.accent b { color: var(--brand); }
+  @media (max-width: 640px) { .tiles { grid-template-columns: repeat(2, 1fr); } }
+  .table-wrap { overflow-x: auto; }
+  table.roles { width: 100%; border-collapse: collapse; font-size: 12.5px; font-variant-numeric: tabular-nums; }
+  table.roles th { text-align: right; font-size: 10.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); padding: 6px 8px; border-bottom: 2px solid var(--ink); white-space: nowrap; }
+  table.roles td { text-align: right; padding: 8px 6px; border-bottom: 1px solid var(--hairline); white-space: nowrap; }
+  table.roles th:first-child, table.roles td:first-child { text-align: left; padding-left: 0; }
+  table.roles tfoot td { font-weight: 700; color: var(--ink); border-bottom: 0; border-top: 2px solid var(--ink); }
+  table.roles .tech { display: block; font-family: var(--mono); font-size: 11px; color: var(--muted); }
+  .swatch { display: inline-block; width: 10px; height: 10px; margin-right: 8px; vertical-align: baseline; }
+  .role-planner { background: var(--teal); } .role-researcher { background: var(--brand); } .role-reconciler { background: var(--taupe); }
+  .role-synthesizer { background: var(--muted); } .role-critic { background: var(--brand-soft); } .role-other { background: var(--ink); }
+  .timeline { display: flex; flex-direction: column; gap: 6px; }
+  .tl-row { display: grid; grid-template-columns: minmax(120px, 34%) 1fr 52px; gap: 10px; align-items: center; font-family: var(--mono); font-size: 11.5px; line-height: 1.3; }
+  .tl-label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text); }
+  .tl-track { background: var(--white); height: 14px; position: relative; }
+  .tl-bar { display: block; height: 100%; min-width: 2px; }
+  .tl-bar.FAILED { outline: 2px solid var(--ink); outline-offset: -2px; }
+  .tl-time { text-align: right; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .tl-scale { display: grid; grid-template-columns: minmax(120px, 34%) 1fr 52px; gap: 10px; font-size: 11px; color: var(--muted); margin-top: 8px; }
+  .tl-scale span:nth-child(2) { display: flex; justify-content: space-between; }
   .log { list-style: none; margin: 0; padding: 0; font-family: var(--mono); font-size: 12.5px; line-height: 1.5; }
   .log li { padding: 8px 0; border-top: 1px solid var(--hairline); }
   .log li.step { color: var(--muted); font-weight: 600; }
@@ -80,80 +125,248 @@
 <body>
 <header id="top">
   <svg class="logo" viewBox="0 0 129 104" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Berenberg"><path fill="#FF5229" d="M0.4 94.6H8.7C11 94.6 12.1 95.2 12.1 97.1C12.1 98.7 11.5 99 10.7 99.2V99.3C12 99.4 12.5 100.1 12.5 101.5C12.5 103.5 11.2 104 9.6 104H0.4V94.6ZM3.3 98.3H8.4C8.9 98.3 9.2 98.1 9.2 97.6C9.2 97.1 8.9 96.9 8.4 96.9H3.3V98.3ZM3.3 101.7H8.5C9.1 101.7 9.5 101.6 9.5 101C9.5 100.4 9.1 100.3 8.5 100.3H3.3V101.7ZM15.4 94.6V104H25.9V101.7H18.3V100.2H25.3V98.3H18.3V96.8H25.7V94.6H15.5L15.4 94.6ZM28.9 94.6H37.5C39.8 94.6 40.4 95.7 40.4 97.4V98C40.4 99.3 40.1 100 38.8 100.3V100.3C39.6 100.5 40.3 100.9 40.3 102.4V104H37.4V102.9C37.4 101.9 37.2 101.5 36.3 101.5H31.8V104H28.9V94.6H28.9L28.9 94.6ZM31.7 99.2H36.5C37.3 99.2 37.6 98.9 37.6 98.2V97.9C37.6 97.1 37.1 96.9 36.2 96.9H31.7V99.2L31.7 99.2ZM43.6 94.6V104H54V101.7H46.4V100.2H53.4V98.3H46.4V96.8H53.8V94.6H43.6V94.6ZM66.9 94.6V101.4H66.8L61.4 94.6H57V104H59.9V97.2H59.9L65.3 104H69.7V94.6H66.9H66.9ZM72.9 94.6H81.2C83.5 94.6 84.6 95.2 84.6 97.1C84.6 98.7 84 99 83.2 99.2V99.3C84.5 99.4 84.9 100.1 84.9 101.5C84.9 103.5 83.7 104 82.1 104H72.9V94.6ZM75.8 98.3H80.9C81.4 98.3 81.7 98.1 81.7 97.6C81.7 97.1 81.4 96.9 80.9 96.9H75.8V98.3ZM75.8 101.7H81C81.6 101.7 82 101.6 82 101C82 100.4 81.6 100.3 81 100.3H75.8V101.7ZM87.9 94.6V104H98.4V101.7H90.8V100.2H97.8V98.3H90.8V96.8H98.2V94.6H87.9V94.6ZM101.4 94.6H110C112.2 94.6 112.8 95.7 112.8 97.4V98C112.8 99.3 112.6 100 111.2 100.3V100.3C112.1 100.5 112.8 100.9 112.8 102.4V104H109.9V102.9C109.9 101.9 109.7 101.5 108.8 101.5H104.2V104H101.4V94.6H101.4L101.4 94.6ZM104.2 99.2H109C109.8 99.2 110 98.9 110 98.2V97.9C110 97.1 109.6 96.9 108.7 96.9H104.2V99.2H104.2V99.2ZM115.8 97.9V100.7C115.8 103.3 117.4 104 120 104H123.4C126.7 104 128.1 103.9 128.1 101.2V98.6H121.6V100.5H125.2V100.8C125.2 101.7 124.4 101.8 123.7 101.8H120.6C119.2 101.8 118.8 101.4 118.8 99.9V98.7C118.8 97.2 119.2 96.8 120.6 96.8H123.7C124.7 96.8 125.2 96.9 125.2 97.8H128V97.6C128 95.8 127.6 94.6 124.3 94.6H120C117.4 94.6 115.8 95.3 115.8 97.9H115.8H115.8ZM56 22.9C57.3 23.3 58 22.7 58 22.7L58.5 22.9C58.1 26.2 58.3 28.9 58.8 31.6L58.4 39.8C59.3 41.4 58.8 46.8 57.9 51.5C57.5 53.7 58.5 55.5 58.8 56.3C59.5 58.2 58.2 58.3 58.2 58.3H53C53 56.9 55.1 56.3 55.2 55.4C55.3 54.9 53.7 51.8 52.7 50.1C51.2 50.6 49.7 51.4 49.7 53.6C49.6 54.9 49.7 56.4 49.8 57.4C49.8 57.9 49.1 58.3 48.5 58.3H44C44 56.8 45.8 56.4 46.6 55C47.5 53.7 45.9 52.1 45.9 52.1C45.5 51.1 45.7 50.1 46.3 49.3L50.8 43.7C50.8 43.7 49.8 38.6 47.1 39.2C46.5 39.3 45.9 39.6 45.3 39.9V42.9L46.4 44L45.4 45L46 45.6L44.7 46.8L43.4 45.6L44 45L43 44L44 42.9V39.6L43 38.5L44 37.5V34.6L43 33.6L44 32.5V30.7H40.7L42.8 27.1H41.5L43.9 22.9H42.2L44.7 18.6L47.2 22.9H45.5L47.9 27.1H46.6L48.7 30.7H45.3V32.5C45.3 32.5 47.1 32.5 47.9 32.5C50.5 32.5 52.2 30.6 52.2 29.4C52.2 28.9 50.2 27.7 50.2 27.7L51.6 26.8L49.3 25.7L49.3 24.5L52.7 24.1C52.7 24.1 54.7 22.5 56 22.9L56 22.9ZM81.9 28.9C81.6 27.6 81.3 26.3 80.8 25C82 26.9 83.2 29 84 31.1C83.4 30.4 82.7 29.6 81.9 28.9V28.9ZM81.7 36.4C79.4 35.2 77.6 33.9 75.8 32.2C76.3 30.3 76.5 28.4 76.5 26.4C78 27.4 79.5 28.5 80.9 29.6C81 30.3 81.1 31 81.2 31.7C81.4 33.3 81.6 34.8 81.7 36.4L81.7 36.4ZM84.8 33.4C85.2 35 85.5 36.6 85.4 38.1C84.4 37.7 83.4 37.3 82.6 36.9C82.7 34.9 82.6 32.8 82.3 30.8C83.2 31.6 84.1 32.5 84.8 33.4ZM82.5 37.6C83.4 37.9 84.4 38.1 85.4 38.2C85.3 39.4 85 40.5 84.5 41.6C83.3 44.2 79.2 51 80.4 52.7C81.6 53.2 82.9 53.9 82.8 55.2C81.2 54.7 80 54.6 79 55.1C78.2 56.7 77.2 59 75.5 59.8C74.8 58.9 75 57.2 75.3 55.8C74.1 57.2 72.5 58 71.2 58.4C71.2 56.2 72.9 54.6 74.3 53.7C72.9 53.7 71.9 54.5 71.5 54.6C71.8 52.4 73 51.7 75.4 51.7H75.8C77.3 51.5 80 46.7 81 41.7C71.7 37.9 70.9 27.5 70.9 27.5C71.4 26.3 74 25.8 75.3 25.9C75.3 26.4 75.3 27 75.3 27.5C75.3 28.8 75.2 30.1 75 31.4C74 30.3 72.9 29 71.6 27.5C72.4 29.5 73.5 31.3 74.9 32.8C74.8 33.7 74.6 34.7 74.5 35.6C74.9 34.9 75.2 34.2 75.5 33.4C77.2 35.2 79.4 36.6 81.8 37.4C81.9 38.5 81.9 39.6 82 40.7C82.3 39.7 82.4 38.7 82.5 37.6L82.5 37.6ZM76.4 25.3C76.4 25.1 76.4 24.8 76.3 24.6C77.3 23.4 78.8 22.8 79.2 22.7C79.5 23.1 79.8 23.5 80 23.9C80.2 25.2 80.4 26.6 80.6 27.9C79.3 26.9 77.8 26 76.4 25.3V25.3ZM54.2 8.8H53V8.3L54.2 8.1C54.2 7.6 54.2 7.1 54.2 6.7V3.3L53.2 3.4V2.8L55.8 2.2L55.9 2.3L55.9 3.8V6.7C55.9 7.1 55.9 7.6 55.9 8.1L57.1 8.3V8.8H54.2L54.2 8.8ZM58.6 7.3C58.7 7 59 6.8 59.3 6.8C59.7 6.8 60 7.1 60 7.7L60.1 8.4C60.2 8.4 60.3 8.4 60.5 8.4C61.3 8.4 61.8 7.9 61.8 7C61.8 6.1 61.3 5.6 60.5 5.6C60.2 5.6 59.9 5.6 59.6 5.7L59.3 5.5L59.5 2.3H63.3V3.6H60.1L60 4.9C60.3 4.8 60.6 4.8 61 4.8C62.5 4.8 63.5 5.5 63.5 6.8C63.5 8.2 62.3 9 60.8 9C59.5 9 58.7 8.3 58.6 7.3L58.6 7.3ZM67 6.3C67.4 6.3 67.8 6.2 68.1 6C67.9 7.3 67.1 8 65.6 8.5L65.7 9C68.2 8.6 69.9 7.1 69.9 4.9C69.9 3.2 69 2.2 67.4 2.2C66 2.2 64.9 2.9 64.9 4.4C64.9 5.6 65.8 6.3 67 6.3ZM67.4 2.7C67.9 2.7 68.2 3.2 68.2 4.8C68.2 5 68.2 5.3 68.2 5.5C68 5.6 67.8 5.7 67.6 5.7C66.9 5.7 66.5 5.2 66.5 4.2C66.5 3.1 66.9 2.7 67.4 2.7L67.4 2.7ZM73.4 9C74.7 9 75.8 8 75.8 5.6C75.8 3.2 74.7 2.2 73.4 2.2C72.1 2.2 71 3.2 71 5.6C71 8 72.1 9 73.4 9ZM73.4 2.7C73.9 2.7 74.3 3.3 74.3 5.6C74.3 7.9 73.9 8.4 73.4 8.4C72.9 8.4 72.5 7.9 72.5 5.6C72.5 3.3 72.9 2.7 73.4 2.7ZM93 45.6C95.3 49.1 101.2 50.9 103 50.9L99.9 56.6L102.8 63.9C100.2 63.7 92.7 61.3 91.4 56.3C84.2 68.1 68.1 75.9 64.2 75.9C60.3 75.9 44.3 68.1 37 56.3C35.7 61.3 28.3 63.7 25.6 63.9L28.5 56.6L25.5 50.9C27.2 50.9 33.2 49.1 35.4 45.6C33.3 40.7 27 38.1 22.7 35.4V18.6C22.7 15 24.6 11 33.5 9.6V4.6C36.1 0.7 44.6 -1.5 51 1.3L47.9 4.4L50 9.7C46.7 8.8 43.2 8.8 40 9.9C47.9 14 57.5 13.4 64.2 11.9C71 13.4 80.5 14 88.4 9.9C85.2 8.8 81.8 8.8 78.5 9.7L80.5 4.4L77.4 1.3C83.8 -1.5 92.3 0.7 94.9 4.6V9.6C103.9 11 105.7 15 105.7 18.6V35.4C101.4 38.1 95.1 40.7 93 45.6H93ZM34.6 5C34.6 5.8 35.7 7.3 38.8 9.3C41.8 8.1 45.1 7.7 48.3 8.3L46.7 4.2L49.2 1.7C46.5 0.9 43.5 0.8 40.7 1.5C38 2.1 35.7 3.4 34.6 5H34.6ZM23.8 22.9C24.5 23.3 25.5 23.9 26.6 24.6C28.4 23.5 30.6 22.7 33.5 22.2V10.6C26.5 11.8 23.8 14.5 23.8 19.1C23.8 19.2 23.8 22.9 23.8 22.9V22.9ZM27.6 25.2C30.1 26.7 31.6 27.4 33.5 29.3V23.3C31.1 23.7 29.1 24.3 27.6 25.2V25.2ZM35.9 44.4C37.7 39.1 36.6 34 33.3 30.5C30.9 28 27.3 26.2 23.8 24.1V34.9C27.9 37.5 33.3 39.9 35.9 44.4ZM36.7 45.1C36.6 45.6 36.2 46.3 35.9 46.7C33.9 49.4 29.1 51.2 27.1 51.7L29.6 56.5L27.2 62.6C37.3 59.6 36.9 55.2 36.7 45.1ZM63.7 13C54.4 15.5 40.5 14 34.6 7.1V30.4C37.4 34 37.7 37.2 37.7 39.9C37.7 42.1 38 53 37.4 55C43.8 66.2 59.2 74.2 63.7 74.9V13H63.7ZM94.9 22.2C97.8 22.7 100.1 23.5 101.8 24.6C102.9 23.9 103.9 23.3 104.7 22.9C104.6 22.9 104.7 19.2 104.7 19.1C104.7 14.5 101.9 11.8 94.9 10.6V22.2V22.2ZM94.9 29.3C96.8 27.4 98.4 26.7 100.8 25.2C99.3 24.3 97.3 23.7 94.9 23.3V29.3V29.3ZM89.6 9.3C92.7 7.3 93.8 5.8 93.9 5C92.7 3.4 90.5 2.1 87.7 1.5C84.9 0.8 81.9 0.9 79.3 1.7L81.7 4.2L80.1 8.3C83.3 7.7 86.6 8.1 89.6 9.3H89.6ZM90.7 39.9C90.7 37.2 91 34 93.9 30.4V7.1C87.9 14 74 15.5 64.7 13V74.9C69.3 74.2 84.6 66.2 91 55C90.4 53 90.8 42.1 90.7 39.9H90.7ZM92.5 46.7C92.2 46.3 91.9 45.6 91.7 45.1C91.5 55.2 91.2 59.6 101.2 62.6L98.8 56.5L101.3 51.7C99.3 51.2 94.5 49.4 92.5 46.7ZM104.7 34.9V24.1C101.2 26.2 97.5 28 95.2 30.5C91.8 34 90.8 39.1 92.5 44.4C95.1 39.9 100.5 37.5 104.7 34.9Z"/></svg>
-  <nav><a href="#top" class="active">Research</a><a href="#briefing-card">Analyst briefing</a><a href="#pipeline">Trace</a></nav>
+  <nav><a href="#top" class="active">Recherche</a><a href="#statistics">Statistik</a><a href="#briefing-card">Briefing</a><a href="#pipeline">Trace</a></nav>
 </header>
 
 <section class="hero">
   <div class="hero-text">
     <h1>Heute recherchieren,<br><b>um das Morgen</b><br>zu entscheiden.</h1>
-    <p>Ask a question. Five agents plan, collect, reconcile, write and challenge. Every call, every decision and the confidence behind the answer stay visible.</p>
+    <p>Stellen Sie eine Frage. Fünf Agents planen, recherchieren, gleichen ab, schreiben und hinterfragen. Jeder Call, jede Entscheidung und die Konfidenz hinter der Antwort bleiben sichtbar.</p>
     <form id="form" class="hero-form">
-      <textarea id="query">Give me an overview of the dry bulk shipping market and its main risk drivers.</textarea>
-      <button id="run" class="cta" type="submit"><span class="dot">&#8250;</span>Run research</button>
+      <textarea id="query" aria-label="Frage an die Pipeline">Give me an overview of the dry bulk shipping market and its main risk drivers.</textarea>
+      <div class="settings" id="settings">
+        <div class="field wide">
+          <span class="caption" id="provider-caption">Provider</span>
+          <div class="segments" role="radiogroup" aria-labelledby="provider-caption">
+            <label><input type="radio" name="provider" value="anthropic" checked><span>Anthropic</span></label>
+            <label><input type="radio" name="provider" value="openai"><span>OpenAI</span></label>
+            <label><input type="radio" name="provider" value="local"><span>Lokal</span></label>
+          </div>
+        </div>
+        <label class="field">
+          <span class="caption">Model</span>
+          <input type="text" id="model" autocomplete="off" spellcheck="false">
+        </label>
+        <label class="field" id="key-field">
+          <span class="caption">API-Key</span>
+          <input type="password" id="api-key" autocomplete="new-password" spellcheck="false" placeholder="optional">
+          <span class="hint">nur für diesen Lauf, wird nicht gespeichert</span>
+        </label>
+        <label class="field" id="url-field" hidden>
+          <span class="caption">API-URL</span>
+          <input type="text" id="api-url" autocomplete="off" spellcheck="false">
+        </label>
+        <p class="hint note" id="key-note">Server-Konfiguration wird geladen.</p>
+      </div>
+      <button id="run" class="cta" type="submit"><span class="dot">&#8250;</span>Recherche starten</button>
     </form>
   </div>
   <aside class="hero-side" id="side">
-    <p class="eyebrow">Run status</p>
-    <div class="stat"><span>Status</span><span id="s-status" class="pill">idle</span></div>
-    <div class="stat"><span>Model calls</span><b id="s-calls">0</b></div>
-    <div class="stat"><span>Tokens in / out</span><b id="s-tokens">0 / 0</b></div>
-    <div class="stat"><span>Confidence</span><span id="s-conf" class="empty">pending</span></div>
-    <div class="stat"><span>Stop reason</span><span id="s-stop" class="empty">pending</span></div>
+    <p class="eyebrow">Laufstatus</p>
+    <div class="stat"><span>Status</span><span id="s-status" class="pill">bereit</span></div>
+    <div class="stat"><span>Provider / Model</span><span id="s-model" class="value empty">noch kein Lauf</span></div>
+    <div class="stat"><span>Calls</span><b id="s-calls">0</b></div>
+    <div class="stat"><span>Tokens rein / raus</span><b id="s-tokens">0 / 0</b></div>
+    <div class="stat"><span>Konfidenz</span><span id="s-conf" class="empty">ausstehend</span></div>
+    <div class="stat"><span>Abbruchgrund</span><span id="s-stop" class="empty">ausstehend</span></div>
   </aside>
+</section>
+
+<section class="stats" id="statistics">
+  <div class="card">
+    <p class="eyebrow">Statistik</p>
+    <h2>Verbrauch und Kosten</h2>
+    <div class="tiles">
+      <div class="tile"><span>Calls</span><b id="t-calls">0</b></div>
+      <div class="tile"><span>Tokens rein</span><b id="t-in">0</b></div>
+      <div class="tile"><span>davon aus dem Cache</span><b id="t-cached">0</b></div>
+      <div class="tile"><span>Tokens raus</span><b id="t-out">0</b></div>
+      <div class="tile" title="Summe der Call-Dauern"><span>Dauer</span><b id="t-duration">0,0 s</b></div>
+      <div class="tile accent" title="Schätzung auf Basis indikativer Listenpreise"><span>Geschätzte Kosten</span><b id="t-cost">USD 0,0000</b></div>
+    </div>
+    <div class="table-wrap">
+      <table class="roles">
+        <thead><tr><th>Rolle</th><th>Calls</th><th>Tokens rein</th><th>Cache</th><th>Tokens raus</th><th>Sekunden</th><th>Kosten</th></tr></thead>
+        <tbody id="roles"></tbody>
+        <tfoot id="roles-total"></tfoot>
+      </table>
+    </div>
+    <p class="empty" id="roles-empty">Noch kein Lauf. Die Werte je Rolle erscheinen, sobald die ersten Calls zurückkommen.</p>
+  </div>
+  <div class="card">
+    <p class="eyebrow">Timeline</p>
+    <h2>Calls in Reihenfolge</h2>
+    <div class="timeline" id="timeline"></div>
+    <div class="tl-scale" id="timeline-scale" hidden><span></span><span><span>0 s</span><span id="timeline-max"></span></span><span></span></div>
+    <p class="empty" id="timeline-empty">Noch keine Calls. Jeder Balken steht für einen Call, die Länge für seine Dauer, die Farbe für die Rolle.</p>
+  </div>
 </section>
 
 <main>
   <section class="card" id="pipeline">
     <p class="eyebrow">Pipeline</p>
-    <h2>Every model call, live</h2>
+    <h2>Jeder Model-Call, live</h2>
     <ul class="log" id="log"></ul>
-    <p class="empty" id="log-empty">No run yet. Click a call to see its prompt and raw response.</p>
+    <p class="empty" id="log-empty">Noch kein Lauf. Ein Klick auf einen Call zeigt System Prompt, User Prompt und Raw Response.</p>
   </section>
   <section class="card" id="briefing-card">
-    <p class="eyebrow">Deliverable</p>
-    <h2>Analyst briefing</h2>
-    <div id="briefing" class="briefing"><p class="empty">The briefing appears here when the run finishes.</p></div>
+    <p class="eyebrow">Ergebnis</p>
+    <h2>Analyst Briefing</h2>
+    <div id="briefing" class="briefing"><p class="empty">Das Briefing erscheint hier, sobald der Lauf abgeschlossen ist.</p></div>
   </section>
 </main>
-<footer>All sources are part of a fictional mock corpus built for this exercise. Confidence is derived from the run record, not asserted by a model.</footer>
+<footer>Alle Quellen stammen aus einem fiktiven Mock-Korpus, der für diese Aufgabe erstellt wurde. Die Konfidenz wird aus dem Protokoll des Laufs abgeleitet und nicht von einem Model behauptet. Kosten sind Schätzungen auf Basis indikativer Listenpreise.</footer>
 
 <script>
 (function () {
   var POLL_MS = 1000;
+  var MILLIS_PER_SECOND = 1000;
+  var LOCAL_PROVIDER = 'local';
+  var LOCALE = 'de-DE';
+  var STATUS_LABELS = { RUNNING: 'läuft', FINISHED: 'fertig', FAILED: 'fehlgeschlagen' };
+  var CONFIDENCE_LABELS = { HIGH: 'hoch', MEDIUM: 'mittel', LOW: 'niedrig' };
+  var STOP_LABELS = {
+    APPROVED: 'vom Critic freigegeben',
+    ROUND_LIMIT_REACHED: 'Rundenlimit erreicht',
+    REWRITE_LIMIT_REACHED: 'Limit für Überarbeitungen erreicht',
+    CALL_BUDGET_EXHAUSTED: 'Call-Budget aufgebraucht',
+    NO_NEW_EVIDENCE: 'keine neuen Belege',
+    AGENT_FAILURE: 'Agent ausgefallen'
+  };
+  var CALL_STATUS_LABELS = { OK: 'OK', REPAIRED: 'repariert', FAILED: 'fehlgeschlagen' };
+  var STEP_LABELS = {
+    PLAN: 'Planung', RESEARCH: 'Recherche', SCHEDULE_RESEARCH: 'Recherche eingeplant',
+    SYNTHESIZE: 'Synthese', CRITIQUE: 'Kritik', FINISH: 'Abschluss'
+  };
+  var ROLE_LABELS = { planner: 'Planung', researcher: 'Recherche', reconciler: 'Abgleich', synthesizer: 'Synthese', critic: 'Kritik' };
+  var PROVIDER_LABELS = { anthropic: 'Anthropic', openai: 'OpenAI', local: 'Lokal' };
+  var ERROR_LABELS = {
+    'query must not be blank': 'Bitte zuerst eine Frage eingeben.',
+    'request body is not valid JSON': 'Die Anfrage war kein gültiges JSON.',
+    'provider must be anthropic, openai or local': 'Unbekannter Provider. Erlaubt sind Anthropic, OpenAI und Lokal.',
+    'forbidden': 'Anfrage abgelehnt. Die Oberfläche ist nur lokal erreichbar.',
+    'not found': 'Nicht gefunden.',
+    'method not allowed': 'Methode nicht erlaubt.',
+    'internal server error': 'Interner Serverfehler.'
+  };
+
   var form = document.getElementById('form');
   var queryInput = document.getElementById('query');
   var runButton = document.getElementById('run');
+  var modelInput = document.getElementById('model');
+  var keyInput = document.getElementById('api-key');
+  var urlInput = document.getElementById('api-url');
+  var keyField = document.getElementById('key-field');
+  var urlField = document.getElementById('url-field');
+  var keyNote = document.getElementById('key-note');
+  var providerInputs = Array.prototype.slice.call(document.querySelectorAll('input[name="provider"]'));
   var log = document.getElementById('log');
   var logEmpty = document.getElementById('log-empty');
   var briefingBox = document.getElementById('briefing');
   var sideStatus = document.getElementById('s-status');
+  var sideModel = document.getElementById('s-model');
   var sideCalls = document.getElementById('s-calls');
   var sideTokens = document.getElementById('s-tokens');
   var sideConf = document.getElementById('s-conf');
   var sideStop = document.getElementById('s-stop');
+  var tileCalls = document.getElementById('t-calls');
+  var tileIn = document.getElementById('t-in');
+  var tileCached = document.getElementById('t-cached');
+  var tileOut = document.getElementById('t-out');
+  var tileDuration = document.getElementById('t-duration');
+  var tileCost = document.getElementById('t-cost');
+  var rolesBody = document.getElementById('roles');
+  var rolesTotal = document.getElementById('roles-total');
+  var rolesEmpty = document.getElementById('roles-empty');
+  var timeline = document.getElementById('timeline');
+  var timelineScale = document.getElementById('timeline-scale');
+  var timelineMax = document.getElementById('timeline-max');
+  var timelineEmpty = document.getElementById('timeline-empty');
+  var serverDefaults = null;
   var currentRunId = null;
   var renderedItems = 0;
+
+  providerInputs.forEach(function (input) {
+    input.addEventListener('change', function () { applyProvider(input.value); });
+  });
 
   form.addEventListener('submit', function (event) {
     event.preventDefault();
     startRun(queryInput.value.trim());
   });
 
+  loadDefaults();
+
+  function loadDefaults() {
+    fetch('/config')
+      .then(function (response) { return response.json(); })
+      .then(function (config) {
+        serverDefaults = config;
+        checkProvider(config.provider);
+        applyProvider(config.provider);
+      })
+      .catch(function () { keyNote.textContent = 'Die Server-Konfiguration konnte nicht geladen werden. Model und API-Key bitte selbst eintragen.'; });
+  }
+
+  function selectedProvider() {
+    var checked = providerInputs.filter(function (input) { return input.checked; })[0];
+    return checked ? checked.value : providerInputs[0].value;
+  }
+
+  function checkProvider(provider) {
+    providerInputs.forEach(function (input) { input.checked = input.value === provider; });
+  }
+
+  function applyProvider(provider) {
+    var isLocal = provider === LOCAL_PROVIDER;
+    keyField.hidden = isLocal;
+    urlField.hidden = !isLocal;
+    if (!serverDefaults) { return; }
+    modelInput.value = serverDefaults.models[provider] || '';
+    urlInput.value = serverDefaults.apiUrls[provider] || '';
+    keyNote.innerHTML = keyNoteFor(provider);
+  }
+
+  function keyNoteFor(provider) {
+    if (provider === LOCAL_PROVIDER) {
+      return 'Lokal nutzt die OpenAI-kompatible Schnittstelle ohne API-Key, zum Beispiel Ollama oder LM Studio.';
+    }
+    var present = provider === 'anthropic' ? serverDefaults.anthropicKeyPresent : serverDefaults.openaiKeyPresent;
+    var name = PROVIDER_LABELS[provider];
+    return present
+      ? 'Auf dem Server ist bereits ein API-Key für ' + name + ' hinterlegt. Ein Key hier ersetzt ihn <b>nur für diesen Lauf</b>.'
+      : 'Auf dem Server ist <b>kein</b> API-Key für ' + name + ' hinterlegt. Bitte oben eintragen.';
+  }
+
+  function requestBody(query) {
+    var provider = selectedProvider();
+    var body = { query: query, provider: provider, model: modelInput.value.trim() };
+    if (provider === LOCAL_PROVIDER) {
+      body.apiUrl = urlInput.value.trim();
+      return body;
+    }
+    if (keyInput.value.trim()) { body.apiKey = keyInput.value.trim(); }
+    return body;
+  }
+
   function startRun(query) {
-    if (!query) { return; }
+    if (!query) { showError(germanError('query must not be blank')); return; }
+    var body = requestBody(query);
+    keyInput.value = '';
     runButton.disabled = true;
     log.innerHTML = '';
     logEmpty.style.display = 'none';
     renderedItems = 0;
-    briefingBox.innerHTML = '<p class="empty">Running. The briefing appears here when the run finishes.</p>';
-    fetch('/researches', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: query }) })
-      .then(function (response) { return response.json().then(function (body) { return { ok: response.ok, body: body }; }); })
+    resetStatistics();
+    briefingBox.innerHTML = '<p class="empty">Der Lauf ist gestartet. Das Briefing erscheint hier, sobald er abgeschlossen ist.</p>';
+    fetch('/researches', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+      .then(function (response) { return response.json().then(function (payload) { return { ok: response.ok, body: payload }; }); })
       .then(function (result) {
-        if (!result.ok) { throw new Error(result.body.error || 'request rejected'); }
+        if (!result.ok) { throw new Error(germanError(result.body.error)); }
         currentRunId = result.body.id;
         poll();
       })
-      .catch(function (error) { showError(String(error.message || error)); runButton.disabled = false; });
+      .catch(function (error) { showError('Der Lauf konnte nicht gestartet werden. ' + messageOf(error)); runButton.disabled = false; });
   }
 
   function poll() {
@@ -163,25 +376,82 @@
         render(run);
         if (run.status === 'RUNNING') { setTimeout(poll, POLL_MS); } else { runButton.disabled = false; }
       })
-      .catch(function (error) { showError(String(error.message || error)); runButton.disabled = false; });
+      .catch(function (error) { showError('Der Status konnte nicht abgefragt werden. ' + messageOf(error)); runButton.disabled = false; });
   }
 
   function render(run) {
     renderSide(run);
+    renderStatistics(run);
+    renderTimeline(run.calls);
     renderLog(run);
     if (run.status === 'FINISHED' && run.briefingMarkdown) { briefingBox.innerHTML = markdownToHtml(run.briefingMarkdown); }
-    if (run.status === 'FAILED') { showError(run.error || 'run failed'); }
+    if (run.status === 'FAILED') { showError('Der Lauf ist fehlgeschlagen. ' + (run.error || '')); }
   }
 
   function renderSide(run) {
-    var tokensIn = 0, tokensOut = 0;
-    run.calls.forEach(function (call) { tokensIn += call.inputTokens; tokensOut += call.outputTokens; });
-    sideStatus.textContent = run.status;
+    var totals = run.totals;
+    sideStatus.textContent = STATUS_LABELS[run.status] || run.status;
+    sideStatus.title = run.status;
     sideStatus.className = 'pill ' + run.status;
-    sideCalls.textContent = run.calls.length;
-    sideTokens.textContent = tokensIn + ' / ' + tokensOut;
-    if (run.confidence) { sideConf.textContent = run.confidence; sideConf.className = 'pill ' + run.confidence; }
-    if (run.stopReason) { sideStop.textContent = run.stopReason.replace(/_/g, ' ').toLowerCase(); sideStop.className = ''; sideStop.title = run.stopExplanation || ''; }
+    sideModel.textContent = (PROVIDER_LABELS[run.provider] || run.provider) + ' / ' + run.model;
+    sideModel.className = 'value';
+    sideCalls.textContent = number(totals.calls);
+    sideTokens.textContent = number(totals.inputTokens) + ' / ' + number(totals.outputTokens);
+    if (run.confidence) {
+      sideConf.textContent = CONFIDENCE_LABELS[run.confidence] || run.confidence;
+      sideConf.title = run.confidence;
+      sideConf.className = 'pill ' + run.confidence;
+    }
+    if (run.stopReason) {
+      sideStop.textContent = STOP_LABELS[run.stopReason] || run.stopReason;
+      sideStop.className = '';
+      sideStop.title = run.stopReason + (run.stopExplanation ? ': ' + run.stopExplanation : '');
+    }
+  }
+
+  function renderStatistics(run) {
+    var totals = run.totals;
+    tileCalls.textContent = number(totals.calls);
+    tileIn.textContent = number(totals.inputTokens);
+    tileCached.textContent = number(totals.cachedInputTokens);
+    tileOut.textContent = number(totals.outputTokens);
+    tileDuration.textContent = seconds(totals.durationMillis) + ' s';
+    tileCost.textContent = usd(totals.costUsd);
+    rolesEmpty.style.display = run.roles.length ? 'none' : '';
+    rolesBody.innerHTML = run.roles.map(function (role) {
+      return '<tr><td><span class="swatch ' + roleClass(role.role) + '"></span>' + escapeHtml(ROLE_LABELS[role.role] || role.role)
+        + '<span class="tech">' + escapeHtml(role.role) + '</span></td>' + figures(role) + '</tr>';
+    }).join('');
+    rolesTotal.innerHTML = run.roles.length ? '<tr><td>Gesamt</td>' + figures(totals) + '</tr>' : '';
+  }
+
+  function figures(line) {
+    return '<td>' + number(line.calls) + '</td><td>' + number(line.inputTokens) + '</td><td>' + number(line.cachedInputTokens)
+      + '</td><td>' + number(line.outputTokens) + '</td><td>' + seconds(line.durationMillis) + '</td><td>' + usd(line.costUsd) + '</td>';
+  }
+
+  function renderTimeline(calls) {
+    timelineEmpty.style.display = calls.length ? 'none' : '';
+    timelineScale.hidden = !calls.length;
+    var longest = calls.reduce(function (max, call) { return Math.max(max, call.durationMillis); }, 1);
+    timelineMax.textContent = seconds(longest) + ' s';
+    timeline.innerHTML = calls.map(function (call) {
+      var role = roleOf(call.label);
+      var width = Math.max(call.durationMillis / longest * 100, 0.5).toFixed(2);
+      var tooltip = '[' + pad(call.sequence) + '] ' + call.label + '\n'
+        + 'Tokens rein ' + number(call.inputTokens) + ' (Cache ' + number(call.cachedInputTokens) + ')\n'
+        + 'Tokens raus ' + number(call.outputTokens) + '\n'
+        + 'Dauer ' + seconds(call.durationMillis) + ' s, ' + usd(call.costUsd);
+      return '<div class="tl-row" title="' + escapeHtml(tooltip) + '">'
+        + '<span class="tl-label">' + pad(call.sequence) + ' ' + escapeHtml(ROLE_LABELS[role] || role) + '</span>'
+        + '<span class="tl-track"><span class="tl-bar ' + roleClass(role) + ' ' + call.status + '" style="width:' + width + '%"></span></span>'
+        + '<span class="tl-time">' + seconds(call.durationMillis) + ' s</span></div>';
+    }).join('');
+  }
+
+  function resetStatistics() {
+    renderStatistics({ totals: { calls: 0, inputTokens: 0, cachedInputTokens: 0, outputTokens: 0, durationMillis: 0, costUsd: 0 }, roles: [] });
+    renderTimeline([]);
   }
 
   function renderLog(run) {
@@ -196,16 +466,18 @@
   function stepItem(step) {
     var li = document.createElement('li');
     li.className = 'step';
-    li.textContent = step.step + '  round ' + step.round + '  ' + step.subQuestions + ' sub-question(s)  ' + step.claims + ' claim(s)  ' + step.groups + ' group(s)';
+    li.textContent = step.step + ' (' + (STEP_LABELS[step.step] || step.step) + ')  Runde ' + step.round + '  '
+      + step.subQuestions + ' Teilfrage(n)  ' + step.claims + ' Claim(s)  ' + step.groups + ' Gruppe(n)';
     return li;
   }
 
   function callItem(call) {
     var li = document.createElement('li');
     li.className = 'call';
-    var seconds = (call.durationMillis / 1000).toFixed(1);
     li.innerHTML = '[' + pad(call.sequence) + '] ' + escapeHtml(call.label) + ' <span class="tok">' + escapeHtml(call.model)
-      + '  in ' + call.inputTokens + '  out ' + call.outputTokens + '  ' + seconds + 's</span>  <span class="st-' + call.status + '">' + call.status + '</span>'
+      + '  rein ' + number(call.inputTokens) + '  Cache ' + number(call.cachedInputTokens) + '  raus ' + number(call.outputTokens)
+      + '  ' + seconds(call.durationMillis) + ' s  ' + usd(call.costUsd) + '</span>  <span class="st-' + call.status + '" title="' + call.status + '">'
+      + escapeHtml(CALL_STATUS_LABELS[call.status] || call.status) + '</span>'
       + (call.failure ? ' <span class="st-FAILED">(' + escapeHtml(call.failure) + ')</span>' : '')
       + '<div class="detail"></div>';
     li.addEventListener('click', function (event) {
@@ -219,21 +491,41 @@
     var detail = li.querySelector('.detail');
     if (detail.classList.contains('open')) { detail.classList.remove('open'); return; }
     if (detail.innerHTML === '') {
-      detail.innerHTML = '<p class="empty">loading</p>';
+      detail.innerHTML = '<p class="empty">wird geladen</p>';
       fetch('/researches/' + currentRunId + '/calls/' + sequence)
         .then(function (response) { return response.json(); })
         .then(function (call) {
-          detail.innerHTML = '<h4>System prompt</h4><pre>' + escapeHtml(call.systemPrompt) + '</pre>'
-            + '<h4>User prompt</h4><pre>' + escapeHtml(call.userPrompt) + '</pre>'
-            + '<h4>Raw response</h4><pre>' + escapeHtml(call.rawResponse) + '</pre>';
+          detail.innerHTML = '<h4>System Prompt</h4><pre>' + escapeHtml(call.systemPrompt) + '</pre>'
+            + '<h4>User Prompt</h4><pre>' + escapeHtml(call.userPrompt) + '</pre>'
+            + '<h4>Raw Response</h4><pre>' + escapeHtml(call.rawResponse) + '</pre>';
         })
-        .catch(function () { detail.innerHTML = '<p class="error">could not load this call</p>'; });
+        .catch(function () { detail.innerHTML = '<p class="error">Dieser Call konnte nicht geladen werden.</p>'; });
     }
     detail.classList.add('open');
   }
 
   function showError(message) {
     briefingBox.innerHTML = '<p class="error">' + escapeHtml(message) + '</p>';
+  }
+
+  function germanError(message) {
+    return ERROR_LABELS[message] || message || 'Die Anfrage wurde abgelehnt.';
+  }
+
+  function messageOf(error) { return String(error && error.message ? error.message : error); }
+
+  function roleOf(label) { return String(label).split('/')[0]; }
+
+  function roleClass(role) { return ROLE_LABELS[role] ? 'role-' + role : 'role-other'; }
+
+  function number(value) { return Number(value || 0).toLocaleString(LOCALE); }
+
+  function seconds(millis) {
+    return (Number(millis || 0) / MILLIS_PER_SECOND).toLocaleString(LOCALE, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  }
+
+  function usd(value) {
+    return 'USD ' + Number(value || 0).toLocaleString(LOCALE, { minimumFractionDigits: 4, maximumFractionDigits: 4 });
   }
 
   function pad(number) { return number < 10 ? '0' + number : String(number); }

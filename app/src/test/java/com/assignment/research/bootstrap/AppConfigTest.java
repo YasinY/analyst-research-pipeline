@@ -24,6 +24,16 @@ class AppConfigTest {
     private static final String CORPUS_FILE = "other.json";
     private static final String PADDED_PORT = " 9090 ";
     private static final int PARSED_PORT = 9090;
+    private static final String SERVER_ANTHROPIC_KEY = "server-anthropic-key";
+    private static final String SERVER_OPENAI_KEY = "server-openai-key";
+    private static final String RUN_KEY = "run-key";
+    private static final String PADDED_RUN_MODEL = "  run-model  ";
+    private static final String RUN_MODEL = "run-model";
+    private static final String NO_OVERRIDE = "";
+    private static final String BLANK_OVERRIDE = "   ";
+    private static final String LOCAL_URL = "http://127.0.0.1:8080/v1/chat/completions";
+    private static final String LOCAL_MODEL = "qwen3";
+    private static final String PADDED_WIRE_NAME = " Local ";
 
     @Test
     void defaultsToAnthropicWithStandardLocations() {
@@ -61,6 +71,67 @@ class AppConfigTest {
                 .isEqualTo(Path.of(DATA_DIR, BootstrapConstants.PROMPTS_SUBDIRECTORY));
         assertThat(config.getCorpusPath())
                 .isEqualTo(Path.of(DATA_DIR, BootstrapConstants.CORPUS_SUBDIRECTORY, CORPUS_FILE));
+    }
+
+    @Test
+    void runWithoutOverridesKeepsTheServerSettings() {
+        var config = AppConfig.fromEnvironment(Map.of(AnthropicConstants.ENV_API_KEY, SERVER_ANTHROPIC_KEY));
+
+        var merged = config.withRunSettings(new RunSettings(null, NO_OVERRIDE, BLANK_OVERRIDE, NO_OVERRIDE));
+
+        assertThat(merged).isEqualTo(config);
+    }
+
+    @Test
+    void runOverridesReplaceOnlyTheGivenFields() {
+        var config = AppConfig.fromEnvironment(Map.of(
+                AnthropicConstants.ENV_API_KEY, SERVER_ANTHROPIC_KEY,
+                OpenAiConstants.ENV_API_KEY, SERVER_OPENAI_KEY,
+                BootstrapConstants.ENV_RUNS_DIR, RUNS_DIR));
+
+        var merged = config.withRunSettings(new RunSettings(LLMProvider.OPENAI, PADDED_RUN_MODEL, NO_OVERRIDE,
+                API_URL));
+
+        assertThat(merged.getProvider()).isEqualTo(LLMProvider.OPENAI);
+        assertThat(merged.getModel()).isEqualTo(RUN_MODEL);
+        assertThat(merged.getApiKey()).isEqualTo(SERVER_OPENAI_KEY);
+        assertThat(merged.getApiUrl()).isEqualTo(API_URL);
+        assertThat(merged.getRunsDirectory()).isEqualTo(Path.of(RUNS_DIR));
+        assertThat(merged.getPort()).isEqualTo(config.getPort());
+    }
+
+    @Test
+    void runKeyOverridesTheServerKeyWithoutAppearingInToString() {
+        var config = AppConfig.fromEnvironment(Map.of(AnthropicConstants.ENV_API_KEY, SERVER_ANTHROPIC_KEY));
+
+        var merged = config.withRunSettings(new RunSettings(null, NO_OVERRIDE, RUN_KEY, NO_OVERRIDE));
+
+        assertThat(merged.getApiKey()).isEqualTo(RUN_KEY);
+        assertThat(merged.toString()).doesNotContain(RUN_KEY).doesNotContain(SERVER_ANTHROPIC_KEY);
+    }
+
+    @Test
+    void localProviderUsesItsOwnDefaultsAndNoKey() {
+        var config = AppConfig.fromEnvironment(Map.of(
+                BootstrapConstants.ENV_PROVIDER, LLMProvider.LOCAL.getWireName(),
+                BootstrapConstants.ENV_LOCAL_API_URL, LOCAL_URL,
+                BootstrapConstants.ENV_LOCAL_MODEL, LOCAL_MODEL,
+                OpenAiConstants.ENV_API_KEY, SERVER_OPENAI_KEY));
+
+        assertThat(config.getProvider()).isEqualTo(LLMProvider.LOCAL);
+        assertThat(config.getApiKey()).isEqualTo(BootstrapConstants.DEFAULT_API_KEY);
+        assertThat(config.getApiUrl()).isEqualTo(LOCAL_URL);
+        assertThat(config.getModel()).isEqualTo(LOCAL_MODEL);
+        assertThat(config.defaultsFor(LLMProvider.LOCAL).hasApiKey()).isFalse();
+        assertThat(config.defaultsFor(LLMProvider.OPENAI).hasApiKey()).isTrue();
+        assertThat(config.defaultsFor(LLMProvider.LOCAL).getProvider()).isEqualTo(LLMProvider.LOCAL);
+    }
+
+    @Test
+    void resolvesProvidersByWireName() {
+        assertThat(LLMProvider.fromWireName(PADDED_WIRE_NAME)).contains(LLMProvider.LOCAL);
+        assertThat(LLMProvider.fromWireName(UNKNOWN_PROVIDER)).isEmpty();
+        assertThat(LLMProvider.ANTHROPIC.getWireName()).isEqualTo(BootstrapConstants.DEFAULT_PROVIDER);
     }
 
     @Test

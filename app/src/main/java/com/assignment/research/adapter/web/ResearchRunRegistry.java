@@ -2,8 +2,10 @@ package com.assignment.research.adapter.web;
 
 import com.assignment.research.adapter.output.MarkdownBriefingRenderer;
 import com.assignment.research.adapter.output.RunArchive;
+import com.assignment.research.adapter.pricing.CostEstimator;
 import com.assignment.research.bootstrap.AppConfig;
 import com.assignment.research.bootstrap.BootstrapConstants;
+import com.assignment.research.bootstrap.RunSettings;
 import com.assignment.research.pipeline.PipelineAbortedException;
 import com.assignment.research.pipeline.ProduceBriefingUseCase;
 import com.assignment.research.query.AnalystQuery;
@@ -18,6 +20,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -25,8 +28,9 @@ public final class ResearchRunRegistry {
 
     private static final long FIRST_RUN_NUMBER = 1;
 
-    private final ProduceBriefingUseCase useCase;
+    private final Function<AppConfig, ProduceBriefingUseCase> useCaseFactory;
     private final AppConfig config;
+    private final CostEstimator costEstimator;
     private final ObjectMapper mapper;
     private final Clock clock;
     private final PrintStream console;
@@ -35,32 +39,40 @@ public final class ResearchRunRegistry {
     private final Queue<String> finishedRunIds = new ConcurrentLinkedQueue<>();
     private final AtomicLong counter = new AtomicLong(FIRST_RUN_NUMBER);
 
-    public ResearchRunRegistry(ProduceBriefingUseCase useCase, AppConfig config, ObjectMapper mapper, Clock clock,
-            PrintStream console) {
-        this(useCase, config, mapper, clock, console, Executors.newVirtualThreadPerTaskExecutor());
+    public ResearchRunRegistry(Function<AppConfig, ProduceBriefingUseCase> useCaseFactory, AppConfig config,
+            CostEstimator costEstimator, ObjectMapper mapper, Clock clock, PrintStream console) {
+        this(useCaseFactory, config, costEstimator, mapper, clock, console,
+                Executors.newVirtualThreadPerTaskExecutor());
     }
 
-    public ResearchRun start(String queryText) {
-        var run = new ResearchRun(WebConstants.RUN_ID_FORMAT.formatted(counter.getAndIncrement()), queryText);
+    public ResearchRun start(String queryText, RunSettings settings) {
+        var runConfig = config.withRunSettings(settings);
+        var run = new ResearchRun(WebConstants.RUN_ID_FORMAT.formatted(counter.getAndIncrement()), queryText,
+                runConfig.getProvider().getWireName(), runConfig.getModel(), costEstimator);
         runs.put(run.getId(), run);
-        executor.execute(() -> execute(run));
+        executor.execute(() -> execute(run, runConfig));
         return run;
+    }
+
+    public ConfigResponse describeDefaults() {
+        return ConfigResponse.from(config);
     }
 
     public Optional<ResearchRun> find(String id) {
         return Optional.ofNullable(runs.get(id));
     }
 
-    private void execute(ResearchRun run) {
-        run.complete(produceOutcome(run));
+    private void execute(ResearchRun run, AppConfig runConfig) {
+        run.complete(produceOutcome(run, runConfig));
         retire(run);
     }
 
-    private RunOutcome produceOutcome(ResearchRun run) {
+    private RunOutcome produceOutcome(ResearchRun run, AppConfig runConfig) {
         try {
-            var archive = new RunArchive(config.getRunsDirectory(), clock, mapper, console);
+            var archive = new RunArchive(runConfig.getRunsDirectory(), clock, mapper, console, costEstimator);
+            var useCase = useCaseFactory.apply(runConfig);
             var result = useCase.produce(new AnalystQuery(run.getQuery()), new CompositeObserver(archive, run));
-            var markdown = new MarkdownBriefingRenderer(clock).render(result);
+            var markdown = new MarkdownBriefingRenderer(clock, costEstimator).render(result);
             var directory = archive.writeResult(result, markdown);
             return RunOutcome.finished(result, markdown, directory.toAbsolutePath().toString());
         } catch (Throwable failure) {

@@ -12,6 +12,7 @@ public final class WebConstants {
 
     public static final String ROOT_PATH = "/";
     public static final String RESEARCHES_PATH = "/researches";
+    public static final String CONFIG_PATH = "/config";
     public static final String CALLS_SEGMENT = "calls";
     public static final String INDEX_RESOURCE = "web/index.html";
     public static final String PATH_SEPARATOR = "/";
@@ -41,12 +42,17 @@ public final class WebConstants {
 
     public static final String JSON_KEY_ERROR = "error";
     public static final String JSON_KEY_QUERY = "query";
+    public static final String JSON_KEY_PROVIDER = "provider";
+    public static final String JSON_KEY_MODEL = "model";
+    public static final String JSON_KEY_API_KEY = "apiKey";
+    public static final String JSON_KEY_API_URL = "apiUrl";
     public static final String EMPTY_TEXT = "";
 
     public static final String ERROR_NOT_FOUND = "not found";
     public static final String ERROR_METHOD = "method not allowed";
     public static final String ERROR_FORBIDDEN = "forbidden";
     public static final String ERROR_EMPTY_QUERY = "query must not be blank";
+    public static final String ERROR_UNKNOWN_PROVIDER = "provider must be anthropic, openai or local";
     public static final String ERROR_MALFORMED_JSON = "request body is not valid JSON";
     public static final String ERROR_INDEX_MISSING = "web page resource is missing";
     public static final String ERROR_INTERNAL = "internal server error";

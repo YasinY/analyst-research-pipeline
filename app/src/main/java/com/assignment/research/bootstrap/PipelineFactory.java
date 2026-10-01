@@ -14,6 +14,7 @@ import com.assignment.research.pipeline.BriefingOrchestrator;
 import com.assignment.research.pipeline.ProduceBriefingUseCase;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Clock;
+import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -22,6 +23,10 @@ public final class PipelineFactory {
     private final AppConfig config;
     private final ObjectMapper mapper;
     private final Clock clock;
+
+    public static Function<AppConfig, ProduceBriefingUseCase> useCasesFor(ObjectMapper mapper, Clock clock) {
+        return config -> new PipelineFactory(config, mapper, clock).createUseCase();
+    }
 
     public ProduceBriefingUseCase createUseCase() {
         var search = JSONCorpusSearchAdapter.load(config.getCorpusPath(), mapper);
@@ -37,7 +42,7 @@ public final class PipelineFactory {
     private ChatClient createChatClient() {
         var poster = new HttpJSONPoster(mapper);
         return switch (config.getProvider()) {
-            case OPENAI -> new OpenAiCompatibleChatClient(poster, config.getApiUrl(), config.getApiKey(),
+            case OPENAI, LOCAL -> new OpenAiCompatibleChatClient(poster, config.getApiUrl(), config.getApiKey(),
                     config.getModel());
             case ANTHROPIC -> new AnthropicChatClient(poster, config.getApiUrl(), config.getApiKey(),
                     config.getModel());

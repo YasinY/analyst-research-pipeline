@@ -4,8 +4,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.assignment.research.adapter.output.JSONMapperFactory;
+import com.assignment.research.adapter.llm.anthropic.AnthropicConstants;
+import com.assignment.research.adapter.llm.openai.OpenAiConstants;
 import com.assignment.research.bootstrap.AppConfig;
 import com.assignment.research.bootstrap.BootstrapConstants;
+import com.assignment.research.bootstrap.LLMProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -22,6 +25,7 @@ import java.time.ZoneOffset;
 import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -54,12 +58,30 @@ class WebServerTest {
     private static final String JSON_KEY_STATUS = "status";
     private static final String JSON_KEY_LABEL = "label";
     private static final String STATUS_LINE_PREFIX = "HTTP/1.1 %d";
+    private static final String SERVER_KEY = "server-anthropic-key";
+    private static final String RUN_KEY = "sk-run-only-secret";
+    private static final String RUN_MODEL = "gpt-run-model";
+    private static final String RUN_URL = "http://127.0.0.1:9/v1/chat/completions";
+    private static final String OVERRIDE_BODY = """
+            {"query":"dry bulk outlook","provider":" OpenAI ","model":"gpt-run-model",\
+            "apiKey":"sk-run-only-secret","apiUrl":"http://127.0.0.1:9/v1/chat/completions"}""";
+    private static final String UNKNOWN_PROVIDER_BODY = """
+            {"query":"dry bulk outlook","provider":"gemini"}""";
+    private static final String CONFIG_SUFFIX_PATH = "/configuration";
+    private static final String JSON_KEY_PROVIDER = "provider";
+    private static final String JSON_KEY_MODEL = "model";
+    private static final String JSON_KEY_MODELS = "models";
+    private static final String JSON_KEY_API_URLS = "apiUrls";
+    private static final String JSON_KEY_ANTHROPIC_KEY_PRESENT = "anthropicKeyPresent";
+    private static final String JSON_KEY_OPENAI_KEY_PRESENT = "openaiKeyPresent";
 
     private final HttpClient client = HttpClient.newHttpClient();
     private final ObjectMapper mapper = JSONMapperFactory.create();
 
     @TempDir
     private Path runsRoot;
+
+    private final AtomicReference<AppConfig> receivedConfig = new AtomicReference<>();
 
     private WebServer server;
     private int port;
@@ -168,6 +190,75 @@ class WebServerTest {
     }
 
     @Test
+    void servesTheDefaultsWithoutKeyValues() throws Exception {
+        start(Runnable::run);
+
+        var response = get(WebConstants.CONFIG_PATH);
+        var body = mapper.readTree(response.body());
+
+        assertThat(response.statusCode()).isEqualTo(WebConstants.HTTP_OK);
+        assertThat(body.path(JSON_KEY_PROVIDER).asText()).isEqualTo(LLMProvider.ANTHROPIC.getWireName());
+        assertThat(body.path(JSON_KEY_MODELS).path(LLMProvider.OPENAI.getWireName()).asText())
+                .isEqualTo(OpenAiConstants.DEFAULT_MODEL);
+        assertThat(body.path(JSON_KEY_MODELS).path(LLMProvider.ANTHROPIC.getWireName()).asText())
+                .isEqualTo(AnthropicConstants.DEFAULT_MODEL);
+        assertThat(body.path(JSON_KEY_API_URLS).path(LLMProvider.LOCAL.getWireName()).asText())
+                .isEqualTo(BootstrapConstants.LOCAL_DEFAULT_URL);
+        assertThat(body.path(JSON_KEY_ANTHROPIC_KEY_PRESENT).asBoolean()).isTrue();
+        assertThat(body.path(JSON_KEY_OPENAI_KEY_PRESENT).asBoolean()).isFalse();
+        assertThat(response.body()).doesNotContain(SERVER_KEY);
+    }
+
+    @Test
+    void answersConfigMisuseWithErrors() throws Exception {
+        start(Runnable::run);
+
+        var post = postJson(WebConstants.CONFIG_PATH, VALID_BODY);
+        var unknown = get(CONFIG_SUFFIX_PATH);
+
+        assertThat(post.statusCode()).isEqualTo(WebConstants.HTTP_METHOD_NOT_ALLOWED);
+        assertThat(post.headers().firstValue(WebConstants.HEADER_ALLOW)).contains(WebConstants.METHOD_GET);
+        assertThat(unknown.statusCode()).isEqualTo(WebConstants.HTTP_NOT_FOUND);
+    }
+
+    @Test
+    void runsWithPerRunProviderOverridesAndNeverEchoesTheKey() throws Exception {
+        start(Runnable::run);
+
+        var created = postJson(RESEARCHES, OVERRIDE_BODY);
+        var runId = mapper.readTree(created.body()).path(JSON_KEY_ID).asText();
+        var status = get(RUN_PATH.formatted(runId));
+        var call = get(CALL_PATH.formatted(runId, BriefingFixtures.FIRST_SEQUENCE));
+        var config = get(WebConstants.CONFIG_PATH);
+        var runConfig = receivedConfig.get();
+
+        assertThat(created.statusCode()).isEqualTo(WebConstants.HTTP_ACCEPTED);
+        assertThat(mapper.readTree(status.body()).path(JSON_KEY_PROVIDER).asText())
+                .isEqualTo(LLMProvider.OPENAI.getWireName());
+        assertThat(mapper.readTree(status.body()).path(JSON_KEY_MODEL).asText()).isEqualTo(RUN_MODEL);
+        assertThat(runConfig.getProvider()).isEqualTo(LLMProvider.OPENAI);
+        assertThat(runConfig.getModel()).isEqualTo(RUN_MODEL);
+        assertThat(runConfig.getApiKey()).isEqualTo(RUN_KEY);
+        assertThat(runConfig.getApiUrl()).isEqualTo(RUN_URL);
+        assertThat(runConfig.getRunsDirectory()).isEqualTo(runsRoot);
+        assertThat(runConfig.toString()).doesNotContain(RUN_KEY);
+        assertThat(created.body()).doesNotContain(RUN_KEY);
+        assertThat(status.body()).doesNotContain(RUN_KEY);
+        assertThat(call.body()).doesNotContain(RUN_KEY);
+        assertThat(config.body()).doesNotContain(RUN_KEY);
+    }
+
+    @Test
+    void rejectsUnknownProvider() throws Exception {
+        start(Runnable::run);
+
+        var response = postJson(RESEARCHES, UNKNOWN_PROVIDER_BODY);
+
+        assertThat(response.statusCode()).isEqualTo(WebConstants.HTTP_BAD_REQUEST);
+        assertThat(response.body()).contains(WebConstants.ERROR_UNKNOWN_PROVIDER);
+    }
+
+    @Test
     void answersUnknownCallsWithNotFound() throws Exception {
         start(Runnable::run);
         postJson(RESEARCHES, VALID_BODY);
@@ -238,9 +329,16 @@ class WebServerTest {
     }
 
     private ResearchRunRegistry registry(Executor executor) {
-        var config = AppConfig.fromEnvironment(Map.of(BootstrapConstants.ENV_RUNS_DIR, runsRoot.toString()));
-        return new ResearchRunRegistry(new ObservingBriefingUseCase(), config, mapper, FIXED_CLOCK,
-                ResearchRunRegistryTest.silentConsole(), executor);
+        var config = AppConfig.fromEnvironment(Map.of(
+                BootstrapConstants.ENV_RUNS_DIR, runsRoot.toString(),
+                AnthropicConstants.ENV_API_KEY, SERVER_KEY));
+        return new ResearchRunRegistry(this::recordingUseCase, config, BriefingFixtures.costEstimator(), mapper,
+                FIXED_CLOCK, ResearchRunRegistryTest.silentConsole(), executor);
+    }
+
+    private ObservingBriefingUseCase recordingUseCase(AppConfig runConfig) {
+        receivedConfig.set(runConfig);
+        return new ObservingBriefingUseCase();
     }
 
     private URI uri(String path) {

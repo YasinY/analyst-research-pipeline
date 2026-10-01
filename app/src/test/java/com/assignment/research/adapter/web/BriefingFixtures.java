@@ -1,5 +1,9 @@
 package com.assignment.research.adapter.web;
 
+import com.assignment.research.adapter.pricing.CostEstimator;
+import com.assignment.research.adapter.pricing.ModelPrice;
+import com.assignment.research.adapter.pricing.PricingTable;
+import com.assignment.research.bootstrap.RunSettings;
 import com.assignment.research.confidence.ConfidenceLevel;
 import com.assignment.research.llm.LLMCallStatus;
 import com.assignment.research.llm.LLMUsage;
@@ -32,8 +36,16 @@ public final class BriefingFixtures {
     public static final int SECOND_SEQUENCE = 2;
     public static final int INPUT_TOKENS = 120;
     public static final int OUTPUT_TOKENS = 30;
+    public static final int CACHED_INPUT_TOKENS = 100;
+    public static final double INPUT_PRICE_PER_MILLION = 2.0;
+    public static final double CACHED_INPUT_PRICE_PER_MILLION = 0.2;
+    public static final double OUTPUT_PRICE_PER_MILLION = 10.0;
+    public static final double CALL_COST_USD = 0.00036;
+    public static final double COST_TOLERANCE = 1e-12;
     public static final long DURATION_MILLIS = 1500;
     public static final double MEDIAN_SCORE = 0.8;
+    public static final String NO_OVERRIDE = "";
+    public static final RunSettings SERVER_DEFAULTS = new RunSettings(null, NO_OVERRIDE, NO_OVERRIDE, NO_OVERRIDE);
     public static final Instant STARTED_AT = Instant.parse("2026-05-20T10:15:30Z");
 
     private BriefingFixtures() {
@@ -49,6 +61,11 @@ public final class BriefingFixtures {
 
     public static TraceEntry failedCriticEntry() {
         return entry(SECOND_SEQUENCE, CRITIC_LABEL, LLMCallStatus.FAILED, FAILURE_REASON);
+    }
+
+    public static CostEstimator costEstimator() {
+        return new CostEstimator(new PricingTable(List.of(new ModelPrice(MODEL, INPUT_PRICE_PER_MILLION,
+                CACHED_INPUT_PRICE_PER_MILLION, OUTPUT_PRICE_PER_MILLION))));
     }
 
     public static BriefingResult result() {
@@ -68,6 +85,7 @@ public final class BriefingFixtures {
 
     private static TraceEntry entry(int sequence, String label, LLMCallStatus status, String failureReason) {
         return new TraceEntry(sequence, label, STARTED_AT, Duration.ofMillis(DURATION_MILLIS), MODEL, SYSTEM_PROMPT,
-                USER_PROMPT, RAW_RESPONSE, new LLMUsage(INPUT_TOKENS, OUTPUT_TOKENS), status, failureReason);
+                USER_PROMPT, RAW_RESPONSE, new LLMUsage(INPUT_TOKENS, OUTPUT_TOKENS, CACHED_INPUT_TOKENS), status,
+                failureReason);
     }
 }

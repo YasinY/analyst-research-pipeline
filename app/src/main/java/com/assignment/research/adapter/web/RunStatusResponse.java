@@ -12,11 +12,19 @@ public class RunStatusResponse {
     @NonNull
     private final String query;
     @NonNull
+    private final String provider;
+    @NonNull
+    private final String model;
+    @NonNull
     private final RunStatus status;
     @NonNull
     private final List<StepLine> steps;
     @NonNull
     private final List<TraceLine> calls;
+    @NonNull
+    private final RunTotals totals;
+    @NonNull
+    private final List<RoleLine> roles;
     private final String briefingMarkdown;
     private final String confidence;
     private final String stopReason;

@@ -25,6 +25,15 @@ class PipelineFactoryTest {
         assertThat(factory.createUseCase()).isInstanceOf(BriefingOrchestrator.class);
     }
 
+    @Test
+    void createsAUseCasePerConfig() {
+        var config = AppConfig.fromEnvironment(Map.of(BootstrapConstants.ENV_DATA_DIR, DATA.toString()));
+
+        var useCase = PipelineFactory.useCasesFor(JSONMapperFactory.create(), Clock.systemUTC()).apply(config);
+
+        assertThat(useCase).isInstanceOf(BriefingOrchestrator.class);
+    }
+
     @ParameterizedTest
     @EnumSource(LLMProvider.class)
     void createsAStructuredLLMPortForEveryProvider(LLMProvider provider) {
@@ -40,6 +49,8 @@ class PipelineFactoryTest {
         assertThat(LLMProvider.OPENAI.getDefaultModel()).isEqualTo(OpenAiConstants.DEFAULT_MODEL);
         assertThat(LLMProvider.ANTHROPIC.getApiKeyVariable()).isEqualTo(AnthropicConstants.ENV_API_KEY);
         assertThat(LLMProvider.ANTHROPIC.getDefaultUrl()).isEqualTo(AnthropicConstants.DEFAULT_URL);
+        assertThat(LLMProvider.LOCAL.getUrlVariable()).isEqualTo(BootstrapConstants.ENV_LOCAL_API_URL);
+        assertThat(LLMProvider.LOCAL.getDefaultUrl()).isEqualTo(BootstrapConstants.LOCAL_DEFAULT_URL);
     }
 
     private static PipelineFactory factory(LLMProvider provider) {
