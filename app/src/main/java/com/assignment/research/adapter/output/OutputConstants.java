@@ -1,6 +1,12 @@
 package com.assignment.research.adapter.output;
 
+import com.assignment.research.critique.FindingSeverity;
+import com.assignment.research.critique.FindingType;
+import com.assignment.research.evidence.SourceTier;
+import com.assignment.research.reconciliation.ConflictStatus;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
+import java.util.Map;
 
 public final class OutputConstants {
 
@@ -57,7 +63,7 @@ public final class OutputConstants {
     public static final String OVERALL_CONFIDENCE_LINE = "> **Overall confidence:** %s";
     public static final String SCOPE_LINE = "> **Scope as understood by the system:** %s";
     public static final String SECTION_HEADING = "## %s";
-    public static final String HEADING_SUB_QUESTIONS = "Sub-questions investigated";
+    public static final String HEADING_SUB_QUESTIONS = "Questions we investigated";
     public static final String HEADING_SUMMARY = "Summary";
     public static final String HEADING_KEY_FACTS = "Key facts";
     public static final String HEADING_UNCERTAINTIES = "Identified uncertainties";
@@ -66,17 +72,45 @@ public final class OutputConstants {
     public static final String HEADING_FOLLOW_UPS = "Suggested follow-up questions";
     public static final String HEADING_HOW_PRODUCED = "How this briefing was produced";
     public static final String HEADING_SOURCES = "Sources consulted";
-    public static final String GAPS_HEADING = "### Sub-questions without adequate evidence";
-    public static final String SUB_QUESTION_LINE = "- %s: %s%s";
-    public static final String GAP_LINE = "- %s: %s";
+    public static final String GAPS_HEADING = "### What we could not answer";
+    public static final String SUB_QUESTION_LINE = "- %s%s";
+    public static final String GAP_LINE = "- %s";
     public static final String COVERAGE_OK = " (adequate evidence found)";
     public static final String COVERAGE_GAP = " (no adequate evidence found)";
-    public static final String GROUP_REF = " [%s]";
-    public static final String EVIDENCE_NOTE =
-            "  - evidence: %d independent source(s), best tier %s, newest %s, conflict %s, confidence %s (%.2f)";
+    public static final String STATEMENT_LINE = "%s %s";
+    public static final String SOURCES_ATTRIBUTION = "Sources: %s.";
+    public static final String SOURCES_NOT_IDENTIFIED = "Sources: not identified.";
+    public static final String PUBLISHER_WITH_YEAR = "%s (%d)";
+    public static final String LIST_SEPARATOR = ", ";
+    public static final DateTimeFormatter MONTH_YEAR_FORMAT = DateTimeFormatter.ofPattern("MMMM yyyy", Locale.ENGLISH);
+    public static final String EVIDENCE_NOTE = "  Evidence: %s, %s. Confidence %s.";
+    public static final int SINGLE_SOURCE_COUNT = 1;
+    public static final String SINGLE_SOURCE_PHRASE = "one independent source, %s, published %s";
+    public static final String MULTIPLE_SOURCES_PHRASE =
+            "%s independent sources, the strongest being %s, the newest published %s";
+    public static final Map<Integer, String> COUNT_WORDS = Map.of(2, "two", 3, "three");
+    public static final Map<SourceTier, String> TIER_WORDS = Map.of(
+            SourceTier.A, "official statistics or industry body",
+            SourceTier.B, "industry report, broker or press",
+            SourceTier.C, "blog or forum");
+    public static final Map<ConflictStatus, String> CONFLICT_WORDS = Map.of(
+            ConflictStatus.NONE, "no conflicting source",
+            ConflictStatus.OPEN, "another source disagrees",
+            ConflictStatus.RESOLVED_BY_RECENCY, "an older source disagrees, this one is newer",
+            ConflictStatus.SUPERSEDED, "a newer source disagrees");
+    public static final Map<FindingSeverity, String> SEVERITY_WORDS = Map.of(
+            FindingSeverity.MAJOR, "Major",
+            FindingSeverity.MINOR, "Minor");
+    public static final Map<FindingType, String> FINDING_TYPE_WORDS = Map.of(
+            FindingType.UNSUPPORTED, "unsupported by the evidence",
+            FindingType.CONTRADICTS_EVIDENCE, "contradicts the evidence",
+            FindingType.OVERSTATED_CERTAINTY, "stated more firmly than the evidence allows",
+            FindingType.SMOOTHED_CONFLICT, "glosses over a conflict",
+            FindingType.MISSING_EVIDENCE, "evidence is missing",
+            FindingType.READABILITY, "hard to read");
     public static final String CONFIDENCE_INTRO = "Derived from the run record, not asserted by a model:";
     public static final String REVIEWER_APPROVED = "_The independent reviewer approved the final draft._";
-    public static final String FINDING_LINE = "- **%s / %s** on \"%s\": %s";
+    public static final String FINDING_LINE = "- **%s, %s:** \"%s\" Reviewer note: %s";
     public static final String STOP_REASON_LINE = "- Stop reason: %s. %s";
     public static final String ROUNDS_LINE = "- Research rounds: %d";
     public static final String MODEL_CALLS_LINE =
@@ -87,6 +121,10 @@ public final class OutputConstants {
     public static final String ROLE_TABLE_DIVIDER = "|---|---:|---:|---:|---:|---:|";
     public static final String ROLE_TABLE_ROW = "| %s | %d | %d | %d | %d | %.1f |";
     public static final String CLAIMS_LINE = "- Claims extracted: %d, evidence groups: %d";
+    public static final String MEDIAN_SCORE_LINE = "- Median key-fact evidence score: %.2f";
+    public static final String KEY_FACT_GROUPS_LINE = "- Key fact %d rests on groups %s";
+    public static final String KEY_FACT_WITHOUT_GROUPS_LINE = "- Key fact %d rests on no evidence group";
+    public static final int FIRST_KEY_FACT_NUMBER = 1;
     public static final String DROPPED_STATEMENTS_LINE = "- Statements removed for lacking evidence: %d";
     public static final String DEMOTED_KEY_FACTS_LINE = "- Key facts demoted to uncertainties for weak evidence: %d";
     public static final String DEGRADED_STEPS_LINE = "- Degraded steps:";
