@@ -1,0 +1,44 @@
+{
+  "query" : {
+    "text" : "Give me an overview of the dry bulk shipping market and its main risk drivers."
+  },
+  "interpretation" : "The analyst is asking for a factual overview of the dry bulk shipping market and the main drivers of risk affecting it.",
+  "subQuestions" : [ {
+    "id" : "q1",
+    "question" : "What is the dry bulk shipping market, what cargoes and vessel classes does it include, and how large is the market by fleet or trade volume?",
+    "searchKeywords" : [ "dry bulk shipping", "capesize panamax supramax handysize", "dry bulk fleet" ]
+  }, {
+    "id" : "q2",
+    "question" : "What are the main demand drivers for dry bulk shipping, including the major cargo end-markets and key trade routes?",
+    "searchKeywords" : [ "iron ore trade", "coal trade", "grain shipments", "dry bulk trade routes" ]
+  }, {
+    "id" : "q3",
+    "question" : "What are the main supply-side factors affecting dry bulk freight rates, such as fleet growth, vessel deliveries, scrapping, and port or canal constraints?",
+    "searchKeywords" : [ "dry bulk fleet supply", "new vessel deliveries", "ship scrapping", "port congestion" ]
+  }, {
+    "id" : "q4",
+    "question" : "How have dry bulk freight rates and vessel earnings performed recently, and what indicators are commonly used to track market conditions?",
+    "searchKeywords" : [ "baltic dry index", "freight rates", "time charter rates", "vessel earnings" ]
+  }, {
+    "id" : "q5",
+    "question" : "What are the principal risk drivers for the dry bulk shipping market, including macroeconomic, geopolitical, regulatory, and fuel-cost risks?",
+    "searchKeywords" : [ "dry bulk shipping risks", "geopolitical risk", "imo regulations", "bunker fuel costs" ]
+  } ],
+  "pendingResearchIds" : [ "q1", "q2", "q3", "q4", "q5" ],
+  "exhaustedSubQuestionIds" : [ ],
+  "sources" : [ ],
+  "claims" : [ ],
+  "researchResults" : [ ],
+  "groups" : [ ],
+  "confidences" : [ ],
+  "draft" : null,
+  "draftReviewed" : false,
+  "draftStale" : false,
+  "critiques" : [ ],
+  "critiqueFailed" : false,
+  "round" : 1,
+  "rewritesInRound" : 0,
+  "failures" : [ ],
+  "stopDecision" : null,
+  "latestCritique" : null
+}

@@ -1,0 +1,89 @@
+# synthesizer/round1
+
+## System prompt
+
+You are the synthesis agent of a research pipeline used by financial analysts.
+
+Your only job is to write a short briefing for a non-technical analyst from the evidence you are given. The evidence has already been collected, compared, and scored by other parts of the pipeline. You do not add knowledge of your own, you do not change the confidence scores, and you do not resolve conflicts that the evidence leaves open.
+
+Rules:
+- Every statement in summary, keyFacts, and uncertainties must cite the ids of the evidence groups it is based on, in groupIds. A statement without a groupId will be removed before the briefing is shown. Put the ids only in groupIds, never inside the text itself.
+- The summary answers the analyst query directly in 3 to 5 sentences and touches every sub-question that has evidence, including the risk or outlook dimension if the query asks for it.
+- Write 5 to 10 key facts that together cover every sub-question with eligible evidence. Qualitative findings from eligible groups, such as a named risk driver, are key facts too, not uncertainties.
+- Uncertainties are reserved for three things: open conflicts between groups, weak evidence, and gaps. Do not describe two compatible facts as if they disagreed.
+- Key facts may only be built from evidence groups listed under "Evidence eligible for key facts". Each key fact should rest on one group, or on several groups that agree.
+- Groups listed under "Weak evidence" may only appear in uncertainties, phrased as unconfirmed or weakly supported, never as fact.
+- Where two groups conflict, say so explicitly, give both values, and name both groups. Never average, pick a side, or smooth the conflict away.
+- Evidence groups are formed per sub-question, so the same quantity can appear in one group without a conflict and in another group with an open conflict. Treat such a quantity as conflicted everywhere: do not state it as a key fact from the unconflicted group.
+- Every sub-question listed under "Gaps" must appear in uncertainties with a plain statement that no adequate evidence was found for it.
+- Use only numbers, dates, and names that appear in the evidence. Do not round, extrapolate, or add context from memory.
+- Write in plain English for a reader without technical or domain background. Short sentences. No jargon without a short explanation.
+- Suggest 3 to 5 follow-up questions an analyst could pursue next, focused on the gaps and conflicts.
+- If you are given a previous draft and review findings, produce a corrected draft that resolves every finding. Keep what was not criticised.
+
+Respond with a single JSON object and nothing else. No prose, no markdown fences. Use exactly this shape:
+
+{
+  "summary": [
+    { "text": "one sentence", "groupIds": ["q1-g1"] }
+  ],
+  "keyFacts": [
+    { "text": "one factual sentence", "groupIds": ["q1-g1"] }
+  ],
+  "uncertainties": [
+    { "text": "one sentence naming a conflict, a weak finding, or a gap", "groupIds": ["q2-g1", "q2-g2"] }
+  ],
+  "followUpQuestions": [
+    "a question an analyst could pursue next"
+  ]
+}
+
+For a gap with no evidence group, use an empty groupIds list.
+
+
+## User prompt
+
+Analyst query:
+
+Give me an overview of the dry bulk shipping market and its main risk drivers.
+
+How the planner understood the query:
+
+The analyst is asking for a factual overview of the dry bulk shipping market and the main drivers of risk affecting it.
+
+Evidence eligible for key facts:
+
+[g3] confidence HIGH (0.75): Continued Red Sea and Suez diversions in 2025 added about 1 to 2 percent to dry bulk tonne-mile demand, and a return to Suez routing would release about 2 percent of fleet capacity. | 2 independent source(s), best tier A, newest 2026-08-03, conflict NONE
+[g4] confidence MEDIUM (0.45): Tonne-mile demand grew 2.3 percent in 2025. | 2 independent source(s), best tier A, newest 2026-08-03, conflict OPEN | conflicts with g14: The 2025 fleet growth in g4 is 2.3 percent, while g14 says the dry bulk fleet grew 2.4 percent.
+[g5] confidence MEDIUM (0.40): Chinese steel demand and property construction, the ramp-up of the Simandou iron ore project in Guinea, shifts in grain trade flows between the Americas and Asia, port congestion, bunker fuel prices, and geopolitical disruption of routes including Red Sea diversions were identified as major risk drivers for dry bulk earnings in 2026. | 1 independent source(s), best tier B, newest 2026-05-20, conflict NONE
+[g6] confidence HIGH (0.75): Iron ore and coal together made up 55 percent of seaborne dry bulk trade volumes in 2025, and iron ore remained the single largest dry bulk commodity. | 2 independent source(s), best tier A, newest 2026-03-05, conflict NONE
+[g7] confidence MEDIUM (0.60): Grain and soybeans made up 10 percent of seaborne dry bulk trade volumes in 2025. | 1 independent source(s), best tier A, newest 2026-03-05, conflict NONE
+[g8] confidence HIGH (0.75): China accounted for 71 percent of seaborne iron ore imports in 2025, with seaborne iron ore trade reaching 1.62 billion tonnes and Australia and Brazil supplying 56 percent and 24 percent respectively. | 2 independent source(s), best tier A, newest 2026-03-05, conflict NONE
+[g9] confidence HIGH (0.75): Grain trade shifted toward South American exporters after a weak North American harvest, and average laden voyage distance reached 5,200 nautical miles. | 2 independent source(s), best tier A, newest 2026-08-03, conflict NONE
+[g10] confidence MEDIUM (0.60): Tonne-mile demand grew faster than tonnes carried because of longer Atlantic to Pacific routes. | 1 independent source(s), best tier A, newest 2026-03-05, conflict NONE
+[g13] confidence MEDIUM (0.60): Deliveries of new dry bulk ships were about 31.6 million dwt in 2025, and demolitions were about 3.9 million dwt. | 1 independent source(s), best tier A, newest 2026-02-10, conflict NONE
+[g15] confidence MEDIUM (0.55): The dry bulk fleet net growth outlook for 2026 was about 2.0 to 2.5 percent, and shipyard slots remained tight with newbuilding prices high. | 2 independent source(s), best tier B, newest 2026-03-18, conflict NONE
+[g16] confidence MEDIUM (0.60): Earnings remained above scrapping thresholds in 2025. | 1 independent source(s), best tier A, newest 2026-02-10, conflict NONE
+[g17] confidence HIGH (0.75): The composite dry bulk freight index averaged about 1,650 points in 2025, about 9 percent below 2024, and ended the year at 1,480 points. | 2 independent source(s), best tier A, newest 2026-01-22, conflict NONE
+[g18] confidence MEDIUM (0.40): One-year time charter rates for a modern Kamsarmax averaged about 13,500 US dollars per day in 2025. | 1 independent source(s), best tier B, newest 2026-01-22, conflict NONE
+[g19] confidence MEDIUM (0.60): Capesize earnings were the most volatile segment in 2025, swinging between 8,000 and 34,000 US dollars per day, while Panamax and Supramax earnings were steadier and averaged close to 12,000 US dollars per day. | 1 independent source(s), best tier A, newest 2026-01-15, conflict NONE
+[g20] confidence MEDIUM (0.40): A return to Suez routing was described as the largest single downside risk to freight rates in 2026. | 1 independent source(s), best tier B, newest 2026-07-11, conflict NONE
+
+Weak evidence (may only appear in uncertainties):
+
+[g1] confidence LOW (0.30): The world dry bulk fleet in 2025 was about 1,020 million dwt, counted as vessels above 10,000 dwt, with Capesize vessels making up 39 percent of capacity, Panamax 25 percent, and Supramax and Handysize the remainder. | 1 independent source(s), best tier A, newest 2026-02-10, conflict OPEN | conflicts with g14: The 2025 dry bulk fleet growth rate is given as 3.1 percent in g1 and 2.4 percent in g14.
+[g2] confidence LOW (0.30): The dry bulk orderbook at year end was about 10.2 percent of the fleet and was concentrated in the Panamax and Supramax segments. | 1 independent source(s), best tier A, newest 2026-02-10, conflict OPEN | conflicts with g14: The year-end orderbook share is given as 10.2 percent of the fleet in g2 and 9.8 percent in g14.
+[g11] confidence LOW (0.40): Chinese seaborne coal imports rose about 5 percent per year between 2016 and 2018. | 1 independent source(s), best tier A, newest 2019-06-14, conflict NONE
+[g12] confidence LOW (0.40): Coal remained the main driver of Panamax demand in the Pacific basin, and Indian coal imports were projected to rise steadily with power generation growth. | 1 independent source(s), best tier A, newest 2019-06-14, conflict NONE
+[g14] confidence LOW (0.10): Broader estimates put 2025 dry bulk fleet growth at 2.4 percent, with deliveries of 30.1 million dwt and removals of 5.5 million dwt. | 1 independent source(s), best tier B, newest 2026-03-18, conflict OPEN | conflicts with g1, g2, g4: The 2025 dry bulk fleet growth rate is given as 3.1 percent in g1 and 2.4 percent in g14.
+
+Gaps (sub-questions without adequate evidence):
+
+(none)
+
+Revision context:
+
+This is the first draft. There is no previous draft to revise.
+
+Write the briefing following the rules you were given.
+

@@ -1,0 +1,107 @@
+{
+  "summary": [
+    {
+      "text": "Seaborne dry bulk trade grew 1.1 percent to 5.5 billion tonnes in 2025, with iron ore and coal making up 55 percent of volumes and grain and soybeans 10 percent.",
+      "groupIds": ["g1", "g2", "g3"]
+    },
+    {
+      "text": "Tonne-mile demand (cargo moved multiplied by distance) grew 2.3 percent, roughly double the growth in tonnes, because voyages got longer; Red Sea and Suez diversions are estimated to have added about 1 percentage point.",
+      "groupIds": ["g15", "g19", "g20"]
+    },
+    {
+      "text": "Freight rates were weaker overall: the dry bulk freight index averaged 1,650 points in 2025, about 9 percent below 2024, and Capesize earnings were the most volatile.",
+      "groupIds": ["g29", "g33"]
+    },
+    {
+      "text": "On supply, one lower-tier source (Nordhaven) expects net fleet growth of 2.0 to 2.5 percent in 2026 and calls supply growth manageable, while industry participants expect deliveries to stay elevated in 2026 before easing in 2027; the 2025 fleet-growth base itself is disputed between sources, so this outlook is only weakly supported.",
+      "groupIds": ["g26", "g27", "g28", "g4", "g23"]
+    },
+    {
+      "text": "Hanseatic Maritime Research, a single lower-tier source, lists six main risk drivers for 2026 earnings: Chinese steel demand and property, Simandou ramp-up, grain flow shifts, port congestion, bunker (ship fuel) prices and geopolitical route disruption including Red Sea diversions.",
+      "groupIds": ["g16", "g36"]
+    }
+  ],
+  "keyFacts": [
+    {
+      "text": "Seaborne dry bulk trade grew 1.1 percent to 5.5 billion tonnes in 2025.",
+      "groupIds": ["g1"]
+    },
+    {
+      "text": "Iron ore and coal together made up 55 percent of seaborne dry bulk volumes in 2025, and grain and soybeans made up 10 percent, with minor bulks making up the remainder.",
+      "groupIds": ["g2", "g3"]
+    },
+    {
+      "text": "Iron ore is the single largest dry bulk commodity; seaborne iron ore trade reached 1.62 billion tonnes in 2025, up 1.3 percent.",
+      "groupIds": ["g8", "g9"]
+    },
+    {
+      "text": "China took about 71 percent of seaborne iron ore imports in 2025 (1.15 billion tonnes), while Australia supplied 56 percent and Brazil 24 percent of seaborne iron ore volumes.",
+      "groupIds": ["g10", "g18"]
+    },
+    {
+      "text": "Capesize vessels account for 39 percent and Panamax vessels 25 percent of dry bulk fleet capacity, with Supramax and Handysize making up the remainder.",
+      "groupIds": ["g5"]
+    },
+    {
+      "text": "Tonne-mile demand grew 2.3 percent in 2025 versus 1.1 percent for tonnes, because of longer voyage distances; Red Sea and Suez diversions accounted for an estimated 1 percentage point of that growth, and average laden voyage distance reached 5,200 nautical miles.",
+      "groupIds": ["g15", "g19", "g20"]
+    },
+    {
+      "text": "The dry bulk freight index averaged 1,650 points in 2025, about 9 percent below 2024, and ended the year at 1,480 points.",
+      "groupIds": ["g29", "g35"]
+    },
+    {
+      "text": "Capesize earnings swung between 8,000 and 34,000 US dollars per day in 2025, while Panamax and Supamax earnings averaged close to 12,000 US dollars per day.",
+      "groupIds": ["g33", "g34"]
+    },
+    {
+      "text": "Grain trade shifted towards South American exporters after a weak North American harvest.",
+      "groupIds": ["g14"]
+    }
+  ],
+  "uncertainties": [
+    {
+      "text": "Fleet growth in 2025 is disputed: the Maritime Statistics Bureau says 3.1 percent, while Nordhaven's database says 2.4 percent. Both figures are weakly supported and neither can be treated as established.",
+      "groupIds": ["g4", "g23"]
+    },
+    {
+      "text": "The orderbook (ships already ordered but not yet delivered) is put at 10.2 percent of the fleet by the Maritime Statistics Bureau and 9.8 percent by Nordhaven. The conflict is open and both figures are weakly supported.",
+      "groupIds": ["g6", "g25"]
+    },
+    {
+      "text": "2025 deliveries are 31.6 million dwt per the Maritime Statistics Bureau but 30.1 million dwt per Nordhaven. The conflict is open and both figures are weakly supported.",
+      "groupIds": ["g21", "g24"]
+    },
+    {
+      "text": "2025 demolition (ships scrapped) is 3.9 million dwt per the Maritime Statistics Bureau but 5.5 million dwt per Nordhaven. The conflict is open and both figures are weakly supported.",
+      "groupIds": ["g22", "g24"]
+    },
+    {
+      "text": "A forum poster claims an unpublished IMO rule will force half the dry bulk fleet into scrapping by 2027, while other posters say current CII and EEXI rules only require slow steaming or efficiency upgrades. This is unconfirmed, and no poster cites an official document.",
+      "groupIds": ["g37", "g38", "g39"]
+    },
+    {
+      "text": "The 2026 supply outlook rests on single lower-tier sources: Nordhaven expects net fleet growth of 2.0 to 2.5 percent and calls supply growth manageable, and industry participants expect elevated deliveries in 2026 before easing in 2027. The disputed 2025 fleet-growth base makes this outlook only weakly supported.",
+      "groupIds": ["g26", "g27", "g28", "g4", "g23"]
+    },
+    {
+      "text": "The risk-driver list comes from one lower-tier source (Hanseatic), and its claim that the Simandou ramp-up in Guinea lengthens average haul distances is likewise a single-source view. It is a 2026 risk driver, so it is not part of the 2025 voyage-distance figures.",
+      "groupIds": ["g16", "g17"]
+    },
+    {
+      "text": "The coal-demand findings (Chinese imports down about 6 percent in 2025, a further decline expected in 2026 per Nordhaven, Indian imports up 4 percent) each come from one lower-tier source, so they are only moderately supported.",
+      "groupIds": ["g11", "g12", "g13"]
+    },
+    {
+      "text": "No adequate evidence was found on what independent forecasters project for dry bulk trade volume and tonne-mile demand growth in 2026, so the demand-side outlook is a gap.",
+      "groupIds": []
+    }
+  ],
+  "followUpQuestions": [
+    "What do independent forecasters project for dry bulk trade volume and tonne-mile demand growth in 2026?",
+    "Which figures for 2025 fleet growth, deliveries and demolition are correct, and why do the Maritime Statistics Bureau and Nordhaven differ?",
+    "Is the orderbook 10.2 percent or 9.8 percent of the fleet, and how much of it is due for delivery in 2026 versus 2027?",
+    "Is there any official IMO document supporting a mass-scrapping requirement, or do only CII and EEXI efficiency rules apply?",
+    "How much will the Simandou ramp-up add to iron ore volumes and haul distances in 2026?"
+  ]
+}
