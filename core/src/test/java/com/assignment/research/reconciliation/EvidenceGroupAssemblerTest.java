@@ -1,0 +1,112 @@
+package com.assignment.research.reconciliation;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import com.assignment.research.evidence.Claim;
+import com.assignment.research.evidence.Source;
+import com.assignment.research.evidence.SourceTier;
+import com.assignment.research.evidence.Sources;
+import java.util.List;
+import org.junit.jupiter.api.Test;
+
+class EvidenceGroupAssemblerTest {
+
+    private static final String SUB_QUESTION = "q1";
+
+    private static Claim claim(String id, String sourceId) {
+        return new Claim(id, SUB_QUESTION, "statement " + id, sourceId);
+    }
+
+    @Test
+    void collapsesDerivativeSourcesWhenTheOriginalIsPresent() {
+        var original = Sources.tierA("src-a");
+        var copy = Sources.derivativeOf("src-news", "src-a");
+        var claims = List.of(claim("c1", "src-a"), claim("c2", "src-news"));
+        var output = new ReconciliationOutput(
+                List.of(new ClaimGroupOutput("g1", "Fleet grew 3.1%.", List.of("c1", "c2"))), List.of());
+
+        var result = EvidenceGroupAssembler.assemble(SUB_QUESTION, claims, List.of(original, copy), output);
+
+        var group = result.getGroups().getFirst();
+        assertThat(group.getId()).isEqualTo("q1-g1");
+        assertThat(group.getIndependentSourceIds()).containsExactly("src-a");
+        assertThat(group.getBestTier()).isEqualTo(SourceTier.A);
+        assertThat(group.getConflictStatus()).isEqualTo(ConflictStatus.NONE);
+    }
+
+    @Test
+    void countsIndependentSourcesAndPicksBestTierAndNewestDate() {
+        List<Source> sources = List.of(Sources.tierC("src-blog"), Sources.tierB("src-b", Sources.STALE));
+        var claims = List.of(claim("c1", "src-blog"), claim("c2", "src-b"));
+        var output = new ReconciliationOutput(
+                List.of(new ClaimGroupOutput("g1", "Same fact.", List.of("c1", "c2"))), List.of());
+
+        var group = EvidenceGroupAssembler.assemble(SUB_QUESTION, claims, sources, output).getGroups().getFirst();
+
+        assertThat(group.getIndependentSourceCount()).isEqualTo(2);
+        assertThat(group.getBestTier()).isEqualTo(SourceTier.B);
+        assertThat(group.getNewestSourceDate()).isEqualTo(Sources.RECENT);
+    }
+
+    @Test
+    void marksConflictBetweenContemporarySourcesAsOpenOnBothSides() {
+        var sources = List.of(Sources.tierA("src-a"), Sources.tierB("src-b", Sources.RECENT));
+        var claims = List.of(claim("c1", "src-a"), claim("c2", "src-b"));
+        var output = new ReconciliationOutput(
+                List.of(new ClaimGroupOutput("g1", "Growth 3.1%.", List.of("c1")),
+                        new ClaimGroupOutput("g2", "Growth 2.4%.", List.of("c2"))),
+                List.of(new ConflictOutput(List.of("g1", "g2"), "3.1% vs 2.4% for 2026")));
+
+        var groups = EvidenceGroupAssembler.assemble(SUB_QUESTION, claims, sources, output).getGroups();
+
+        assertThat(groups).extracting(EvidenceGroup::getConflictStatus)
+                .containsExactly(ConflictStatus.OPEN, ConflictStatus.OPEN);
+        assertThat(groups.getFirst().getConflictingGroupIds()).containsExactly("q1-g2");
+        assertThat(groups.getFirst().getConflict()).contains("3.1% vs 2.4% for 2026");
+    }
+
+    @Test
+    void resolvesConflictByRecencyWhenOneSideIsYearsNewer() {
+        var sources = List.of(Sources.tierA("src-old", Sources.STALE), Sources.tierB("src-new", Sources.RECENT));
+        var claims = List.of(claim("c1", "src-old"), claim("c2", "src-new"));
+        var output = new ReconciliationOutput(
+                List.of(new ClaimGroupOutput("g1", "China imports rising.", List.of("c1")),
+                        new ClaimGroupOutput("g2", "China imports falling.", List.of("c2"))),
+                List.of(new ConflictOutput(List.of("g1", "g2"), "rising vs falling")));
+
+        var groups = EvidenceGroupAssembler.assemble(SUB_QUESTION, claims, sources, output).getGroups();
+
+        assertThat(groups).extracting(EvidenceGroup::getConflictStatus)
+                .containsExactly(ConflictStatus.SUPERSEDED, ConflictStatus.RESOLVED_BY_RECENCY);
+    }
+
+    @Test
+    void ignoresUnknownClaimIdsAndGivesUnassignedClaimsTheirOwnGroup() {
+        var sources = List.of(Sources.tierA("src-a"), Sources.tierC("src-c"));
+        var claims = List.of(claim("c1", "src-a"), claim("c2", "src-c"));
+        var output = new ReconciliationOutput(
+                List.of(new ClaimGroupOutput("g1", "Known.", List.of("c1", "c-invented"))), List.of());
+
+        var groups = EvidenceGroupAssembler.assemble(SUB_QUESTION, claims, sources, output).getGroups();
+
+        assertThat(groups).hasSize(2);
+        assertThat(groups.get(0).getClaimIds()).containsExactly("c1");
+        assertThat(groups.get(1).getClaimIds()).containsExactly("c2");
+        assertThat(groups.get(1).getAssertion()).isEqualTo("statement c2");
+    }
+
+    @Test
+    void keepsAClaimOnlyInTheFirstGroupThatListsIt() {
+        var sources = List.of(Sources.tierA("src-a"));
+        var claims = List.of(claim("c1", "src-a"));
+        var output = new ReconciliationOutput(
+                List.of(new ClaimGroupOutput("g1", "First.", List.of("c1")),
+                        new ClaimGroupOutput("g2", "Second.", List.of("c1"))),
+                List.of());
+
+        var groups = EvidenceGroupAssembler.assemble(SUB_QUESTION, claims, sources, output).getGroups();
+
+        assertThat(groups).hasSize(1);
+        assertThat(groups.getFirst().getAssertion()).isEqualTo("First.");
+    }
+}
