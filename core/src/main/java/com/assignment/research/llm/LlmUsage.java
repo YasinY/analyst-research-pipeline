@@ -7,8 +7,8 @@ public class LlmUsage {
 
     public static final LlmUsage NONE = new LlmUsage(0, 0);
 
-    int inputTokens;
-    int outputTokens;
+    private final int inputTokens;
+    private final int outputTokens;
 
     public LlmUsage plus(LlmUsage other) {
         return new LlmUsage(inputTokens + other.inputTokens, outputTokens + other.outputTokens);

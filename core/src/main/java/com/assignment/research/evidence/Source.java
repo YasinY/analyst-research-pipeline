@@ -9,14 +9,14 @@ import lombok.Value;
 @Value
 public class Source {
 
-    @NonNull String id;
-    @NonNull String title;
-    @NonNull String publisher;
-    @NonNull SourceType type;
-    @NonNull LocalDate publishedAt;
-    String citesSourceId;
-    @NonNull List<String> keywords;
-    @NonNull String excerpt;
+    @NonNull private final String id;
+    @NonNull private final String title;
+    @NonNull private final String publisher;
+    @NonNull private final SourceType type;
+    @NonNull private final LocalDate publishedAt;
+    private final String citesSourceId;
+    @NonNull private final List<String> keywords;
+    @NonNull private final String excerpt;
 
     public SourceTier getTier() {
         return type.getTier();

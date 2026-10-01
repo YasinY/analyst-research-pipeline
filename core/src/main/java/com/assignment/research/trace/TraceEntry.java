@@ -11,17 +11,17 @@ import lombok.Value;
 @Value
 public class TraceEntry {
 
-    int sequence;
-    @NonNull String label;
-    @NonNull Instant startedAt;
-    @NonNull Duration duration;
-    @NonNull String model;
-    @NonNull String systemPrompt;
-    @NonNull String userPrompt;
-    @NonNull String rawResponse;
-    @NonNull LlmUsage usage;
-    @NonNull LlmCallStatus status;
-    String failureReason;
+    private final int sequence;
+    @NonNull private final String label;
+    @NonNull private final Instant startedAt;
+    @NonNull private final Duration duration;
+    @NonNull private final String model;
+    @NonNull private final String systemPrompt;
+    @NonNull private final String userPrompt;
+    @NonNull private final String rawResponse;
+    @NonNull private final LlmUsage usage;
+    @NonNull private final LlmCallStatus status;
+    private final String failureReason;
 
     public Optional<String> getFailure() {
         return Optional.ofNullable(failureReason);
