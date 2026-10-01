@@ -5,3 +5,4 @@ target/
 .env
 runs/
 .mvn/wrapper/maven-wrapper.jar
+.claude/
