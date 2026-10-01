@@ -1,6 +1,7 @@
 package com.assignment.research.adapter.llm;
 
 import com.assignment.research.llm.LLMException;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
@@ -21,18 +22,21 @@ public final class HttpJSONPoster {
     }
 
     public JsonNode post(String url, Map<String, String> headers, Object body) {
-        var request = buildRequest(url, headers, body);
-        try {
-            var response = http.send(request, HttpResponse.BodyHandlers.ofString());
-            return parseResponse(url, response);
-        } catch (IOException failure) {
-            throw new LLMException(LLMAdapterConstants.TRANSPORT_FAILURE.formatted(url, failure.getMessage()),
-                    failure);
-        } catch (InterruptedException interrupted) {
-            Thread.currentThread().interrupt();
-            throw new LLMException(LLMAdapterConstants.TRANSPORT_FAILURE.formatted(url, "interrupted"),
-                    interrupted);
+        var response = send(url, buildRequest(url, headers, body));
+        return parseResponse(url, response);
+    }
+
+    public static String requiredText(JsonNode node, String... path) {
+        var field = at(node, path);
+        if (field.isMissingNode() || field.isNull()) {
+            var fieldPath = String.join(LLMAdapterConstants.PATH_SEPARATOR, path);
+            throw new LLMException(LLMAdapterConstants.MISSING_FIELD.formatted(fieldPath));
         }
+        return field.asText();
+    }
+
+    public static int intOrZero(JsonNode node, String... path) {
+        return at(node, path).asInt(LLMAdapterConstants.MISSING_INT_VALUE);
     }
 
     private HttpRequest buildRequest(String url, Map<String, String> headers, Object body) {
@@ -49,32 +53,39 @@ public final class HttpJSONPoster {
         }
     }
 
-    private JsonNode parseResponse(String url, HttpResponse<String> response) throws IOException {
+    private HttpResponse<String> send(String url, HttpRequest request) {
+        try {
+            return http.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (IOException failure) {
+            throw new LLMException(LLMAdapterConstants.TRANSPORT_FAILURE.formatted(url, failure.getMessage()),
+                    failure);
+        } catch (InterruptedException interrupted) {
+            Thread.currentThread().interrupt();
+            throw new LLMException(
+                    LLMAdapterConstants.TRANSPORT_FAILURE.formatted(url, LLMAdapterConstants.INTERRUPTED),
+                    interrupted);
+        }
+    }
+
+    private JsonNode parseResponse(String url, HttpResponse<String> response) {
         var status = response.statusCode();
         if (status < LLMAdapterConstants.HTTP_OK_MIN || status > LLMAdapterConstants.HTTP_OK_MAX) {
             throw new HttpStatusException(status,
                     LLMAdapterConstants.HTTP_FAILURE.formatted(url, status, response.body()));
         }
-        return mapper.readTree(response.body());
+        try {
+            return mapper.readTree(response.body());
+        } catch (JsonProcessingException notJson) {
+            throw new LLMException(LLMAdapterConstants.NON_JSON_RESPONSE.formatted(url, status,
+                    notJson.getOriginalMessage()));
+        }
     }
 
-    public static String requiredText(JsonNode node, String... path) {
+    private static JsonNode at(JsonNode node, String... path) {
         var current = node;
         for (var segment : path) {
             current = current.path(segment);
         }
-        if (current.isMissingNode() || current.isNull()) {
-            var fieldPath = String.join(LLMAdapterConstants.PATH_SEPARATOR, path);
-            throw new LLMException(LLMAdapterConstants.MISSING_FIELD.formatted(fieldPath));
-        }
-        return current.asText();
-    }
-
-    public static int intOrZero(JsonNode node, String... path) {
-        var current = node;
-        for (var segment : path) {
-            current = current.path(segment);
-        }
-        return current.asInt(0);
+        return current;
     }
 }

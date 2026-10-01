@@ -2,6 +2,7 @@ package com.assignment.research.adapter.llm;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.catchThrowableOfType;
 
 import com.assignment.research.adapter.output.JSONMapperFactory;
 import com.assignment.research.llm.LLMCallStatus;
@@ -15,6 +16,7 @@ class StructuredOutputLLMPortTest {
     private static final LLMRequest REQUEST = new LLMRequest("planner", "system", "user prompt", 256);
     private static final String VALID = "{\"interpretation\": \"ok\", \"subQuestions\": []}";
     private static final String GARBAGE = "Sorry, I got confused.";
+    private static final String CUT_OFF = "{\"interpretation\": \"cut off";
 
     private final JSONResponseParser parser = new JSONResponseParser(JSONMapperFactory.create());
 
@@ -44,7 +46,7 @@ class StructuredOutputLLMPortTest {
 
     @Test
     void truncatedReplyIsRetriedWithDoubledBudgetInsteadOfARepairPrompt() {
-        var chat = new ScriptedChatClient(true, "{\"interpretation\": \"cut off", VALID);
+        var chat = new ScriptedChatClient(true, CUT_OFF, VALID);
 
         var result = new StructuredOutputLLMPort(chat, parser).complete(REQUEST, PlanOutput.class);
 
@@ -61,5 +63,24 @@ class StructuredOutputLLMPortTest {
                 .isInstanceOf(MalformedLLMResponseException.class)
                 .extracting(failure -> ((MalformedLLMResponseException) failure).getRawText())
                 .isEqualTo("still not json");
+    }
+
+    @Test
+    void truncationFailureAndRepairFailureReportDistinctMessages() {
+        var truncated = new ScriptedChatClient(true, CUT_OFF, CUT_OFF);
+        var malformed = new ScriptedChatClient(GARBAGE, GARBAGE);
+
+        var truncationFailure = failureOf(truncated);
+        var repairFailure = failureOf(malformed);
+
+        assertThat(truncationFailure.getMessage()).contains("truncated").contains("512");
+        assertThat(repairFailure.getMessage()).contains("malformed JSON twice");
+        assertThat(truncationFailure.getMessage()).isNotEqualTo(repairFailure.getMessage());
+    }
+
+    private MalformedLLMResponseException failureOf(ScriptedChatClient chat) {
+        var port = new StructuredOutputLLMPort(chat, parser);
+        return catchThrowableOfType(MalformedLLMResponseException.class,
+                () -> port.complete(REQUEST, PlanOutput.class));
     }
 }

@@ -1,6 +1,7 @@
 package com.assignment.research.adapter.llm;
 
 import com.assignment.research.llm.LLMException;
+import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -28,7 +29,7 @@ public final class RetryingChatClient implements ChatClient {
         if (failure instanceof HttpStatusException httpFailure) {
             return httpFailure.isRetryable();
         }
-        return failure.getCause() instanceof java.io.IOException;
+        return failure.getCause() instanceof IOException;
     }
 
     private static void pause() {

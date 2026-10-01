@@ -33,8 +33,12 @@ public final class LLMAdapterConstants {
     public static final int TRUNCATION_BUDGET_FACTOR = 2;
     public static final String TRANSPORT_FAILURE = "LLM request to %s failed: %s";
     public static final String HTTP_FAILURE = "LLM provider at %s answered HTTP %d: %s";
+    public static final String NON_JSON_RESPONSE = "LLM provider at %s answered HTTP %d with a body that is not JSON: %s";
+    public static final String INTERRUPTED = "interrupted";
+    public static final int MISSING_INT_VALUE = 0;
     public static final String MISSING_FIELD = "LLM provider response is missing field '%s'";
     public static final String CODE_FENCE = "```";
+    public static final String EMPTY = "";
     public static final String JSON_START = "{";
     public static final String JSON_END = "}";
     public static final String NO_JSON_OBJECT = "no JSON object found in reply";
