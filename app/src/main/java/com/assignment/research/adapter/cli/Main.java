@@ -7,20 +7,23 @@ import com.assignment.research.adapter.web.ResearchRunRegistry;
 import com.assignment.research.adapter.web.WebConstants;
 import com.assignment.research.adapter.web.WebServer;
 import com.assignment.research.bootstrap.AppConfig;
+import com.assignment.research.bootstrap.BootstrapConstants;
 import com.assignment.research.bootstrap.PipelineFactory;
 import com.assignment.research.pipeline.PipelineAbortedException;
 import com.assignment.research.query.AnalystQuery;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Clock;
 import java.util.Arrays;
+import java.util.List;
 
 public final class Main {
 
     private static final String QUERY_FLAG = "--query";
     private static final String SERVE_FLAG = "--serve";
+    private static final String QUERY_WORD_SEPARATOR = " ";
     private static final String USAGE = """
             Usage: java -jar app/target/research-pipeline.jar --query "<analyst question>"
-                   java -jar app/target/research-pipeline.jar --serve      (web UI on http://127.0.0.1:8787)
+                   java -jar app/target/research-pipeline.jar --serve      (web UI on http://%1$s:%2$d)
 
             Environment:
               LLM_PROVIDER        anthropic (default) or openai
@@ -31,9 +34,8 @@ public final class Main {
               OPENAI_MODEL        default gpt-5.4-mini
               DATA_DIR            default ./data (prompts and corpus)
               RUNS_DIR            default ./runs (one folder per run)
-              PORT                web UI port for --serve, default 8787
+              PORT                web UI port for --serve, default %2$d
             """;
-    private static final String ABORTED = "Run aborted: the %s step failed and no briefing could be produced. Cause: %s";
     private static final int EXIT_USAGE = 2;
     private static final int EXIT_ABORTED = 1;
 
@@ -44,13 +46,14 @@ public final class Main {
         var clock = Clock.systemDefaultZone();
         var mapper = JSONMapperFactory.create();
         var config = AppConfig.fromEnvironment(System.getenv());
-        if (Arrays.asList(args).contains(SERVE_FLAG)) {
+        var arguments = Arrays.asList(args);
+        if (arguments.contains(SERVE_FLAG)) {
             serve(config, mapper, clock);
             return;
         }
-        var queryText = queryFrom(args);
+        var queryText = queryFrom(arguments);
         if (queryText == null) {
-            System.err.println(USAGE);
+            System.err.println(USAGE.formatted(WebConstants.BIND_HOST, WebConstants.DEFAULT_PORT));
             System.exit(EXIT_USAGE);
             return;
         }
@@ -60,7 +63,8 @@ public final class Main {
             var result = useCase.produce(new AnalystQuery(queryText), archive);
             archive.writeResult(result, new MarkdownBriefingRenderer(clock).render(result));
         } catch (PipelineAbortedException aborted) {
-            System.err.println(ABORTED.formatted(aborted.getMessage(), aborted.getCause().getMessage()));
+            System.err.println(BootstrapConstants.ABORTED_MESSAGE.formatted(aborted.getMessage(),
+                    aborted.getCause().getMessage()));
             System.exit(EXIT_ABORTED);
         }
     }
@@ -68,17 +72,14 @@ public final class Main {
     private static void serve(AppConfig config, ObjectMapper mapper, Clock clock) {
         var useCase = new PipelineFactory(config, mapper, clock).createUseCase();
         var registry = new ResearchRunRegistry(useCase, config, mapper, clock, System.out);
-        var port = Integer.parseInt(System.getenv().getOrDefault(WebConstants.ENV_PORT,
-                String.valueOf(WebConstants.DEFAULT_PORT)));
-        new WebServer(registry, mapper, port).start();
+        new WebServer(registry, mapper, config.getPort(), System.out).start();
     }
 
-    private static String queryFrom(String[] args) {
-        var arguments = Arrays.asList(args);
+    private static String queryFrom(List<String> arguments) {
         var index = arguments.indexOf(QUERY_FLAG);
         if (index < 0 || index + 1 >= arguments.size()) {
             return null;
         }
-        return String.join(" ", arguments.subList(index + 1, arguments.size()));
+        return String.join(QUERY_WORD_SEPARATOR, arguments.subList(index + 1, arguments.size()));
     }
 }

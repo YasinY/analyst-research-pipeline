@@ -3,6 +3,8 @@ package com.assignment.research.adapter.web;
 import com.assignment.research.adapter.output.MarkdownBriefingRenderer;
 import com.assignment.research.adapter.output.RunArchive;
 import com.assignment.research.bootstrap.AppConfig;
+import com.assignment.research.bootstrap.BootstrapConstants;
+import com.assignment.research.pipeline.PipelineAbortedException;
 import com.assignment.research.pipeline.ProduceBriefingUseCase;
 import com.assignment.research.query.AnalystQuery;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -10,7 +12,9 @@ import java.io.PrintStream;
 import java.time.Clock;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
@@ -27,6 +31,7 @@ public final class ResearchRunRegistry {
     private final Clock clock;
     private final PrintStream console;
     private final Map<String, ResearchRun> runs = new ConcurrentHashMap<>();
+    private final Queue<String> finishedRunIds = new ConcurrentLinkedQueue<>();
     private final AtomicLong counter = new AtomicLong(FIRST_RUN_NUMBER);
     private final ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
 
@@ -42,14 +47,38 @@ public final class ResearchRunRegistry {
     }
 
     private void execute(ResearchRun run) {
+        run.complete(produceOutcome(run));
+        retire(run);
+    }
+
+    private RunOutcome produceOutcome(ResearchRun run) {
         try {
             var archive = new RunArchive(config.getRunsDirectory(), clock, mapper, console);
             var result = useCase.produce(new AnalystQuery(run.getQuery()), new CompositeObserver(archive, run));
             var markdown = new MarkdownBriefingRenderer(clock).render(result);
             var directory = archive.writeResult(result, markdown);
-            run.finish(result, markdown, directory.toAbsolutePath().toString());
-        } catch (RuntimeException failure) {
-            run.fail(failure.getMessage() == null ? failure.getClass().getSimpleName() : failure.getMessage());
+            return RunOutcome.finished(result, markdown, directory.toAbsolutePath().toString());
+        } catch (Throwable failure) {
+            return RunOutcome.failed(describeFailure(failure));
         }
+    }
+
+    private void retire(ResearchRun run) {
+        finishedRunIds.add(run.getId());
+        while (finishedRunIds.size() > WebConstants.MAX_FINISHED_RUNS) {
+            Optional.ofNullable(finishedRunIds.poll()).ifPresent(runs::remove);
+        }
+    }
+
+    private static String describeFailure(Throwable failure) {
+        if (!(failure instanceof PipelineAbortedException aborted)) {
+            return describe(failure);
+        }
+        var cause = aborted.getCause() == null ? aborted : aborted.getCause();
+        return BootstrapConstants.ABORTED_MESSAGE.formatted(aborted.getMessage(), describe(cause));
+    }
+
+    private static String describe(Throwable failure) {
+        return failure.getMessage() == null ? failure.getClass().getSimpleName() : failure.getMessage();
     }
 }
