@@ -39,21 +39,27 @@ public final class MarkdownBriefingRenderer {
         var state = result.getFinalState();
         var groupsById = state.getGroups().stream()
                 .collect(Collectors.toMap(EvidenceGroup::getId, Function.identity()));
+        var sourcesById = state.getSources().stream()
+                .collect(Collectors.toMap(Source::getId, Function.identity()));
         var confidenceById = state.getConfidences().stream()
                 .collect(Collectors.toMap(GroupConfidence::getGroupId, Function.identity()));
+        Function<EvidenceGroup, List<String>> noDetails = group -> List.of();
+        Function<EvidenceGroup, List<String>> evidenceNotes =
+                group -> List.of(evidenceNote(group, confidenceById.get(group.getId())));
         var draft = result.getDraft();
 
         var out = new StringBuilder();
         header(out, state, result);
-        subQuestions(out, state, result);
-        section(out, OutputConstants.HEADING_SUMMARY, draft.getSummary(), groupsById, confidenceById, false);
-        section(out, OutputConstants.HEADING_KEY_FACTS, draft.getKeyFacts(), groupsById, confidenceById, true);
-        section(out, OutputConstants.HEADING_UNCERTAINTIES, draft.getUncertainties(), groupsById, confidenceById,
-                false);
+        section(out, OutputConstants.HEADING_SUMMARY, draft.getSummary(), groupsById, sourcesById, noDetails);
+        section(out, OutputConstants.HEADING_KEY_FACTS, draft.getKeyFacts(), groupsById, sourcesById,
+                evidenceNotes);
+        section(out, OutputConstants.HEADING_UNCERTAINTIES, draft.getUncertainties(), groupsById, sourcesById,
+                noDetails);
         gaps(out, result);
         confidence(out, result);
-        openFindings(out, result.getOpenFindings());
         followUps(out, draft.getFollowUpQuestions());
+        openFindings(out, result.getOpenFindings());
+        subQuestions(out, state, result);
         howProduced(out, result);
         sources(out, state);
         return out.toString();
@@ -71,28 +77,50 @@ public final class MarkdownBriefingRenderer {
     }
 
     private static void section(StringBuilder out, String heading, List<GroundedStatement> statements,
-            Map<String, EvidenceGroup> groups, Map<String, GroupConfidence> confidences, boolean withEvidence) {
+            Map<String, EvidenceGroup> groups, Map<String, Source> sources,
+            Function<EvidenceGroup, List<String>> details) {
         heading(out, heading);
         if (statements.isEmpty()) {
             noneLine(out);
             return;
         }
         for (var statement : statements) {
-            var groupRefs = statement.getGroupIds().stream().map(OutputConstants.GROUP_REF::formatted)
-                    .collect(Collectors.joining());
-            bullet(out, statement.getText() + groupRefs);
-            if (withEvidence) {
-                statement.getGroupIds().stream().map(groups::get).filter(Objects::nonNull)
-                        .forEach(group -> line(out, evidenceNote(group, confidences.get(group.getId()))));
-            }
+            var cited = statement.getGroupIds().stream().map(groups::get).filter(Objects::nonNull).toList();
+            bullet(out, OutputConstants.STATEMENT_LINE.formatted(statement.getText(), attribution(cited, sources)));
+            cited.stream().map(details).flatMap(List::stream).forEach(detail -> line(out, detail));
         }
         blankLine(out);
     }
 
+    private static String attribution(List<EvidenceGroup> cited, Map<String, Source> sources) {
+        var publishers = cited.stream()
+                .flatMap(group -> group.getIndependentSourceIds().stream())
+                .map(sources::get)
+                .filter(Objects::nonNull)
+                .map(source -> OutputConstants.PUBLISHER_WITH_YEAR.formatted(source.getPublisher(),
+                        source.getPublishedAt().getYear()))
+                .distinct()
+                .collect(Collectors.joining(OutputConstants.LIST_SEPARATOR));
+        if (publishers.isEmpty()) {
+            return OutputConstants.SOURCES_NOT_IDENTIFIED;
+        }
+        return OutputConstants.SOURCES_ATTRIBUTION.formatted(publishers);
+    }
+
     private static String evidenceNote(EvidenceGroup group, GroupConfidence confidence) {
-        return String.format(Locale.ROOT, OutputConstants.EVIDENCE_NOTE, group.getIndependentSourceCount(),
-                group.getBestTier(), group.getNewestSourceDate(), group.getConflictStatus(), confidence.getLevel(),
-                confidence.getScore());
+        return OutputConstants.EVIDENCE_NOTE.formatted(sourcesPhrase(group),
+                OutputConstants.CONFLICT_WORDS.get(group.getConflictStatus()), confidence.getLevel());
+    }
+
+    private static String sourcesPhrase(EvidenceGroup group) {
+        var tier = OutputConstants.TIER_WORDS.get(group.getBestTier());
+        var published = group.getNewestSourceDate().format(OutputConstants.MONTH_YEAR_FORMAT);
+        var count = group.getIndependentSourceCount();
+        if (count == OutputConstants.SINGLE_SOURCE_COUNT) {
+            return OutputConstants.SINGLE_SOURCE_PHRASE.formatted(tier, published);
+        }
+        var countWord = OutputConstants.COUNT_WORDS.getOrDefault(count, String.valueOf(count));
+        return OutputConstants.MULTIPLE_SOURCES_PHRASE.formatted(countWord, tier, published);
     }
 
     private static void subQuestions(StringBuilder out, BriefingState state, BriefingResult result) {
@@ -102,7 +130,7 @@ public final class MarkdownBriefingRenderer {
             var status = gapIds.contains(question.getId())
                     ? OutputConstants.COVERAGE_GAP
                     : OutputConstants.COVERAGE_OK;
-            line(out, OutputConstants.SUB_QUESTION_LINE.formatted(question.getId(), question.getQuestion(), status));
+            line(out, OutputConstants.SUB_QUESTION_LINE.formatted(question.getQuestion(), status));
         }
         blankLine(out);
     }
@@ -114,7 +142,7 @@ public final class MarkdownBriefingRenderer {
         }
         line(out, OutputConstants.GAPS_HEADING);
         blankLine(out);
-        gaps.forEach(gap -> line(out, OutputConstants.GAP_LINE.formatted(gap.getId(), gap.getQuestion())));
+        gaps.forEach(gap -> line(out, OutputConstants.GAP_LINE.formatted(gap.getQuestion())));
         blankLine(out);
     }
 
@@ -134,8 +162,10 @@ public final class MarkdownBriefingRenderer {
             blankLine(out);
             return;
         }
-        findings.forEach(finding -> line(out, OutputConstants.FINDING_LINE.formatted(finding.getSeverity(),
-                finding.getType(), finding.getQuotedText(), finding.getDetail())));
+        findings.forEach(finding -> line(out, OutputConstants.FINDING_LINE.formatted(
+                OutputConstants.SEVERITY_WORDS.get(finding.getSeverity()),
+                OutputConstants.FINDING_TYPE_WORDS.get(finding.getType()), finding.getQuotedText(),
+                finding.getDetail())));
         blankLine(out);
     }
 
@@ -163,11 +193,30 @@ public final class MarkdownBriefingRenderer {
                 usage.getCachedInputTokens(), usage.getOutputTokens()));
         cost(out, trace);
         line(out, OutputConstants.CLAIMS_LINE.formatted(state.getClaims().size(), state.getGroups().size()));
+        line(out, String.format(Locale.ROOT, OutputConstants.MEDIAN_SCORE_LINE,
+                result.getConfidence().getMedianKeyFactScore()));
+        keyFactGroups(out, draft.getKeyFacts());
         countLine(out, OutputConstants.DROPPED_STATEMENTS_LINE, draft.getDroppedStatements());
         countLine(out, OutputConstants.DEMOTED_KEY_FACTS_LINE, draft.getDemotedKeyFacts());
         failures(out, state.getFailures());
         blankLine(out);
         roleTable(out, trace);
+    }
+
+    private static void keyFactGroups(StringBuilder out, List<GroundedStatement> keyFacts) {
+        var number = OutputConstants.FIRST_KEY_FACT_NUMBER;
+        for (var keyFact : keyFacts) {
+            line(out, keyFactGroupsLine(number, keyFact.getGroupIds()));
+            number++;
+        }
+    }
+
+    private static String keyFactGroupsLine(int number, List<String> groupIds) {
+        if (groupIds.isEmpty()) {
+            return OutputConstants.KEY_FACT_WITHOUT_GROUPS_LINE.formatted(number);
+        }
+        return OutputConstants.KEY_FACT_GROUPS_LINE.formatted(number,
+                String.join(OutputConstants.LIST_SEPARATOR, groupIds));
     }
 
     private void cost(StringBuilder out, List<TraceEntry> trace) {

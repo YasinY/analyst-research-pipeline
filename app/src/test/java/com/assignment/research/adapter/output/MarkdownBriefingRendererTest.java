@@ -33,6 +33,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
@@ -60,13 +61,20 @@ class MarkdownBriefingRendererTest {
     private static final String EXPECTED_KEY_FACT = """
             ## Key facts
 
-            - The dry bulk fleet grew 3.1 percent in 2025. [g-fleet]
-              - evidence: 1 independent source(s), best tier A, newest 2026-03-01, conflict NONE, confidence HIGH (0.82)
+            - The dry bulk fleet grew 3.1 percent in 2025. Sources: Maritime Statistics Bureau (2026).
+              Evidence: one independent source, official statistics or industry body, published March 2026, no conflicting source. Confidence HIGH.
+
             """;
     private static final String EXPECTED_GAP = """
-            ### Sub-questions without adequate evidence
+            ### What we could not answer
 
-            - sq-2: What does regulation require?
+            - What does regulation require?
+            """;
+    private static final String EXPECTED_SUB_QUESTIONS = """
+            ## Questions we investigated
+
+            - How fast did the fleet grow? (adequate evidence found)
+            - What does regulation require? (no adequate evidence found)
             """;
     private static final String EXPECTED_CONFIDENCE = """
             ## Confidence: MEDIUM
@@ -78,22 +86,28 @@ class MarkdownBriefingRendererTest {
             """;
     private static final String EXPECTED_STOP_REASON =
             "- Stop reason: ROUND_LIMIT_REACHED. The round limit of 3 was reached.";
+    private static final String EXPECTED_AUDIT_LINES = """
+            - Median key-fact evidence score: 0.82
+            - Key fact 1 rests on groups g-fleet
+            """;
     private static final List<String> EXPECTED_HEADINGS = List.of(
-            "## Sub-questions investigated",
             "## Summary",
             "## Key facts",
             "## Identified uncertainties",
+            "### What we could not answer",
             "## Confidence: MEDIUM",
-            "## Open review findings",
             "## Suggested follow-up questions",
+            "## Open review findings",
+            "## Questions we investigated",
             "## How this briefing was produced",
             "## Sources consulted");
+    private static final String INTERNAL_GROUP_REFERENCE = "[g-";
 
     private static final String SUMMARY = "Supply grows moderately.";
     private static final String EXPECTED_SUMMARY = """
             ## Summary
 
-            - Supply grows moderately. [g-fleet]
+            - Supply grows moderately. Sources: Maritime Statistics Bureau (2026).
 
             ## Key facts
             """;
@@ -103,17 +117,18 @@ class MarkdownBriefingRendererTest {
     private static final String INTERPRETATION = "dry bulk supply side only";
     private static final String FOLLOW_UP = "How will the orderbook evolve?";
     private static final String EXPECTED_UNGROUNDED_FACT = """
-            - Ports were congested. [g-missing]
+            - Ports were congested. Sources: not identified.
 
             """;
-    private static final String EXPECTED_FINDING =
-            "- **MAJOR / UNSUPPORTED** on \"Ports were congested.\": no evidence group supports it";
+    private static final String EXPECTED_FINDING = "- **Major, unsupported by the evidence:** "
+            + "\"Ports were congested.\" Reviewer note: no evidence group supports it";
     private static final String EXPECTED_FOLLOW_UPS = """
             ## Suggested follow-up questions
 
             - How will the orderbook evolve?
             """;
     private static final String EXPECTED_COUNTS = """
+            - Key fact 1 rests on groups g-missing
             - Statements removed for lacking evidence: 2
             - Key facts demoted to uncertainties for weak evidence: 1
             - Degraded steps:
@@ -121,6 +136,48 @@ class MarkdownBriefingRendererTest {
             """;
     private static final String EXPECTED_CITING_SOURCE =
             "- `src-tradepress` Fleet grows, Trade Press (TRADE_PRESS, tier B), 2026-03-01, cites `src-fleet-stats`";
+
+    private static final String BROKER_ID = "src-broker";
+    private static final String PRESS_ID = "src-press";
+    private static final String BLOG_ID = "src-blog";
+    private static final String UNKNOWN_SOURCE_ID = "src-unknown";
+    private static final String OTHER_UNKNOWN_SOURCE_ID = "src-unknown-2";
+    private static final String TWO_SOURCES_GROUP_ID = "g-two";
+    private static final String THREE_SOURCES_GROUP_ID = "g-three";
+    private static final String FOUR_SOURCES_GROUP_ID = "g-four";
+    private static final String TWO_SOURCES_FACT = "The dry bulk fleet grew 3.1 percent in 2025.";
+    private static final String THREE_SOURCES_FACT = "Owners are cautious about newbuild orders.";
+    private static final String FOUR_SOURCES_FACT = "Scrapping will accelerate in 2026.";
+    private static final String UNCITED_FACT = "Port congestion eased in the first quarter.";
+    private static final String UNCERTAINTY = "Demand from China may soften.";
+    private static final String EXPECTED_KEY_FACTS = """
+            ## Key facts
+
+            - The dry bulk fleet grew 3.1 percent in 2025. Sources: Maritime Statistics Bureau (2026), Nordhaven Shipbrokers (2026), Bulk Trade Weekly (2025).
+              Evidence: one independent source, official statistics or industry body, published March 2026, no conflicting source. Confidence HIGH.
+              Evidence: two independent sources, the strongest being industry report, broker or press, the newest published February 2026, another source disagrees. Confidence MEDIUM.
+            - Owners are cautious about newbuild orders. Sources: Deck Log Blog (2026).
+              Evidence: three independent sources, the strongest being blog or forum, the newest published January 2026, an older source disagrees, this one is newer. Confidence LOW.
+            - Scrapping will accelerate in 2026. Sources: Maritime Statistics Bureau (2026), Nordhaven Shipbrokers (2026), Bulk Trade Weekly (2025), Deck Log Blog (2026).
+              Evidence: 4 independent sources, the strongest being official statistics or industry body, the newest published March 2026, a newer source disagrees. Confidence MEDIUM.
+              Evidence: one independent source, official statistics or industry body, published March 2026, no conflicting source. Confidence HIGH.
+            - Port congestion eased in the first quarter. Sources: not identified.
+
+            ## Identified uncertainties
+
+            - Demand from China may soften. Sources: Nordhaven Shipbrokers (2026), Bulk Trade Weekly (2025).
+
+            """;
+    private static final String EXPECTED_KEY_FACT_GROUPS = """
+            - Key fact 1 rests on groups g-fleet, g-two
+            - Key fact 2 rests on groups g-three
+            - Key fact 3 rests on groups g-four, g-fleet
+            - Key fact 4 rests on no evidence group
+            """;
+    private static final String QUOTED_TEXT = "Scrapping will accelerate.";
+    private static final String FINDING_DETAIL = "check the wording";
+    private static final String EXPECTED_MINOR_FINDING =
+            "- **Minor, hard to read:** \"Scrapping will accelerate.\" Reviewer note: check the wording";
 
     private static final String MODEL = "claude-sonnet-5-5";
     private static final PricingTable PRICING = new PricingTable(List.of(new ModelPrice(MODEL, 2.0, 0.2, 10.0)));
@@ -140,15 +197,52 @@ class MarkdownBriefingRendererTest {
     private final MarkdownBriefingRenderer renderer = new MarkdownBriefingRenderer(FIXED_CLOCK);
 
     @Test
-    void rendersSectionsKeyFactEvidenceGapConfidenceReasonsAndStopReason() {
+    void rendersAnalystSectionsInReaderOrderWithPlainEvidenceNotesAndNoGroupIds() {
         var markdown = renderer.render(briefingResult());
 
         assertThat(markdown).startsWith(EXPECTED_HEADER);
         assertThat(markdown).containsSubsequence(EXPECTED_HEADINGS);
         assertThat(markdown).contains(EXPECTED_KEY_FACT);
         assertThat(markdown).contains(EXPECTED_GAP);
+        assertThat(markdown).contains(EXPECTED_SUB_QUESTIONS);
         assertThat(markdown).contains(EXPECTED_CONFIDENCE);
         assertThat(markdown).contains(EXPECTED_STOP_REASON);
+        assertThat(markdown).contains(EXPECTED_AUDIT_LINES);
+        assertThat(markdown).doesNotContain(INTERNAL_GROUP_REFERENCE, "0.82)", "sq-1", "sq-2");
+    }
+
+    @Test
+    void attributesStatementsToDistinctPublishersAndDescribesEveryTierConflictAndSourceCount() {
+        var markdown = renderer.render(multiSourceBriefingResult());
+
+        assertThat(markdown).contains(EXPECTED_KEY_FACTS);
+        assertThat(markdown).contains(EXPECTED_KEY_FACT_GROUPS);
+        assertThat(markdown).contains(EXPECTED_MINOR_FINDING);
+        assertThat(markdown).doesNotContain(INTERNAL_GROUP_REFERENCE, UNKNOWN_SOURCE_ID);
+    }
+
+    @Test
+    void wordTablesCoverEveryEnumValue() {
+        assertThat(OutputConstants.TIER_WORDS).containsOnlyKeys(SourceTier.values());
+        assertThat(OutputConstants.CONFLICT_WORDS).containsOnlyKeys(ConflictStatus.values());
+        assertThat(OutputConstants.SEVERITY_WORDS).containsOnlyKeys(FindingSeverity.values());
+        assertThat(OutputConstants.FINDING_TYPE_WORDS).containsOnlyKeys(FindingType.values());
+    }
+
+    @Test
+    void rendersEveryFindingTypeInPlainWords() {
+        var findings = Arrays.stream(FindingType.values())
+                .map(type -> new CriticFinding(type, FindingSeverity.MINOR, QUOTED_TEXT, FINDING_DETAIL, List.of(),
+                        List.of()))
+                .toList();
+        var base = briefingResult();
+        var result = new BriefingResult(base.getDraft(), base.getConfidence(), findings, base.getGaps(),
+                base.getStopDecision(), base.getFinalState(), List.of(), base.getUsage());
+
+        var markdown = renderer.render(result);
+
+        assertThat(markdown).contains(OutputConstants.FINDING_TYPE_WORDS.values());
+        assertThat(markdown).doesNotContain(FindingType.CONTRADICTS_EVIDENCE.name(), FindingSeverity.MINOR.name());
     }
 
     @Test
@@ -194,6 +288,52 @@ class MarkdownBriefingRendererTest {
                 "Key facts demoted");
     }
 
+    private static BriefingResult multiSourceBriefingResult() {
+        var keyFacts = List.of(
+                new GroundedStatement(TWO_SOURCES_FACT, List.of(GROUP_ID, TWO_SOURCES_GROUP_ID)),
+                new GroundedStatement(THREE_SOURCES_FACT, List.of(THREE_SOURCES_GROUP_ID)),
+                new GroundedStatement(FOUR_SOURCES_FACT, List.of(FOUR_SOURCES_GROUP_ID, GROUP_ID)),
+                new GroundedStatement(UNCITED_FACT, List.of()));
+        var uncertainties = List.of(new GroundedStatement(UNCERTAINTY, List.of(TWO_SOURCES_GROUP_ID)));
+        var draft = new BriefingDraft(List.of(), keyFacts, uncertainties, List.of(), List.of(), List.of());
+        var finding = new CriticFinding(FindingType.READABILITY, FindingSeverity.MINOR, QUOTED_TEXT, FINDING_DETAIL,
+                List.of(), List.of());
+        var base = briefingResult();
+        var baseState = base.getFinalState();
+        var state = baseState.toBuilder()
+                .sources(List.of(
+                        baseState.getSources().getFirst(),
+                        source(BROKER_ID, "Nordhaven Shipbrokers", SourceType.BROKER_NOTE, LocalDate.of(2026, 2, 10)),
+                        source(PRESS_ID, "Bulk Trade Weekly", SourceType.TRADE_PRESS, LocalDate.of(2025, 11, 20)),
+                        source(BLOG_ID, "Deck Log Blog", SourceType.BLOG, LocalDate.of(2026, 1, 5))))
+                .groups(List.of(
+                        baseState.getGroups().getFirst(),
+                        group(TWO_SOURCES_GROUP_ID, List.of(BROKER_ID, PRESS_ID), SourceTier.B,
+                                LocalDate.of(2026, 2, 10), ConflictStatus.OPEN),
+                        group(THREE_SOURCES_GROUP_ID, List.of(BLOG_ID, UNKNOWN_SOURCE_ID, OTHER_UNKNOWN_SOURCE_ID),
+                                SourceTier.C, LocalDate.of(2026, 1, 5), ConflictStatus.RESOLVED_BY_RECENCY),
+                        group(FOUR_SOURCES_GROUP_ID, List.of(SOURCE_ID, BROKER_ID, PRESS_ID, BLOG_ID), SourceTier.A,
+                                PUBLISHED, ConflictStatus.SUPERSEDED)))
+                .confidences(List.of(
+                        baseState.getConfidences().getFirst(),
+                        new GroupConfidence(TWO_SOURCES_GROUP_ID, 0.5, ConfidenceLevel.MEDIUM, List.of()),
+                        new GroupConfidence(THREE_SOURCES_GROUP_ID, 0.2, ConfidenceLevel.LOW, List.of()),
+                        new GroupConfidence(FOUR_SOURCES_GROUP_ID, 0.6, ConfidenceLevel.MEDIUM, List.of())))
+                .build();
+        return new BriefingResult(draft, base.getConfidence(), List.of(finding), List.of(), base.getStopDecision(),
+                state, List.of(), base.getUsage());
+    }
+
+    private static Source source(String id, String publisher, SourceType type, LocalDate publishedAt) {
+        return new Source(id, publisher + " note", publisher, type, publishedAt, null, List.of(), "Excerpt.");
+    }
+
+    private static EvidenceGroup group(String id, List<String> sourceIds, SourceTier tier, LocalDate newest,
+            ConflictStatus conflict) {
+        return new EvidenceGroup(id, Set.of(COVERED.getId()), KEY_FACT, List.of("c-" + id), sourceIds, tier, newest,
+                conflict, null, List.of());
+    }
+
     private static BriefingResult degradedBriefingResult() {
         var summary = new GroundedStatement(SUMMARY, List.of(GROUP_ID));
         var draft = new BriefingDraft(List.of(summary), List.of(new GroundedStatement(UNGROUNDED_FACT,
@@ -203,11 +343,12 @@ class MarkdownBriefingRendererTest {
                 "no evidence group supports it", List.of(MISSING_GROUP_ID), List.of());
         var confidence = new BriefingConfidence(ConfidenceLevel.LOW, 0.2, List.of(SECOND_REASON));
         var stopDecision = new StopDecision(StopReason.ROUND_LIMIT_REACHED, STOP_EXPLANATION);
+        var base = finalState();
         var derivative = new Source(DERIVATIVE_ID, "Fleet grows", "Trade Press", SourceType.TRADE_PRESS,
                 PUBLISHED, SOURCE_ID, List.of(), "Citing the bureau.");
-        var state = finalState().toBuilder()
+        var state = base.toBuilder()
                 .interpretation(INTERPRETATION)
-                .sources(List.of(derivative))
+                .sources(List.of(base.getSources().getFirst(), derivative))
                 .failures(List.of(new AgentFailure("critic", 2, "model returned malformed JSON twice")))
                 .build();
         return new BriefingResult(draft, confidence, List.of(finding), List.of(), stopDecision, state, List.of(),

@@ -540,6 +540,11 @@
         html.push('<li' + (listMatch[1].length ? ' class="sub"' : '') + '>' + inline(listMatch[2]) + '</li>');
         return;
       }
+      var continuation = listOpen && line.match(/^\s+(\S.*)$/);
+      if (continuation) {
+        html.push('<li class="sub">' + inline(continuation[1]) + '</li>');
+        return;
+      }
       if (listOpen) { html.push('</ul>'); listOpen = false; }
       if (line.startsWith('> ')) {
         if (!quoteOpen) { html.push('<blockquote>'); quoteOpen = true; }
