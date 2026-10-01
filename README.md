@@ -10,6 +10,7 @@ Turns a free-text analyst question into a structured briefing with a confidence 
 ---
 
 <img src="docs/web-ui.png" width="49%"> <img src="docs/web-ui-stats.png" width="49%">
+<img src="docs/web-ui-pipeline.png" width="49%"> <img src="docs/coverage-core.png" width="49%">
 
 ---
 ## Run it
@@ -33,6 +34,10 @@ The CLI does the same without a browser and reads the key from the environment:
 java -jar research-pipeline.jar --query "Give me an overview of the dry bulk shipping market and its main risk drivers."
 ./mvnw -B test        # tests only; JaCoCo enforces 100% line and branch coverage, report under core|app/target/site/jacoco
 ```
+
+JaCoCo report of the current build, both modules at 100 percent line and branch coverage:
+
+<img src="docs/coverage-core.png" width="49%"> <img src="docs/coverage-app.png" width="49%">
 
 - `LLM_PROVIDER`: `anthropic` (default), `openai` or `local`
 - `ANTHROPIC_API_KEY`, `ANTHROPIC_MODEL` (default `claude-sonnet-5-5`), `ANTHROPIC_API_URL`
