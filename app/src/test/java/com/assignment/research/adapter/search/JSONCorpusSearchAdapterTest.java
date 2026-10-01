@@ -1,12 +1,14 @@
 package com.assignment.research.adapter.search;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.assignment.research.adapter.output.JSONMapperFactory;
 import com.assignment.research.evidence.SearchHit;
 import com.assignment.research.evidence.Source;
 import com.assignment.research.evidence.SourceTier;
 import com.assignment.research.evidence.SourceType;
+import java.io.UncheckedIOException;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.List;
@@ -20,6 +22,12 @@ class JSONCorpusSearchAdapterTest {
     private static final Source REPORT_ONLY = new Source("src-report", "Quarterly market report", "Broker",
             SourceType.BROKER_NOTE, LocalDate.of(2026, 1, 15), null, List.of("freight"),
             "Analysts report weaker freight demand.");
+    private static final Source OLDER_QUOTED = new Source("src-older", "\"Freight\" outlook", "Broker",
+            SourceType.BROKER_NOTE, LocalDate.of(2025, 6, 1), null, List.of("freight"), "Older freight view.");
+    private static final Source NEWER_QUOTED = new Source("src-newer", "\"Freight\" update", "Broker",
+            SourceType.BROKER_NOTE, LocalDate.of(2026, 2, 1), null, List.of("freight"), "Newer freight view.");
+    private static final Path MISSING_CORPUS = CORPUS.resolveSibling("does-not-exist.json");
+    private static final int SINGLE_RESULT = 1;
 
     private final JSONCorpusSearchAdapter search = JSONCorpusSearchAdapter.load(CORPUS, JSONMapperFactory.create());
 
@@ -74,5 +82,32 @@ class JSONCorpusSearchAdapterTest {
         assertThat(reportOnly.search(List.of("port"), MAX_RESULTS)).isEmpty();
         assertThat(reportOnly.search(List.of("report"), MAX_RESULTS)).hasSize(1);
         assertThat(reportOnly.search(List.of("weaker freight"), MAX_RESULTS)).hasSize(1);
+        assertThat(reportOnly.search(List.of("demand weaker"), MAX_RESULTS)).hasSize(1);
+    }
+
+    @Test
+    void keywordsWithoutAnyWordCharactersOrWithOnlyShortUnmatchedWordsFindNothing() {
+        var reportOnly = new JSONCorpusSearchAdapter(List.of(REPORT_ONLY));
+
+        assertThat(reportOnly.search(List.of("", "--"), MAX_RESULTS)).isEmpty();
+        assertThat(reportOnly.search(List.of("an of"), MAX_RESULTS)).isEmpty();
+    }
+
+    @Test
+    void equalScoresAreOrderedNewestFirstAndCutAtMaxResults() {
+        var adapter = new JSONCorpusSearchAdapter(List.of(OLDER_QUOTED, NEWER_QUOTED));
+
+        assertThat(adapter.size()).isEqualTo(2);
+        assertThat(adapter.search(List.of("freight"), MAX_RESULTS)).extracting(hit -> hit.getSource().getId())
+                .containsExactly(NEWER_QUOTED.getId(), OLDER_QUOTED.getId());
+        assertThat(adapter.search(List.of("freight"), SINGLE_RESULT)).extracting(hit -> hit.getSource().getId())
+                .containsExactly(NEWER_QUOTED.getId());
+    }
+
+    @Test
+    void loadingAMissingCorpusFailsNamingTheFile() {
+        assertThatThrownBy(() -> JSONCorpusSearchAdapter.load(MISSING_CORPUS, JSONMapperFactory.create()))
+                .isInstanceOf(UncheckedIOException.class)
+                .hasMessageContaining(MISSING_CORPUS.getFileName().toString());
     }
 }

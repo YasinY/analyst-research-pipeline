@@ -17,8 +17,12 @@ public final class HttpJSONPoster {
     private final ObjectMapper mapper;
 
     public HttpJSONPoster(ObjectMapper mapper) {
+        this(mapper, HttpClient.newBuilder().connectTimeout(LLMAdapterConstants.CONNECT_TIMEOUT).build());
+    }
+
+    public HttpJSONPoster(ObjectMapper mapper, HttpClient http) {
         this.mapper = mapper;
-        this.http = HttpClient.newBuilder().connectTimeout(LLMAdapterConstants.CONNECT_TIMEOUT).build();
+        this.http = http;
     }
 
     public JsonNode post(String url, Map<String, String> headers, Object body) {

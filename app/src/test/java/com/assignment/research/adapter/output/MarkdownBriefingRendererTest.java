@@ -4,10 +4,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.assignment.research.confidence.ConfidenceLevel;
 import com.assignment.research.confidence.GroupConfidence;
+import com.assignment.research.critique.CriticFinding;
+import com.assignment.research.critique.FindingSeverity;
+import com.assignment.research.critique.FindingType;
 import com.assignment.research.evidence.Source;
 import com.assignment.research.evidence.SourceTier;
 import com.assignment.research.evidence.SourceType;
 import com.assignment.research.llm.LLMUsage;
+import com.assignment.research.pipeline.AgentFailure;
 import com.assignment.research.pipeline.BriefingConfidence;
 import com.assignment.research.pipeline.BriefingResult;
 import com.assignment.research.pipeline.BriefingState;
@@ -79,6 +83,39 @@ class MarkdownBriefingRendererTest {
             "## How this briefing was produced",
             "## Sources consulted");
 
+    private static final String SUMMARY = "Supply grows moderately.";
+    private static final String EXPECTED_SUMMARY = """
+            ## Summary
+
+            - Supply grows moderately. [g-fleet]
+
+            ## Key facts
+            """;
+    private static final String MISSING_GROUP_ID = "g-missing";
+    private static final String UNGROUNDED_FACT = "Ports were congested.";
+    private static final String DERIVATIVE_ID = "src-tradepress";
+    private static final String INTERPRETATION = "dry bulk supply side only";
+    private static final String FOLLOW_UP = "How will the orderbook evolve?";
+    private static final String EXPECTED_UNGROUNDED_FACT = """
+            - Ports were congested. [g-missing]
+
+            """;
+    private static final String EXPECTED_FINDING =
+            "- **MAJOR / UNSUPPORTED** on \"Ports were congested.\": no evidence group supports it";
+    private static final String EXPECTED_FOLLOW_UPS = """
+            ## Suggested follow-up questions
+
+            - How will the orderbook evolve?
+            """;
+    private static final String EXPECTED_COUNTS = """
+            - Statements removed for lacking evidence: 2
+            - Key facts demoted to uncertainties for weak evidence: 1
+            - Degraded steps:
+              - round 2, critic: model returned malformed JSON twice
+            """;
+    private static final String EXPECTED_CITING_SOURCE =
+            "- `src-tradepress` Fleet grows, Trade Press (TRADE_PRESS, tier B), 2026-03-01, cites `src-fleet-stats`";
+
     private final MarkdownBriefingRenderer renderer = new MarkdownBriefingRenderer(FIXED_CLOCK);
 
     @Test
@@ -91,6 +128,49 @@ class MarkdownBriefingRendererTest {
         assertThat(markdown).contains(EXPECTED_GAP);
         assertThat(markdown).contains(EXPECTED_CONFIDENCE);
         assertThat(markdown).contains(EXPECTED_STOP_REASON);
+    }
+
+    @Test
+    void rendersOpenFindingsFollowUpsDegradedStepsCountsAndCitationsWithoutGaps() {
+        var markdown = renderer.render(degradedBriefingResult());
+
+        assertThat(markdown).contains("> **Scope as understood by the system:** " + INTERPRETATION);
+        assertThat(markdown).contains(EXPECTED_SUMMARY);
+        assertThat(markdown).contains(EXPECTED_UNGROUNDED_FACT);
+        assertThat(markdown).doesNotContain(OutputConstants.GAPS_HEADING, OutputConstants.REVIEWER_APPROVED);
+        assertThat(markdown).contains(EXPECTED_FINDING);
+        assertThat(markdown).contains(EXPECTED_FOLLOW_UPS);
+        assertThat(markdown).contains(EXPECTED_COUNTS);
+        assertThat(markdown).contains(EXPECTED_CITING_SOURCE);
+    }
+
+    @Test
+    void approvedDraftWithoutFailuresOmitsCountsAndShowsTheApproval() {
+        var markdown = renderer.render(briefingResult());
+
+        assertThat(markdown).contains(OutputConstants.REVIEWER_APPROVED);
+        assertThat(markdown).doesNotContain(OutputConstants.DEGRADED_STEPS_LINE, "Statements removed",
+                "Key facts demoted");
+    }
+
+    private static BriefingResult degradedBriefingResult() {
+        var summary = new GroundedStatement(SUMMARY, List.of(GROUP_ID));
+        var draft = new BriefingDraft(List.of(summary), List.of(new GroundedStatement(UNGROUNDED_FACT,
+                List.of(MISSING_GROUP_ID))), List.of(), List.of(FOLLOW_UP), List.of("weak fact"),
+                List.of("dropped one", "dropped two"));
+        var finding = new CriticFinding(FindingType.UNSUPPORTED, FindingSeverity.MAJOR, UNGROUNDED_FACT,
+                "no evidence group supports it", List.of(MISSING_GROUP_ID), List.of());
+        var confidence = new BriefingConfidence(ConfidenceLevel.LOW, 0.2, List.of(SECOND_REASON));
+        var stopDecision = new StopDecision(StopReason.ROUND_LIMIT_REACHED, STOP_EXPLANATION);
+        var derivative = new Source(DERIVATIVE_ID, "Fleet grows", "Trade Press", SourceType.TRADE_PRESS,
+                PUBLISHED, SOURCE_ID, List.of(), "Citing the bureau.");
+        var state = finalState().toBuilder()
+                .interpretation(INTERPRETATION)
+                .sources(List.of(derivative))
+                .failures(List.of(new AgentFailure("critic", 2, "model returned malformed JSON twice")))
+                .build();
+        return new BriefingResult(draft, confidence, List.of(finding), List.of(), stopDecision, state, List.of(),
+                new LLMUsage(100, 50));
     }
 
     private static BriefingResult briefingResult() {
