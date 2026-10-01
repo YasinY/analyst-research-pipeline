@@ -1,4 +1,4 @@
-package dev.yazici.research.domain;
+package com.assignment.research.domain;
 
 import java.time.LocalDate;
 import java.util.List;

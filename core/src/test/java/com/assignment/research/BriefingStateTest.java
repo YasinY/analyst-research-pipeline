@@ -1,10 +1,10 @@
-package dev.yazici.research;
+package com.assignment.research;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import dev.yazici.research.domain.AnalystQuery;
-import dev.yazici.research.domain.BriefingState;
-import dev.yazici.research.domain.SubQuestion;
+import com.assignment.research.domain.AnalystQuery;
+import com.assignment.research.domain.BriefingState;
+import com.assignment.research.domain.SubQuestion;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
