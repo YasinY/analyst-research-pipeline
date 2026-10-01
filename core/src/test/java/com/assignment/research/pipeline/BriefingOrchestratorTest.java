@@ -8,6 +8,7 @@ import com.assignment.research.critique.CritiqueOutput;
 import com.assignment.research.critique.FindingOutput;
 import com.assignment.research.critique.FindingSeverity;
 import com.assignment.research.critique.FindingType;
+import com.assignment.research.evidence.Claim;
 import com.assignment.research.evidence.ExtractedClaim;
 import com.assignment.research.evidence.FakeSourceSearchPort;
 import com.assignment.research.evidence.ResearchOutput;
@@ -19,6 +20,7 @@ import com.assignment.research.planning.PlannedQuestion;
 import com.assignment.research.prompt.FakePromptTemplates;
 import com.assignment.research.query.AnalystQuery;
 import com.assignment.research.reconciliation.ClaimGroupOutput;
+import com.assignment.research.reconciliation.EvidenceGroup;
 import com.assignment.research.reconciliation.ReconciliationOutput;
 import com.assignment.research.synthesis.GroundedStatement;
 import com.assignment.research.synthesis.SynthesisOutput;
@@ -44,6 +46,7 @@ class BriefingOrchestratorTest {
             List.of(new ClaimGroupOutput("g1", "Fleet grew about 3% in 2025.", List.of("q1-c1", "q1-c2", "q2-c1",
                     "q2-c2"))), List.of());
     private static final CritiqueOutput CLEAN = CritiqueOutput.clean();
+    private static final String GROUP_OF_Q1_C1 = "g-q1-c1";
 
     private final FakePromptTemplates prompts = new FakePromptTemplates("prompt without placeholders");
     private final FakeSourceSearchPort search = FakeSourceSearchPort.returning(Sources.tierA("src-a"),
@@ -62,7 +65,7 @@ class BriefingOrchestratorTest {
 
     private static FindingOutput overstated() {
         return new FindingOutput(FindingType.OVERSTATED_CERTAINTY, FindingSeverity.MAJOR,
-                "Fleet grew about 3% in 2025.", "Evidence is medium.", List.of("g1"), List.of());
+                "Fleet grew about 3% in 2025.", "Evidence is medium.", List.of(GROUP_OF_Q1_C1), List.of());
     }
 
     @Test
@@ -71,7 +74,7 @@ class BriefingOrchestratorTest {
                 .on("planner", TWO_QUESTIONS)
                 .on("researcher", TWO_CLAIMS)
                 .on("reconciler", ONE_GROUP)
-                .on("synthesizer", groundedDraft("g1"))
+                .on("synthesizer", groundedDraft(GROUP_OF_Q1_C1))
                 .on("critic", CLEAN);
 
         var result = new BriefingOrchestrator(llm, search, prompts, CLOCK).produce(QUERY, observer);
@@ -97,7 +100,7 @@ class BriefingOrchestratorTest {
                 .on("planner", TWO_QUESTIONS)
                 .on("researcher", TWO_CLAIMS)
                 .on("reconciler", ONE_GROUP)
-                .on("synthesizer", groundedDraft("g1"))
+                .on("synthesizer", groundedDraft(GROUP_OF_Q1_C1))
                 .on("critic", new CritiqueOutput(List.of(missingEvidence())), CLEAN);
 
         var result = new BriefingOrchestrator(llm, searchWithoutFollowUpHits, prompts, CLOCK)
@@ -118,7 +121,7 @@ class BriefingOrchestratorTest {
                 .on("planner", TWO_QUESTIONS)
                 .on("researcher", TWO_CLAIMS)
                 .on("reconciler", ONE_GROUP)
-                .on("synthesizer", groundedDraft("g1"))
+                .on("synthesizer", groundedDraft(GROUP_OF_Q1_C1))
                 .on("critic", new CritiqueOutput(List.of(overstated())));
 
         var result = new BriefingOrchestrator(llm, search, prompts, CLOCK).produce(QUERY, observer);
@@ -136,7 +139,7 @@ class BriefingOrchestratorTest {
                 .on("planner", TWO_QUESTIONS)
                 .on("researcher", TWO_CLAIMS)
                 .on("reconciler", ONE_GROUP)
-                .on("synthesizer", groundedDraft("g1"))
+                .on("synthesizer", groundedDraft(GROUP_OF_Q1_C1))
                 .on("critic", new LLMException("provider down"));
 
         var result = new BriefingOrchestrator(llm, search, prompts, CLOCK).produce(QUERY, observer);
@@ -156,13 +159,60 @@ class BriefingOrchestratorTest {
     }
 
     @Test
+    void unexpectedRuntimeFailureIsWrappedIntoPipelineAbortedWithTheStepName() {
+        var unexpected = new IllegalStateException("bug in adapter");
+        var llm = new ScriptedLLMPort().on("planner", unexpected);
+
+        assertThatThrownBy(() -> new BriefingOrchestrator(llm, search, prompts, CLOCK).produce(QUERY, observer))
+                .isInstanceOf(PipelineAbortedException.class)
+                .hasMessage(PipelineStep.PLAN.name())
+                .hasCause(unexpected);
+    }
+
+    @Test
+    void secondRoundResearchOnAnExistingSubQuestionContinuesItsClaimNumbering() {
+        var weakClaim = new ResearchOutput(List.of(new ExtractedClaim("A blog expects rates to rise.", "src-c")));
+        var llm = new ScriptedLLMPort()
+                .on("planner", TWO_QUESTIONS)
+                .on("researcher", weakClaim)
+                .on("reconciler", ReconciliationOutput.empty())
+                .on("synthesizer", groundedDraft(GROUP_OF_Q1_C1))
+                .on("critic", CLEAN);
+
+        var result = new BriefingOrchestrator(llm, FakeSourceSearchPort.returning(Sources.tierC("src-c")), prompts,
+                CLOCK).produce(QUERY, observer);
+
+        assertThat(result.getFinalState().getRound()).isEqualTo(2);
+        assertThat(result.getFinalState().getClaims()).extracting(Claim::getId)
+                .containsExactly("q1-c1", "q2-c1", "q1-c2", "q2-c2");
+        assertThat(result.getFinalState().getGroups()).extracting(EvidenceGroup::getId)
+                .containsExactly(GROUP_OF_Q1_C1, "g-q2-c1", "g-q1-c2", "g-q2-c2");
+    }
+
+    @Test
+    void neverFinishesWithoutADraftEvenWhenNoEvidenceIsFound() {
+        var emptyDraft = new SynthesisOutput(List.of(), List.of(), List.of(), List.of());
+        var llm = new ScriptedLLMPort()
+                .on("planner", TWO_QUESTIONS)
+                .on("synthesizer", emptyDraft)
+                .on("critic", CLEAN);
+
+        var result = new BriefingOrchestrator(llm, FakeSourceSearchPort.empty(), prompts, CLOCK)
+                .produce(QUERY, observer);
+
+        assertThat(result.getDraft()).isNotNull();
+        assertThat(observer.getSteps()).containsSubsequence(PipelineStep.SYNTHESIZE, PipelineStep.FINISH);
+        assertThat(result.getGaps()).extracting(gap -> gap.getId()).containsExactly("q1", "q2");
+    }
+
+    @Test
     void researcherFailureBecomesAVisibleGapInsteadOfAbortingTheRun() {
         var llm = new ScriptedLLMPort()
                 .on("planner", TWO_QUESTIONS)
                 .on("researcher/q1", TWO_CLAIMS)
                 .on("researcher/q2", new LLMException("timeout"))
                 .on("reconciler", ONE_GROUP)
-                .on("synthesizer", groundedDraft("g1"))
+                .on("synthesizer", groundedDraft(GROUP_OF_Q1_C1))
                 .on("critic", CLEAN);
 
         var result = new BriefingOrchestrator(llm, search, prompts, CLOCK).produce(QUERY, observer);

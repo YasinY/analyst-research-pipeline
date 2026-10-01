@@ -20,6 +20,7 @@ public final class SynthesisConstants {
             "[%s] confidence %s (%.2f): %s | %d independent source(s), best tier %s, newest %s, conflict %s";
     public static final String CONFLICT_SUFFIX = " | conflicts with %s: %s";
     public static final String GAP_LINE = "[%s] %s";
+    public static final String FOLLOW_UP_LINE = "- %s";
     public static final String STATEMENT_LINE = "- %s (groups: %s)";
     public static final String FINDING_LINE = "- %s %s on \"%s\": %s";
     public static final String SECTION_FORMAT = "%s:%n%s";

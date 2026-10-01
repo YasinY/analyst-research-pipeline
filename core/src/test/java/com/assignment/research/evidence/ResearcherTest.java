@@ -12,6 +12,7 @@ class ResearcherTest {
 
     private static final SubQuestion QUESTION = new SubQuestion("q2", "What drives supply?", List.of("fleet"));
     private static final int ROUND = 1;
+    private static final int FIRST_CLAIM = 1;
     private static final Source SOURCE_A = Sources.tierA("src-a");
     private static final Source SOURCE_B = Sources.tierC("src-b");
 
@@ -27,7 +28,7 @@ class ResearcherTest {
         var llm = FakeLLMPort.returning(output);
         var researcher = new Researcher(llm, FakeSourceSearchPort.returning(SOURCE_A, SOURCE_B), prompts);
 
-        var result = researcher.research(QUESTION, ROUND);
+        var result = researcher.research(QUESTION, ROUND, FIRST_CLAIM);
 
         assertThat(result.getClaims()).extracting(Claim::getId).containsExactly("q2-c1", "q2-c2");
         assertThat(result.getClaims()).extracting(Claim::getSubQuestionId).containsOnly("q2");
@@ -36,11 +37,24 @@ class ResearcherTest {
     }
 
     @Test
+    void continuesClaimNumberingWhenTheSubQuestionIsResearchedAgain() {
+        var output = new ResearchOutput(List.of(
+                new ExtractedClaim("Fleet grew 3.1% in 2025.", "src-a"),
+                new ExtractedClaim("Rates will double.", "src-b")));
+        var researcher = new Researcher(FakeLLMPort.returning(output),
+                FakeSourceSearchPort.returning(SOURCE_A, SOURCE_B), prompts);
+
+        var result = researcher.research(QUESTION, 2, 3);
+
+        assertThat(result.getClaims()).extracting(Claim::getId).containsExactly("q2-c3", "q2-c4");
+    }
+
+    @Test
     void skipsLLMEntirelyWhenSearchFindsNothing() {
         var llm = FakeLLMPort.returning(new ResearchOutput(List.of()));
         var researcher = new Researcher(llm, FakeSourceSearchPort.empty(), prompts);
 
-        var result = researcher.research(QUESTION, ROUND);
+        var result = researcher.research(QUESTION, ROUND, FIRST_CLAIM);
 
         assertThat(result.hasClaims()).isFalse();
         assertThat(result.getConsultedSources()).isEmpty();
@@ -56,7 +70,7 @@ class ResearcherTest {
         var llm = FakeLLMPort.returning(output);
         var researcher = new Researcher(llm, FakeSourceSearchPort.returning(SOURCE_A), prompts);
 
-        var result = researcher.research(QUESTION, ROUND);
+        var result = researcher.research(QUESTION, ROUND, FIRST_CLAIM);
 
         assertThat(result.getClaims()).hasSize(1);
     }
@@ -66,7 +80,7 @@ class ResearcherTest {
         var llm = FakeLLMPort.returning(new ResearchOutput(List.of()));
         var researcher = new Researcher(llm, FakeSourceSearchPort.returning(SOURCE_A), prompts);
 
-        researcher.research(QUESTION, 2);
+        researcher.research(QUESTION, 2, FIRST_CLAIM);
 
         var request = llm.getLastRequest();
         assertThat(request.getLabel()).isEqualTo("researcher/q2/round2");

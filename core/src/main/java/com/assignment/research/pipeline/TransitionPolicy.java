@@ -49,13 +49,12 @@ public final class TransitionPolicy {
             return Transition.finish(StopReason.CALL_BUDGET_EXHAUSTED,
                     PipelineConstants.EXPLANATION_CALL_BUDGET.formatted(PipelineConstants.MAX_LLM_CALLS));
         }
-        if (!critique.getResearchFindings().isEmpty()) {
-            if (state.getRound() < PipelineConstants.MAX_RESEARCH_ROUNDS) {
-                return Transition.to(PipelineStep.SCHEDULE_RESEARCH);
-            }
-            if (critique.getRewriteFindings().isEmpty()) {
-                return roundLimit(state);
-            }
+        var researchRequested = !critique.getResearchFindings().isEmpty();
+        if (researchRequested && state.getRound() < PipelineConstants.MAX_RESEARCH_ROUNDS) {
+            return Transition.to(PipelineStep.SCHEDULE_RESEARCH);
+        }
+        if (researchRequested && critique.getRewriteFindings().isEmpty()) {
+            return roundLimit(state);
         }
         if (state.getRewritesInRound() < PipelineConstants.MAX_REWRITES_PER_ROUND) {
             return Transition.to(PipelineStep.SYNTHESIZE);

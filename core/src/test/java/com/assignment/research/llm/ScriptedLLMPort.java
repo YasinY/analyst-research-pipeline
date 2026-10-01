@@ -28,7 +28,7 @@ public final class ScriptedLLMPort implements LLMPort {
     public <T> LLMResult<T> complete(LLMRequest request, Class<T> responseType) {
         requests.add(request);
         var response = nextResponse(request.getLabel());
-        if (response instanceof LLMException failure) {
+        if (response instanceof RuntimeException failure) {
             throw failure;
         }
         return new LLMResult<>(responseType.cast(response), RAW, MODEL, USAGE_PER_CALL, LLMCallStatus.OK);

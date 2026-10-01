@@ -1,14 +1,12 @@
 package com.assignment.research.synthesis;
 
-import com.assignment.research.confidence.ConfidenceLevel;
+import com.assignment.research.confidence.ConfidenceConstants;
 import com.assignment.research.confidence.GroupConfidence;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public final class BriefingDraftAssembler {
-
-    private static final ConfidenceLevel KEY_FACT_MINIMUM = ConfidenceLevel.MEDIUM;
 
     private BriefingDraftAssembler() {
     }
@@ -54,6 +52,6 @@ public final class BriefingDraftAssembler {
     private static boolean restsOnEligibleGroup(GroundedStatement statement, Map<String, GroupConfidence> confidences) {
         return statement.getGroupIds().stream()
                 .map(confidences::get)
-                .anyMatch(confidence -> confidence.getLevel().isAtLeast(KEY_FACT_MINIMUM));
+                .anyMatch(confidence -> confidence.getLevel().isAtLeast(ConfidenceConstants.ADEQUATE_EVIDENCE));
     }
 }

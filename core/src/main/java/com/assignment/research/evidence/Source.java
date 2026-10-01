@@ -32,8 +32,4 @@ public class Source {
     public Optional<String> getCitedSource() {
         return Optional.ofNullable(citesSourceId);
     }
-
-    public boolean isDerivative() {
-        return citesSourceId != null;
-    }
 }
