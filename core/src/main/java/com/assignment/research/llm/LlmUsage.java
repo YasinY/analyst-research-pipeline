@@ -1,14 +1,20 @@
-package com.assignment.research.domain;
+package com.assignment.research.llm;
 
-public record LlmUsage(int inputTokens, int outputTokens) {
+import lombok.Value;
+
+@Value
+public class LlmUsage {
 
     public static final LlmUsage NONE = new LlmUsage(0, 0);
+
+    int inputTokens;
+    int outputTokens;
 
     public LlmUsage plus(LlmUsage other) {
         return new LlmUsage(inputTokens + other.inputTokens, outputTokens + other.outputTokens);
     }
 
-    public int totalTokens() {
+    public int getTotalTokens() {
         return inputTokens + outputTokens;
     }
 }

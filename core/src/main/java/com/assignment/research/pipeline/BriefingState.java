@@ -1,24 +1,24 @@
-package com.assignment.research.domain;
+package com.assignment.research.pipeline;
 
+import com.assignment.research.evidence.Claim;
+import com.assignment.research.evidence.Source;
+import com.assignment.research.planning.SubQuestion;
+import com.assignment.research.query.AnalystQuery;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Stream;
+import lombok.NonNull;
+import lombok.Value;
 
-public record BriefingState(
-        AnalystQuery query,
-        List<SubQuestion> subQuestions,
-        List<Source> sources,
-        List<Claim> claims,
-        int round) {
+@Value
+public class BriefingState {
 
     private static final int FIRST_ROUND = 1;
 
-    public BriefingState {
-        Objects.requireNonNull(query, "query");
-        subQuestions = List.copyOf(Objects.requireNonNull(subQuestions, "subQuestions"));
-        sources = List.copyOf(Objects.requireNonNull(sources, "sources"));
-        claims = List.copyOf(Objects.requireNonNull(claims, "claims"));
-    }
+    @NonNull AnalystQuery query;
+    @NonNull List<SubQuestion> subQuestions;
+    @NonNull List<Source> sources;
+    @NonNull List<Claim> claims;
+    int round;
 
     public static BriefingState initial(AnalystQuery query) {
         return new BriefingState(query, List.of(), List.of(), List.of(), FIRST_ROUND);

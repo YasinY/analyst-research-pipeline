@@ -1,10 +1,9 @@
-package com.assignment.research;
+package com.assignment.research.pipeline;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.assignment.research.domain.AnalystQuery;
-import com.assignment.research.domain.BriefingState;
-import com.assignment.research.domain.SubQuestion;
+import com.assignment.research.planning.SubQuestion;
+import com.assignment.research.query.AnalystQuery;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
@@ -16,9 +15,9 @@ class BriefingStateTest {
     void initialStateStartsInRoundOneWithoutContent() {
         var state = BriefingState.initial(QUERY);
 
-        assertThat(state.round()).isEqualTo(1);
-        assertThat(state.subQuestions()).isEmpty();
-        assertThat(state.claims()).isEmpty();
+        assertThat(state.getRound()).isEqualTo(1);
+        assertThat(state.getSubQuestions()).isEmpty();
+        assertThat(state.getClaims()).isEmpty();
     }
 
     @Test
@@ -28,7 +27,7 @@ class BriefingStateTest {
 
         var updated = initial.withSubQuestions(List.of(question));
 
-        assertThat(initial.subQuestions()).isEmpty();
-        assertThat(updated.subQuestions()).containsExactly(question);
+        assertThat(initial.getSubQuestions()).isEmpty();
+        assertThat(updated.getSubQuestions()).containsExactly(question);
     }
 }

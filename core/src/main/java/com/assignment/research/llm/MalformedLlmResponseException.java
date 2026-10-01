@@ -1,5 +1,8 @@
-package com.assignment.research.application.port;
+package com.assignment.research.llm;
 
+import lombok.Getter;
+
+@Getter
 public class MalformedLlmResponseException extends LlmException {
 
     private final String rawText;
@@ -7,9 +10,5 @@ public class MalformedLlmResponseException extends LlmException {
     public MalformedLlmResponseException(String message, String rawText) {
         super(message);
         this.rawText = rawText;
-    }
-
-    public String rawText() {
-        return rawText;
     }
 }

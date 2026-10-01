@@ -1,13 +1,9 @@
-package com.assignment.research.application;
+package com.assignment.research.llm;
 
-import com.assignment.research.application.port.LlmException;
-import com.assignment.research.application.port.LlmPort;
-import com.assignment.research.application.port.LlmRequest;
-import com.assignment.research.application.port.LlmResult;
-import com.assignment.research.domain.LlmCallStatus;
-import com.assignment.research.domain.LlmUsage;
 import java.util.function.Function;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
 public final class FakeLlmPort implements LlmPort {
 
     public static final String MODEL = "fake-model";
@@ -15,12 +11,6 @@ public final class FakeLlmPort implements LlmPort {
     private final Function<LlmRequest, Object> responder;
     private final String rawText;
     private final LlmUsage usage;
-
-    private FakeLlmPort(Function<LlmRequest, Object> responder, String rawText, LlmUsage usage) {
-        this.responder = responder;
-        this.rawText = rawText;
-        this.usage = usage;
-    }
 
     public static FakeLlmPort returning(Object value, String rawText, LlmUsage usage) {
         return new FakeLlmPort(request -> value, rawText, usage);

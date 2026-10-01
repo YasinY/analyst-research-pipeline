@@ -1,5 +1,10 @@
-package com.assignment.research.domain;
+package com.assignment.research.evidence;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@Getter
+@RequiredArgsConstructor
 public enum SourceType {
     REGULATOR(SourceTier.A),
     OFFICIAL_STATISTICS(SourceTier.A),
@@ -13,12 +18,4 @@ public enum SourceType {
     PROMOTIONAL(SourceTier.C);
 
     private final SourceTier tier;
-
-    SourceType(SourceTier tier) {
-        this.tier = tier;
-    }
-
-    public SourceTier tier() {
-        return tier;
-    }
 }

@@ -1,15 +1,14 @@
-package com.assignment.research.application.trace;
+package com.assignment.research.trace;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.assignment.research.application.FakeLlmPort;
-import com.assignment.research.application.port.LlmException;
-import com.assignment.research.application.port.LlmRequest;
-import com.assignment.research.application.port.MalformedLlmResponseException;
-import com.assignment.research.domain.LlmCallStatus;
-import com.assignment.research.domain.LlmUsage;
-import com.assignment.research.domain.TraceEntry;
+import com.assignment.research.llm.FakeLlmPort;
+import com.assignment.research.llm.LlmCallStatus;
+import com.assignment.research.llm.LlmException;
+import com.assignment.research.llm.LlmRequest;
+import com.assignment.research.llm.LlmUsage;
+import com.assignment.research.llm.MalformedLlmResponseException;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
@@ -30,15 +29,15 @@ class TracingLlmPortTest {
 
         var result = tracing.complete(REQUEST, String.class);
 
-        assertThat(result.value()).isEqualTo("parsed");
-        var entry = sink.entries().getFirst();
-        assertThat(entry.sequence()).isEqualTo(1);
-        assertThat(entry.label()).isEqualTo("planner");
-        assertThat(entry.systemPrompt()).isEqualTo("system");
-        assertThat(entry.rawResponse()).isEqualTo(RAW_JSON);
-        assertThat(entry.usage()).isEqualTo(new LlmUsage(100, 20));
-        assertThat(entry.status()).isEqualTo(LlmCallStatus.OK);
-        assertThat(sink.totalUsage().totalTokens()).isEqualTo(120);
+        assertThat(result.getValue()).isEqualTo("parsed");
+        var entry = sink.getEntries().getFirst();
+        assertThat(entry.getSequence()).isEqualTo(1);
+        assertThat(entry.getLabel()).isEqualTo("planner");
+        assertThat(entry.getSystemPrompt()).isEqualTo("system");
+        assertThat(entry.getRawResponse()).isEqualTo(RAW_JSON);
+        assertThat(entry.getUsage()).isEqualTo(new LlmUsage(100, 20));
+        assertThat(entry.getStatus()).isEqualTo(LlmCallStatus.OK);
+        assertThat(sink.getTotalUsage().getTotalTokens()).isEqualTo(120);
     }
 
     @Test
@@ -49,10 +48,10 @@ class TracingLlmPortTest {
         assertThatThrownBy(() -> tracing.complete(REQUEST, String.class))
                 .isInstanceOf(MalformedLlmResponseException.class);
 
-        var entry = sink.entries().getFirst();
-        assertThat(entry.status()).isEqualTo(LlmCallStatus.FAILED);
-        assertThat(entry.rawResponse()).isEqualTo("garbage output");
-        assertThat(entry.failure()).contains("not json");
+        var entry = sink.getEntries().getFirst();
+        assertThat(entry.getStatus()).isEqualTo(LlmCallStatus.FAILED);
+        assertThat(entry.getRawResponse()).isEqualTo("garbage output");
+        assertThat(entry.getFailure()).contains("not json");
     }
 
     @Test
@@ -63,6 +62,6 @@ class TracingLlmPortTest {
         assertThatThrownBy(() -> tracing.complete(REQUEST, String.class)).isInstanceOf(LlmException.class);
         assertThatThrownBy(() -> tracing.complete(REQUEST, String.class)).isInstanceOf(LlmException.class);
 
-        assertThat(sink.entries()).extracting(TraceEntry::sequence).containsExactly(1, 2);
+        assertThat(sink.getEntries()).extracting(TraceEntry::getSequence).containsExactly(1, 2);
     }
 }

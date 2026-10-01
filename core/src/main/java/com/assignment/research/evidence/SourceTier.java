@@ -1,4 +1,4 @@
-package com.assignment.research.domain;
+package com.assignment.research.evidence;
 
 public enum SourceTier {
     A,

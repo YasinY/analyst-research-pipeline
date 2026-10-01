@@ -1,4 +1,4 @@
-package com.assignment.research.application.port;
+package com.assignment.research.llm;
 
 public class LlmException extends RuntimeException {
 
