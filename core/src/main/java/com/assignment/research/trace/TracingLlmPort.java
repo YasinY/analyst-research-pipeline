@@ -1,5 +1,9 @@
 package com.assignment.research.trace;
 
+import static com.assignment.research.trace.TraceConstants.FIRST_SEQUENCE;
+import static com.assignment.research.trace.TraceConstants.NO_RESPONSE;
+import static com.assignment.research.trace.TraceConstants.UNKNOWN_MODEL;
+
 import com.assignment.research.llm.LlmCallStatus;
 import com.assignment.research.llm.LlmException;
 import com.assignment.research.llm.LlmPort;
@@ -15,10 +19,6 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public final class TracingLlmPort implements LlmPort {
-
-    private static final int FIRST_SEQUENCE = 1;
-    private static final String UNKNOWN_MODEL = "unknown";
-    private static final String NO_RESPONSE = "";
 
     private final LlmPort delegate;
     private final TraceSink sink;

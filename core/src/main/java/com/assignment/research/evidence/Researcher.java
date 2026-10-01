@@ -1,5 +1,14 @@
 package com.assignment.research.evidence;
 
+import static com.assignment.research.evidence.EvidenceConstants.CLAIM_ID_FORMAT;
+import static com.assignment.research.evidence.EvidenceConstants.FIRST_CLAIM_NUMBER;
+import static com.assignment.research.evidence.EvidenceConstants.MAX_OUTPUT_TOKENS;
+import static com.assignment.research.evidence.EvidenceConstants.MAX_SEARCH_HITS;
+import static com.assignment.research.evidence.EvidenceConstants.QUESTION_VARIABLE;
+import static com.assignment.research.evidence.EvidenceConstants.SOURCES_VARIABLE;
+import static com.assignment.research.evidence.EvidenceConstants.STATEMENT_KEY_SEPARATOR;
+import static com.assignment.research.evidence.EvidenceConstants.TRACE_LABEL_FORMAT;
+
 import com.assignment.research.llm.LlmPort;
 import com.assignment.research.llm.LlmRequest;
 import com.assignment.research.planning.SubQuestion;
@@ -14,14 +23,6 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public final class Researcher {
-
-    private static final String TRACE_LABEL_FORMAT = "researcher/%s/round%d";
-    private static final String QUESTION_VARIABLE = "question";
-    private static final String SOURCES_VARIABLE = "sources";
-    private static final String CLAIM_ID_FORMAT = "%s-c%d";
-    private static final int FIRST_CLAIM_NUMBER = 1;
-    private static final int MAX_SEARCH_HITS = 5;
-    private static final int MAX_OUTPUT_TOKENS = 2048;
 
     private final LlmPort llm;
     private final SourceSearchPort search;
@@ -70,6 +71,6 @@ public final class Researcher {
     }
 
     private static String statementKey(String sourceId, String statement) {
-        return sourceId + "|" + statement;
+        return sourceId + STATEMENT_KEY_SEPARATOR + statement;
     }
 }

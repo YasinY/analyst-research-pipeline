@@ -1,5 +1,14 @@
 package com.assignment.research.planning;
 
+import static com.assignment.research.planning.PlanningConstants.FIRST_ID;
+import static com.assignment.research.planning.PlanningConstants.MAX_OUTPUT_TOKENS;
+import static com.assignment.research.planning.PlanningConstants.MAX_SUB_QUESTIONS;
+import static com.assignment.research.planning.PlanningConstants.MIN_FALLBACK_KEYWORD_LENGTH;
+import static com.assignment.research.planning.PlanningConstants.QUERY_VARIABLE;
+import static com.assignment.research.planning.PlanningConstants.SUB_QUESTION_ID_FORMAT;
+import static com.assignment.research.planning.PlanningConstants.TRACE_LABEL;
+import static com.assignment.research.planning.PlanningConstants.WORD_SEPARATOR;
+
 import com.assignment.research.llm.LlmPort;
 import com.assignment.research.llm.LlmRequest;
 import com.assignment.research.prompt.AgentName;
@@ -8,21 +17,11 @@ import com.assignment.research.query.AnalystQuery;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.regex.Pattern;
 import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public final class Planner {
-
-    private static final String TRACE_LABEL = "planner";
-    private static final String QUERY_VARIABLE = "query";
-    private static final String SUB_QUESTION_ID_FORMAT = "q%d";
-    private static final int FIRST_ID = 1;
-    private static final int MAX_SUB_QUESTIONS = 5;
-    private static final int MAX_OUTPUT_TOKENS = 1024;
-    private static final int MIN_FALLBACK_KEYWORD_LENGTH = 4;
-    private static final Pattern WORD_SEPARATOR = Pattern.compile("[^\\p{L}\\p{N}]+");
 
     private final LlmPort llm;
     private final PromptTemplates prompts;
@@ -51,7 +50,7 @@ public final class Planner {
     }
 
     private SubQuestion toSubQuestion(int number, PlannedQuestion planned) {
-        var id = String.format(SUB_QUESTION_ID_FORMAT, number);
+        var id = SUB_QUESTION_ID_FORMAT.formatted(number);
         var question = planned.getQuestion().strip();
         var keywords = normalizeKeywords(planned.getSearchKeywords());
         if (keywords.isEmpty()) {

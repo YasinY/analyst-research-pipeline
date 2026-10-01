@@ -1,5 +1,9 @@
 package com.assignment.research.reconciliation;
 
+import static com.assignment.research.reconciliation.ReconciliationConstants.CLAIM_LINE;
+import static com.assignment.research.reconciliation.ReconciliationConstants.LINE_SEPARATOR;
+import static com.assignment.research.reconciliation.ReconciliationConstants.UNKNOWN;
+
 import com.assignment.research.evidence.Claim;
 import com.assignment.research.evidence.Source;
 import java.util.List;
@@ -8,10 +12,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public final class ClaimPromptFormatter {
-
-    private static final String CLAIM_LINE = "[%s] (source %s, %s, %s, %s): %s";
-    private static final String UNKNOWN = "unknown";
-    private static final String LINE_SEPARATOR = "\n";
 
     private ClaimPromptFormatter() {
     }

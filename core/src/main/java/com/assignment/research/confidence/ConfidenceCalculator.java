@@ -1,5 +1,27 @@
 package com.assignment.research.confidence;
 
+import static com.assignment.research.confidence.ConfidenceConstants.CORROBORATION_BONUS_CAP;
+import static com.assignment.research.confidence.ConfidenceConstants.CORROBORATION_BONUS_PER_SOURCE;
+import static com.assignment.research.confidence.ConfidenceConstants.CORROBORATION_LABEL;
+import static com.assignment.research.confidence.ConfidenceConstants.HIGH_THRESHOLD;
+import static com.assignment.research.confidence.ConfidenceConstants.MAX_SCORE;
+import static com.assignment.research.confidence.ConfidenceConstants.MEDIUM_THRESHOLD;
+import static com.assignment.research.confidence.ConfidenceConstants.MIN_SCORE;
+import static com.assignment.research.confidence.ConfidenceConstants.OPEN_CONFLICT_LABEL;
+import static com.assignment.research.confidence.ConfidenceConstants.OPEN_CONFLICT_PENALTY;
+import static com.assignment.research.confidence.ConfidenceConstants.RESOLVED_CONFLICT_LABEL;
+import static com.assignment.research.confidence.ConfidenceConstants.RESOLVED_CONFLICT_PENALTY;
+import static com.assignment.research.confidence.ConfidenceConstants.SINGLE_SOURCE;
+import static com.assignment.research.confidence.ConfidenceConstants.STALE_AFTER_YEARS;
+import static com.assignment.research.confidence.ConfidenceConstants.STALE_LABEL;
+import static com.assignment.research.confidence.ConfidenceConstants.STALE_PENALTY;
+import static com.assignment.research.confidence.ConfidenceConstants.SUPERSEDED_LABEL;
+import static com.assignment.research.confidence.ConfidenceConstants.SUPERSEDED_PENALTY;
+import static com.assignment.research.confidence.ConfidenceConstants.TIER_A_BASE;
+import static com.assignment.research.confidence.ConfidenceConstants.TIER_B_BASE;
+import static com.assignment.research.confidence.ConfidenceConstants.TIER_C_BASE;
+import static com.assignment.research.confidence.ConfidenceConstants.TIER_LABEL;
+
 import com.assignment.research.evidence.SourceTier;
 import com.assignment.research.reconciliation.ConflictStatus;
 import com.assignment.research.reconciliation.EvidenceGroup;
@@ -15,30 +37,6 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public final class ConfidenceCalculator {
-
-    static final double TIER_A_BASE = 0.60;
-    static final double TIER_B_BASE = 0.40;
-    static final double TIER_C_BASE = 0.15;
-    static final double CORROBORATION_BONUS_PER_SOURCE = 0.15;
-    static final double CORROBORATION_BONUS_CAP = 0.30;
-    static final double STALE_PENALTY = -0.20;
-    static final double OPEN_CONFLICT_PENALTY = -0.30;
-    static final double RESOLVED_CONFLICT_PENALTY = -0.10;
-    static final double SUPERSEDED_PENALTY = -0.50;
-    static final int STALE_AFTER_YEARS = 3;
-    static final double HIGH_THRESHOLD = 0.70;
-    static final double MEDIUM_THRESHOLD = 0.40;
-
-    private static final double MIN_SCORE = 0.0;
-    private static final double MAX_SCORE = 1.0;
-    private static final int SINGLE_SOURCE = 1;
-
-    private static final String TIER_LABEL = "best source tier %s";
-    private static final String CORROBORATION_LABEL = "%d additional independent source(s)";
-    private static final String STALE_LABEL = "newest source older than %d years";
-    private static final String OPEN_CONFLICT_LABEL = "open conflict with another source group";
-    private static final String RESOLVED_CONFLICT_LABEL = "conflict resolved in favour of this newer group";
-    private static final String SUPERSEDED_LABEL = "superseded by a newer conflicting group";
 
     private static final Map<SourceTier, Double> BASE_BY_TIER = new EnumMap<>(Map.of(
             SourceTier.A, TIER_A_BASE,

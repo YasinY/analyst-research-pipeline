@@ -11,8 +11,10 @@ public class PromptTemplate {
 
     private static final Pattern PLACEHOLDER = Pattern.compile("\\{\\{\\s*([a-zA-Z0-9_]+)\\s*}}");
 
-    @NonNull private final String systemPrompt;
-    @NonNull private final String userPromptTemplate;
+    @NonNull
+    private final String systemPrompt;
+    @NonNull
+    private final String userPromptTemplate;
 
     public String renderUserPrompt(Map<String, String> variables) {
         var matcher = PLACEHOLDER.matcher(userPromptTemplate);

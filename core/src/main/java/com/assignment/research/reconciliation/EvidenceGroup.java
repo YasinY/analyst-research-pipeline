@@ -10,16 +10,25 @@ import lombok.Value;
 @Value
 public class EvidenceGroup {
 
-    @NonNull private final String id;
-    @NonNull private final String subQuestionId;
-    @NonNull private final String assertion;
-    @NonNull private final List<String> claimIds;
-    @NonNull private final List<String> independentSourceIds;
-    @NonNull private final SourceTier bestTier;
-    @NonNull private final LocalDate newestSourceDate;
-    @NonNull private final ConflictStatus conflictStatus;
+    @NonNull
+    private final String id;
+    @NonNull
+    private final String subQuestionId;
+    @NonNull
+    private final String assertion;
+    @NonNull
+    private final List<String> claimIds;
+    @NonNull
+    private final List<String> independentSourceIds;
+    @NonNull
+    private final SourceTier bestTier;
+    @NonNull
+    private final LocalDate newestSourceDate;
+    @NonNull
+    private final ConflictStatus conflictStatus;
     private final String conflictDescription;
-    @NonNull private final List<String> conflictingGroupIds;
+    @NonNull
+    private final List<String> conflictingGroupIds;
 
     public Optional<String> getConflict() {
         return Optional.ofNullable(conflictDescription);

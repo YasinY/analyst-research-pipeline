@@ -6,6 +6,7 @@ import lombok.Value;
 @Value
 public class ConfidenceFactor {
 
-    @NonNull private final String label;
+    @NonNull
+    private final String label;
     private final double delta;
 }

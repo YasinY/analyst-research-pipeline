@@ -6,6 +6,7 @@ import lombok.Value;
 @Value
 public class SearchHit {
 
-    @NonNull private final Source source;
+    @NonNull
+    private final Source source;
     private final int score;
 }

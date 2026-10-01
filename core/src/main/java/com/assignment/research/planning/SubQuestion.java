@@ -7,7 +7,10 @@ import lombok.Value;
 @Value
 public class SubQuestion {
 
-    @NonNull private final String id;
-    @NonNull private final String question;
-    @NonNull private final List<String> searchKeywords;
+    @NonNull
+    private final String id;
+    @NonNull
+    private final String question;
+    @NonNull
+    private final List<String> searchKeywords;
 }

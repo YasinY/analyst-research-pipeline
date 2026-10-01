@@ -12,15 +12,24 @@ import lombok.Value;
 public class TraceEntry {
 
     private final int sequence;
-    @NonNull private final String label;
-    @NonNull private final Instant startedAt;
-    @NonNull private final Duration duration;
-    @NonNull private final String model;
-    @NonNull private final String systemPrompt;
-    @NonNull private final String userPrompt;
-    @NonNull private final String rawResponse;
-    @NonNull private final LlmUsage usage;
-    @NonNull private final LlmCallStatus status;
+    @NonNull
+    private final String label;
+    @NonNull
+    private final Instant startedAt;
+    @NonNull
+    private final Duration duration;
+    @NonNull
+    private final String model;
+    @NonNull
+    private final String systemPrompt;
+    @NonNull
+    private final String userPrompt;
+    @NonNull
+    private final String rawResponse;
+    @NonNull
+    private final LlmUsage usage;
+    @NonNull
+    private final LlmCallStatus status;
     private final String failureReason;
 
     public Optional<String> getFailure() {

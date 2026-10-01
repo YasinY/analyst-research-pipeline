@@ -7,7 +7,10 @@ import lombok.Value;
 @Value
 public class ClaimGroupOutput {
 
-    @NonNull private final String id;
-    @NonNull private final String assertion;
-    @NonNull private final List<String> claimIds;
+    @NonNull
+    private final String id;
+    @NonNull
+    private final String assertion;
+    @NonNull
+    private final List<String> claimIds;
 }

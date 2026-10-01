@@ -6,6 +6,8 @@ import lombok.Value;
 @Value
 public class ExtractedClaim {
 
-    @NonNull private final String statement;
-    @NonNull private final String sourceId;
+    @NonNull
+    private final String statement;
+    @NonNull
+    private final String sourceId;
 }

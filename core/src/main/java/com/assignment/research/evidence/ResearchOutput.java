@@ -7,5 +7,6 @@ import lombok.Value;
 @Value
 public class ResearchOutput {
 
-    @NonNull private final List<ExtractedClaim> claims;
+    @NonNull
+    private final List<ExtractedClaim> claims;
 }

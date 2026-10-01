@@ -1,5 +1,10 @@
 package com.assignment.research.reconciliation;
 
+import static com.assignment.research.reconciliation.ReconciliationConstants.FIRST_GROUP_NUMBER;
+import static com.assignment.research.reconciliation.ReconciliationConstants.GROUP_ID_FORMAT;
+import static com.assignment.research.reconciliation.ReconciliationConstants.MIN_GROUPS_IN_CONFLICT;
+import static com.assignment.research.reconciliation.ReconciliationConstants.RECENCY_THRESHOLD_YEARS;
+
 import com.assignment.research.evidence.Claim;
 import com.assignment.research.evidence.Source;
 import com.assignment.research.evidence.SourceTier;
@@ -17,11 +22,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public final class EvidenceGroupAssembler {
-
-    private static final String GROUP_ID_FORMAT = "%s-g%d";
-    private static final int FIRST_GROUP_NUMBER = 1;
-    private static final int MIN_GROUPS_IN_CONFLICT = 2;
-    private static final int RECENCY_THRESHOLD_YEARS = 3;
 
     private EvidenceGroupAssembler() {
     }

@@ -7,6 +7,8 @@ import lombok.Value;
 @Value
 public class Plan {
 
-    @NonNull private final String interpretation;
-    @NonNull private final List<SubQuestion> subQuestions;
+    @NonNull
+    private final String interpretation;
+    @NonNull
+    private final List<SubQuestion> subQuestions;
 }

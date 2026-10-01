@@ -14,10 +14,14 @@ public class BriefingState {
 
     private static final int FIRST_ROUND = 1;
 
-    @NonNull private final AnalystQuery query;
-    @NonNull private final List<SubQuestion> subQuestions;
-    @NonNull private final List<Source> sources;
-    @NonNull private final List<Claim> claims;
+    @NonNull
+    private final AnalystQuery query;
+    @NonNull
+    private final List<SubQuestion> subQuestions;
+    @NonNull
+    private final List<Source> sources;
+    @NonNull
+    private final List<Claim> claims;
     private final int round;
 
     public static BriefingState initial(AnalystQuery query) {

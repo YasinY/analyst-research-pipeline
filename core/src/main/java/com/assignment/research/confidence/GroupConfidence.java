@@ -7,8 +7,11 @@ import lombok.Value;
 @Value
 public class GroupConfidence {
 
-    @NonNull private final String groupId;
+    @NonNull
+    private final String groupId;
     private final double score;
-    @NonNull private final ConfidenceLevel level;
-    @NonNull private final List<ConfidenceFactor> factors;
+    @NonNull
+    private final ConfidenceLevel level;
+    @NonNull
+    private final List<ConfidenceFactor> factors;
 }

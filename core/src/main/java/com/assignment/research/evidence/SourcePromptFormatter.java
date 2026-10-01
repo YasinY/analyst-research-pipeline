@@ -1,18 +1,12 @@
 package com.assignment.research.evidence;
 
+import static com.assignment.research.evidence.EvidenceConstants.BLOCK_SEPARATOR;
+import static com.assignment.research.evidence.EvidenceConstants.SOURCE_BLOCK;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
 public final class SourcePromptFormatter {
-
-    private static final String SOURCE_BLOCK = """
-            [sourceId: %s]
-            Title: %s
-            Publisher: %s (%s)
-            Published: %s
-            Excerpt: %s
-            """;
-    private static final String BLOCK_SEPARATOR = "\n";
 
     private SourcePromptFormatter() {
     }

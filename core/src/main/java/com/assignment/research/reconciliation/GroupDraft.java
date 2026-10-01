@@ -9,10 +9,16 @@ import lombok.Value;
 @Value
 class GroupDraft {
 
-    @NonNull private final String modelGroupId;
-    @NonNull private final String assertion;
-    @NonNull private final List<String> claimIds;
-    @NonNull private final List<String> independentSourceIds;
-    @NonNull private final SourceTier bestTier;
-    @NonNull private final LocalDate newestDate;
+    @NonNull
+    private final String modelGroupId;
+    @NonNull
+    private final String assertion;
+    @NonNull
+    private final List<String> claimIds;
+    @NonNull
+    private final List<String> independentSourceIds;
+    @NonNull
+    private final SourceTier bestTier;
+    @NonNull
+    private final LocalDate newestDate;
 }

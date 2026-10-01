@@ -1,5 +1,11 @@
 package com.assignment.research.reconciliation;
 
+import static com.assignment.research.reconciliation.ReconciliationConstants.CLAIMS_VARIABLE;
+import static com.assignment.research.reconciliation.ReconciliationConstants.MAX_OUTPUT_TOKENS;
+import static com.assignment.research.reconciliation.ReconciliationConstants.MIN_CLAIMS_WORTH_COMPARING;
+import static com.assignment.research.reconciliation.ReconciliationConstants.QUESTION_VARIABLE;
+import static com.assignment.research.reconciliation.ReconciliationConstants.TRACE_LABEL_FORMAT;
+
 import com.assignment.research.evidence.Claim;
 import com.assignment.research.evidence.Source;
 import com.assignment.research.llm.LlmPort;
@@ -13,12 +19,6 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public final class Reconciler {
-
-    private static final String TRACE_LABEL_FORMAT = "reconciler/%s/round%d";
-    private static final String QUESTION_VARIABLE = "question";
-    private static final String CLAIMS_VARIABLE = "claims";
-    private static final int MIN_CLAIMS_WORTH_COMPARING = 2;
-    private static final int MAX_OUTPUT_TOKENS = 2048;
 
     private final LlmPort llm;
     private final PromptTemplates prompts;
