@@ -2,27 +2,27 @@
   "query" : {
     "text" : "Give me an overview of the dry bulk shipping market and its main risk drivers."
   },
-  "interpretation" : "The analyst is asking for a factual overview of the dry bulk shipping market and the main drivers of risk affecting it.",
+  "interpretation" : "The analyst is asking for a factual overview of the dry bulk shipping market and the main factors that drive its risks and volatility.",
   "subQuestions" : [ {
     "id" : "q1",
-    "question" : "What is the dry bulk shipping market, what cargoes and vessel classes does it include, and how large is the market by fleet or trade volume?",
-    "searchKeywords" : [ "dry bulk shipping", "capesize panamax supramax handysize", "dry bulk fleet" ]
+    "question" : "What is the dry bulk shipping market, including its main vessel classes, cargo types, and principal trade routes?",
+    "searchKeywords" : [ "dry bulk shipping", "capesize", "panamax", "handysize", "bulk cargo" ]
   }, {
     "id" : "q2",
-    "question" : "What are the main demand drivers for dry bulk shipping, including the major cargo end-markets and key trade routes?",
-    "searchKeywords" : [ "iron ore trade", "coal trade", "grain shipments", "dry bulk trade routes" ]
+    "question" : "What are the main demand drivers for dry bulk shipping volumes, such as iron ore, coal, grain, and industrial commodity trade?",
+    "searchKeywords" : [ "iron ore demand", "coal trade", "grain shipments", "dry bulk demand", "commodity imports" ]
   }, {
     "id" : "q3",
-    "question" : "What are the main supply-side factors affecting dry bulk freight rates, such as fleet growth, vessel deliveries, scrapping, and port or canal constraints?",
-    "searchKeywords" : [ "dry bulk fleet supply", "new vessel deliveries", "ship scrapping", "port congestion" ]
+    "question" : "What are the main supply-side drivers affecting dry bulk shipping capacity, including new vessel deliveries, fleet age, demolition, and orderbook levels?",
+    "searchKeywords" : [ "dry bulk fleet", "vessel deliveries", "shipyard orderbook", "ship demolition", "fleet capacity" ]
   }, {
     "id" : "q4",
-    "question" : "How have dry bulk freight rates and vessel earnings performed recently, and what indicators are commonly used to track market conditions?",
-    "searchKeywords" : [ "baltic dry index", "freight rates", "time charter rates", "vessel earnings" ]
+    "question" : "How do freight rates and earnings in dry bulk shipping typically move, and what market indicators are used to track pricing and utilization?",
+    "searchKeywords" : [ "dry bulk freight rates", "baltic dry index", "time charter rates", "vessel utilization", "shipping earnings" ]
   }, {
     "id" : "q5",
-    "question" : "What are the principal risk drivers for the dry bulk shipping market, including macroeconomic, geopolitical, regulatory, and fuel-cost risks?",
-    "searchKeywords" : [ "dry bulk shipping risks", "geopolitical risk", "imo regulations", "bunker fuel costs" ]
+    "question" : "What are the main risk drivers for dry bulk shipping, including geopolitical disruption, regulation, fuel costs, and macroeconomic slowdown?",
+    "searchKeywords" : [ "geopolitical risk", "imo regulation", "bunker fuel costs", "china slowdown", "trade disruption" ]
   } ],
   "pendingResearchIds" : [ "q1", "q2", "q3", "q4", "q5" ],
   "exhaustedSubQuestionIds" : [ ],

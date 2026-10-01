@@ -30,15 +30,9 @@ Respond with a single JSON object and nothing else. No prose, no markdown fences
 
 Sub-question:
 
-Which regulatory, geopolitical, and macroeconomic risks (IMO decarbonization rules, sanctions and trade route disruptions, tariffs, interest rates, and economic slowdown) could materially affect dry bulk shipping outlook?
+What are the principal regulatory, geopolitical, and macroeconomic risks facing the dry bulk market, including IMO emissions rules, trade disputes, and shipping route disruptions?
 
 Sources:
-
-[sourceId: src-risk-report-2026]
-Title: Dry Bulk Shipping Risk Drivers 2026
-Publisher: Hanseatic Maritime Research (INDUSTRY_REPORT)
-Published: 2026-05-20
-Excerpt: We identify six main risk drivers for dry bulk earnings in 2026: Chinese steel demand and property construction, the ramp-up of the Simandou iron ore project in Guinea which lengthens average haul distances, shifts in grain trade flows between the Americas and Asia, port congestion, bunker fuel prices, and geopolitical disruption of routes including Red Sea diversions. Tonne-mile demand grew 2.3 percent in 2025, roughly double the growth in tonnes.
 
 [sourceId: src-forum-regulation-2026]
 Title: Secret IMO rule will force half the bulk fleet to scrap in 2027 (thread)

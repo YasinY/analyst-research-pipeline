@@ -49,33 +49,35 @@ Give me an overview of the dry bulk shipping market and its main risk drivers.
 
 How the planner understood the query:
 
-The analyst is asking for a factual overview of the dry bulk shipping market and the main drivers of risk affecting it.
+The analyst is asking for a factual overview of the dry bulk shipping market and the main factors that drive its risks and volatility.
 
 Evidence eligible for key facts:
 
-[g3] confidence HIGH (0.75): Continued Red Sea and Suez diversions in 2025 added about 1 to 2 percent to dry bulk tonne-mile demand, and a return to Suez routing would release about 2 percent of fleet capacity. | 2 independent source(s), best tier A, newest 2026-08-03, conflict NONE
-[g4] confidence MEDIUM (0.45): Tonne-mile demand grew 2.3 percent in 2025. | 2 independent source(s), best tier A, newest 2026-08-03, conflict OPEN | conflicts with g14: The 2025 fleet growth in g4 is 2.3 percent, while g14 says the dry bulk fleet grew 2.4 percent.
-[g5] confidence MEDIUM (0.40): Chinese steel demand and property construction, the ramp-up of the Simandou iron ore project in Guinea, shifts in grain trade flows between the Americas and Asia, port congestion, bunker fuel prices, and geopolitical disruption of routes including Red Sea diversions were identified as major risk drivers for dry bulk earnings in 2026. | 1 independent source(s), best tier B, newest 2026-05-20, conflict NONE
-[g6] confidence HIGH (0.75): Iron ore and coal together made up 55 percent of seaborne dry bulk trade volumes in 2025, and iron ore remained the single largest dry bulk commodity. | 2 independent source(s), best tier A, newest 2026-03-05, conflict NONE
-[g7] confidence MEDIUM (0.60): Grain and soybeans made up 10 percent of seaborne dry bulk trade volumes in 2025. | 1 independent source(s), best tier A, newest 2026-03-05, conflict NONE
-[g8] confidence HIGH (0.75): China accounted for 71 percent of seaborne iron ore imports in 2025, with seaborne iron ore trade reaching 1.62 billion tonnes and Australia and Brazil supplying 56 percent and 24 percent respectively. | 2 independent source(s), best tier A, newest 2026-03-05, conflict NONE
-[g9] confidence HIGH (0.75): Grain trade shifted toward South American exporters after a weak North American harvest, and average laden voyage distance reached 5,200 nautical miles. | 2 independent source(s), best tier A, newest 2026-08-03, conflict NONE
-[g10] confidence MEDIUM (0.60): Tonne-mile demand grew faster than tonnes carried because of longer Atlantic to Pacific routes. | 1 independent source(s), best tier A, newest 2026-03-05, conflict NONE
-[g13] confidence MEDIUM (0.60): Deliveries of new dry bulk ships were about 31.6 million dwt in 2025, and demolitions were about 3.9 million dwt. | 1 independent source(s), best tier A, newest 2026-02-10, conflict NONE
-[g15] confidence MEDIUM (0.55): The dry bulk fleet net growth outlook for 2026 was about 2.0 to 2.5 percent, and shipyard slots remained tight with newbuilding prices high. | 2 independent source(s), best tier B, newest 2026-03-18, conflict NONE
-[g16] confidence MEDIUM (0.60): Earnings remained above scrapping thresholds in 2025. | 1 independent source(s), best tier A, newest 2026-02-10, conflict NONE
-[g17] confidence HIGH (0.75): The composite dry bulk freight index averaged about 1,650 points in 2025, about 9 percent below 2024, and ended the year at 1,480 points. | 2 independent source(s), best tier A, newest 2026-01-22, conflict NONE
-[g18] confidence MEDIUM (0.40): One-year time charter rates for a modern Kamsarmax averaged about 13,500 US dollars per day in 2025. | 1 independent source(s), best tier B, newest 2026-01-22, conflict NONE
-[g19] confidence MEDIUM (0.60): Capesize earnings were the most volatile segment in 2025, swinging between 8,000 and 34,000 US dollars per day, while Panamax and Supramax earnings were steadier and averaged close to 12,000 US dollars per day. | 1 independent source(s), best tier A, newest 2026-01-15, conflict NONE
-[g20] confidence MEDIUM (0.40): A return to Suez routing was described as the largest single downside risk to freight rates in 2026. | 1 independent source(s), best tier B, newest 2026-07-11, conflict NONE
+[g-q1-c6] confidence MEDIUM (0.60): The dry bulk orderbook was around 10.2 percent of the fleet and was concentrated in the Panamax and Supramax segments at year end. | 1 independent source(s), best tier A, newest 2026-02-10, conflict NONE
+[g-q1-c7] confidence HIGH (0.75): China took roughly 70 to 71 percent of seaborne iron ore imports in 2025, including 1.15 billion tonnes, while iron ore remained the largest dry bulk commodity. | 2 independent source(s), best tier A, newest 2026-04-09, conflict NONE
+[g-q1-c8] confidence MEDIUM (0.40): Chinese seaborne coal imports fell about 6 percent in 2025 and this weighed on Panamax demand in the Pacific. | 1 independent source(s), best tier B, newest 2026-04-09, conflict NONE
+[g-q1-c10] confidence MEDIUM (0.40): Indian coal imports grew 4 percent in 2025. | 1 independent source(s), best tier B, newest 2026-04-09, conflict NONE
+[g-q1-c11] confidence HIGH (0.75): The composite dry bulk freight index averaged about 1,650 points in 2025. | 2 independent source(s), best tier A, newest 2026-01-22, conflict NONE
+[g-q1-c12] confidence MEDIUM (0.40): One-year time charter rates for a modern Kamsarmax averaged 13,500 US dollars per day. | 1 independent source(s), best tier B, newest 2026-01-22, conflict NONE
+[g-q1-c14] confidence MEDIUM (0.60): Capesize earnings were highly volatile in 2025, swinging between 8,000 and 34,000 US dollars per day. | 1 independent source(s), best tier A, newest 2026-01-15, conflict NONE
+[g-q1-c15] confidence MEDIUM (0.60): Panamax and Supramax earnings averaged close to 12,000 US dollars per day and were steadier than Capesize earnings. | 1 independent source(s), best tier A, newest 2026-01-15, conflict NONE
+[g-q2-c4] confidence MEDIUM (0.60): Total seaborne dry bulk trade grew 1.1 percent to 5.5 billion tonnes in 2025, with iron ore and coal together making up 55 percent of volumes and grain and soybeans 10 percent. | 1 independent source(s), best tier A, newest 2026-03-05, conflict NONE
+[g-q2-c7] confidence MEDIUM (0.60): Grain trade shifted toward South American exporters after a weak North American harvest. | 1 independent source(s), best tier A, newest 2026-03-05, conflict NONE
+[g-q2-c12] confidence HIGH (0.75): Tonne-mile demand grew faster than tonnes because of longer Atlantic-to-Pacific routes, including a 2.3 percent rise in 2025. | 2 independent source(s), best tier A, newest 2026-05-20, conflict NONE
+[g-q2-c9] confidence MEDIUM (0.40): Chinese steel demand and property construction are identified as main risk drivers for dry bulk earnings in 2026. | 1 independent source(s), best tier B, newest 2026-05-20, conflict NONE
+[g-q2-c10] confidence MEDIUM (0.40): The ramp-up of the Simandou iron ore project in Guinea is identified as a main risk driver because it lengthens average haul distances. | 1 independent source(s), best tier B, newest 2026-05-20, conflict NONE
+[g-q2-c11] confidence MEDIUM (0.40): Shifts in grain trade flows between the Americas and Asia are identified as a main risk driver for dry bulk earnings in 2026. | 1 independent source(s), best tier B, newest 2026-05-20, conflict NONE
+[g-q3-c14] confidence MEDIUM (0.55): Industry participants expected deliveries to stay elevated in 2026 before easing in 2027, and the shipbroker expected net fleet growth of 2.0 to 2.5 percent in 2026. | 2 independent source(s), best tier B, newest 2026-03-18, conflict NONE
+[g-q4-c6] confidence MEDIUM (0.40): Continued diversions around the Cape of Good Hope added 1 to 2 percent to dry bulk tonne-mile demand in 2025, and a return to Suez routing would release the equivalent of roughly 2 percent of fleet capacity. | 1 independent source(s), best tier B, newest 2026-07-11, conflict NONE
+[g-q4-c9] confidence MEDIUM (0.40): The main risk drivers for dry bulk earnings in 2026 include Chinese steel demand and property construction, the Simandou ramp-up, grain flow shifts, port congestion, bunker fuel prices, and geopolitical disruption of routes including Red Sea diversions. | 1 independent source(s), best tier B, newest 2026-05-20, conflict NONE
+[g-q2-c15] confidence MEDIUM (0.40): Capesize volatility was driven by Brazilian iron ore timing and Chinese restocking. | 1 independent source(s), best tier B, newest 2026-01-22, conflict NONE
+[g-q2-c16] confidence MEDIUM (0.40): 2026 rates were expected to be capped by soft Chinese steel demand. | 1 independent source(s), best tier B, newest 2026-01-22, conflict NONE
 
 Weak evidence (may only appear in uncertainties):
 
-[g1] confidence LOW (0.30): The world dry bulk fleet in 2025 was about 1,020 million dwt, counted as vessels above 10,000 dwt, with Capesize vessels making up 39 percent of capacity, Panamax 25 percent, and Supramax and Handysize the remainder. | 1 independent source(s), best tier A, newest 2026-02-10, conflict OPEN | conflicts with g14: The 2025 dry bulk fleet growth rate is given as 3.1 percent in g1 and 2.4 percent in g14.
-[g2] confidence LOW (0.30): The dry bulk orderbook at year end was about 10.2 percent of the fleet and was concentrated in the Panamax and Supramax segments. | 1 independent source(s), best tier A, newest 2026-02-10, conflict OPEN | conflicts with g14: The year-end orderbook share is given as 10.2 percent of the fleet in g2 and 9.8 percent in g14.
-[g11] confidence LOW (0.40): Chinese seaborne coal imports rose about 5 percent per year between 2016 and 2018. | 1 independent source(s), best tier A, newest 2019-06-14, conflict NONE
-[g12] confidence LOW (0.40): Coal remained the main driver of Panamax demand in the Pacific basin, and Indian coal imports were projected to rise steadily with power generation growth. | 1 independent source(s), best tier A, newest 2019-06-14, conflict NONE
-[g14] confidence LOW (0.10): Broader estimates put 2025 dry bulk fleet growth at 2.4 percent, with deliveries of 30.1 million dwt and removals of 5.5 million dwt. | 1 independent source(s), best tier B, newest 2026-03-18, conflict OPEN | conflicts with g1, g2, g4: The 2025 dry bulk fleet growth rate is given as 3.1 percent in g1 and 2.4 percent in g14.
+[g-q1-c1] confidence LOW (0.30): The world dry bulk fleet counted by the bureau covers vessels above 10,000 dwt and grew in 2025 to about 1,020 million dwt, with Capesize at 39 percent, Panamax at 25 percent, and Supramax and Handysize making up the rest. | 1 independent source(s), best tier A, newest 2026-02-10, conflict OPEN | conflicts with g-q3-c1: The dry bulk fleet growth rate in 2025 is given as 3.1 percent in g1 but 2.4 percent in g16.
+[g-q3-c1] confidence LOW (0.10): The shipbroker said the dry bulk fleet expanded by 2.4 percent in 2025, with deliveries of 30.1 million dwt, removals of 5.5 million dwt, and an orderbook of 9.8 percent of the fleet. | 1 independent source(s), best tier B, newest 2026-03-18, conflict OPEN | conflicts with g-q1-c1, g-q3-c11: The dry bulk fleet growth rate in 2025 is given as 3.1 percent in g1 but 2.4 percent in g16.
+[g-q3-c11] confidence LOW (0.30): The bureau said dry bulk fleet deliveries reached 31.6 million dwt in 2025 and demolition stayed low at 3.9 million dwt. | 1 independent source(s), best tier A, newest 2026-02-10, conflict OPEN | conflicts with g-q3-c1: 2025 deliveries are given as 30.1 million dwt in g16 but 31.6 million dwt in g17, and removals/demolition are given as 5.5 million dwt in g16 versus 3.9 million dwt in g17.
 
 Gaps (sub-questions without adequate evidence):
 
@@ -85,38 +87,39 @@ Revision context:
 
 Previous draft:
 Summary:
-- The dry bulk market was softer in 2025, with the composite freight index averaging about 1,650 points, about 9 percent below 2024, and ending the year at 1,480 points. Freight and tonne-mile demand were supported by longer routes, especially Red Sea and Suez diversions, which added about 1 to 2 percent to dry bulk tonne-mile demand. Main risk drivers were Chinese steel demand and property construction, the Simandou iron ore ramp-up, grain trade shifts, port congestion, bunker fuel prices, and geopolitical route disruption. (groups: g17, g3, g5)
-- The market is still heavily driven by iron ore and coal, which together made up 55 percent of seaborne dry bulk trade volumes in 2025, while iron ore remained the single largest commodity. China accounted for 71 percent of seaborne iron ore imports, so Chinese demand is a major swing factor. Grain and soybeans also mattered, at 10 percent of seaborne dry bulk trade volumes, and grain trade moved toward South American exporters after a weak North American harvest. (groups: g6, g8, g7, g9)
-- Fleet supply was still growing, with about 31.6 million dwt of new ships delivered in 2025 and only about 3.9 million dwt demolished. The 2026 fleet growth outlook was about 2.0 to 2.5 percent, while shipyard slots remained tight and newbuilding prices high. A return to Suez routing would release about 2 percent of fleet capacity and was described as the largest single downside risk to freight rates in 2026. (groups: g13, g15, g20, g3)
+- The dry bulk market grew in 2025, with seaborne trade at 5.5 billion tonnes and the composite freight index averaging about 1,650 points. Tonne-mile demand rose faster than tonnes, helped by longer Atlantic-to-Pacific routes and continued diversions around the Cape of Good Hope. The main risk drivers for 2026 are Chinese steel demand and property construction, the Simandou ramp-up, grain flow shifts, port congestion, bunker fuel prices, and route disruption such as Red Sea diversions. Freight earnings were uneven across vessel types, with Capesize far more volatile than Panamax and Supramax. (groups: g-q2-c4, g-q2-c12, g-q4-c6, g-q4-c9, g-q1-c11, g-q1-c14, g-q1-c15, g-q2-c9, g-q2-c10, g-q2-c11)
 
 Key facts:
-- The composite dry bulk freight index averaged about 1,650 points in 2025, about 9 percent below 2024, and ended the year at 1,480 points. (groups: g17)
-- Tonne-mile demand grew 2.3 percent in 2025. (groups: g4)
-- Continued Red Sea and Suez diversions in 2025 added about 1 to 2 percent to dry bulk tonne-mile demand. (groups: g3)
-- Iron ore and coal together made up 55 percent of seaborne dry bulk trade volumes in 2025, and iron ore remained the single largest dry bulk commodity. (groups: g6)
-- China accounted for 71 percent of seaborne iron ore imports in 2025, with seaborne iron ore trade reaching 1.62 billion tonnes and Australia and Brazil supplying 56 percent and 24 percent respectively. (groups: g8)
-- Grain and soybeans made up 10 percent of seaborne dry bulk trade volumes in 2025. (groups: g7)
-- Grain trade shifted toward South American exporters after a weak North American harvest, and average laden voyage distance reached 5,200 nautical miles. (groups: g9)
-- Deliveries of new dry bulk ships were about 31.6 million dwt in 2025, and demolitions were about 3.9 million dwt. (groups: g13)
-- The dry bulk fleet net growth outlook for 2026 was about 2.0 to 2.5 percent, and shipyard slots remained tight with newbuilding prices high. (groups: g15)
-- A return to Suez routing was described as the largest single downside risk to freight rates in 2026. (groups: g20)
+- Total seaborne dry bulk trade grew 1.1 percent to 5.5 billion tonnes in 2025. (groups: g-q2-c4)
+- Iron ore and coal together made up 55 percent of dry bulk volumes, while grain and soybeans made up 10 percent. (groups: g-q2-c4)
+- China took roughly 70 to 71 percent of seaborne iron ore imports in 2025, including 1.15 billion tonnes. (groups: g-q1-c7)
+- Iron ore remained the largest dry bulk commodity. (groups: g-q1-c7)
+- Chinese seaborne coal imports fell about 6 percent in 2025, while Indian coal imports grew 4 percent. (groups: g-q1-c8, g-q1-c10)
+- The composite dry bulk freight index averaged about 1,650 points in 2025. (groups: g-q1-c11)
+- One-year time charter rates for a modern Kamsarmax averaged 13,500 US dollars per day. (groups: g-q1-c12)
+- Capesize earnings were highly volatile in 2025, swinging between 8,000 and 34,000 US dollars per day. (groups: g-q1-c14)
+- Panamax and Supramax earnings averaged close to 12,000 US dollars per day and were steadier than Capesize earnings. (groups: g-q1-c15)
+- Tonne-mile demand grew faster than tonnes, including a 2.3 percent rise in 2025. (groups: g-q2-c12)
 
 Uncertainties:
-- There is an open conflict on 2025 dry bulk fleet growth: g1 says 3.1 percent, g4 implies 2.3 percent, and g14 says 2.4 percent. (groups: g1, g4, g14)
-- There is an open conflict on the year-end orderbook share: g2 says 10.2 percent of the fleet, while g14 says 9.8 percent. (groups: g2, g14)
-- The 2025 dry bulk fleet size is weakly supported and conflicted: g1 gives about 1,020 million dwt, but it conflicts with other fleet growth estimates. (groups: g1, g14)
-- The dry bulk orderbook at year end is weakly supported and conflicted: g2 says about 10.2 percent of the fleet, but it conflicts with another estimate. (groups: g2, g14)
+- There is an open conflict on 2025 fleet growth and fleet size. One group says the fleet grew by 3.1 percent and was about 1,020 million dwt, while another says it grew by 2.4 percent. (groups: g-q1-c1, g-q3-c1)
+- There is an open conflict on 2025 deliveries and removals. One group says deliveries were 30.1 million dwt and removals were 5.5 million dwt, while another says deliveries were 31.6 million dwt and demolition was 3.9 million dwt. (groups: g-q3-c1, g-q3-c11)
+- There is an open conflict on the orderbook. One group says it was around 10.2 percent of the fleet and concentrated in the Panamax and Supramax segments, while another says it was 9.8 percent of the fleet. (groups: g-q1-c6, g-q3-c1)
+- The evidence for 2026 fleet growth is limited. One group says deliveries are expected to stay elevated in 2026 before easing in 2027, and net fleet growth may be 2.0 to 2.5 percent in 2026. (groups: g-q3-c14)
+- No adequate evidence was found for any other 2026 risk drivers beyond the named factors in the evidence. (groups: )
 
 Follow-up questions:
-- How much of 2026 freight risk depends on Red Sea and Suez routing staying disrupted?
-- What is the latest outlook for Chinese steel demand and property construction?
-- How much new dry bulk supply is due to hit the market in 2026 by vessel segment?
-- Which of the listed risk drivers is most important for earnings in 2026?
-- How exposed are Panamax and Supramax earnings to grain trade shifts and bunker fuel prices?
+- How much of 2026 dry bulk earnings risk comes from Chinese steel demand versus property construction?
+- What is the expected timing and scale of the Simandou iron ore ramp-up, and how much could it change voyage distances?
+- How exposed are Panamax and Supramax earnings to grain flow shifts between the Americas and Asia?
+- What would a return to Suez routing mean for tonne-mile demand and fleet capacity?
+- How large is the current orderbook by vessel segment after reconciling the conflicting figures?
 
 Review findings to resolve:
-- MINOR OVERSTATED_CERTAINTY on "A return to Suez routing would release about 2 percent of fleet capacity and was described as the largest single downside risk to freight rates in 2026.": The cited evidence says this was described as a downside risk, but the phrase "would release" states it as a definite outcome rather than a scenario. This adds certainty that the evidence does not carry.
-- MAJOR SMOOTHED_CONFLICT on "The 2026 fleet growth outlook was about 2.0 to 2.5 percent, while shipyard slots remained tight and newbuilding prices high.": The briefing presents a single 2026 growth range without acknowledging that the evidence only provides a forecast range and that related fleet-growth figures in the evidence are already in conflict for 2025. The text smooths over the uncertainty rather than flagging it.
+- MAJOR UNSUPPORTED on "Freight earnings were uneven across vessel types, with Capesize far more volatile than Panamax and Supramax.": The cited groups support the volatility comparison, but the phrase "Freight earnings were uneven across vessel types" is too general and not directly stated as such. More importantly, this sentence also relies on a broad synthesis across multiple groups without any single group explicitly making that overall claim.
+- MAJOR UNSUPPORTED on "The main risk drivers for 2026 are Chinese steel demand and property construction, the Simandou ramp-up, grain flow shifts, port congestion, bunker fuel prices, and route disruption such as Red Sea diversions.": The cited evidence names these as main risk drivers, but it does not support the statement as an exhaustive list. In particular, saying "the main risk drivers for 2026 are" implies completeness that the evidence does not establish.
+- MINOR OVERSTATED_CERTAINTY on "The main risk drivers for 2026 are Chinese steel demand and property construction, the Simandou ramp-up, grain flow shifts, port congestion, bunker fuel prices, and route disruption such as Red Sea diversions.": The cited groups describe these as risk drivers, but the wording "are" presents them as settled and exhaustive rather than as identified drivers. The evidence supports a tentative list of key drivers, not certainty about completeness.
+- MAJOR SMOOTHED_CONFLICT on "There is an open conflict on 2025 fleet growth and fleet size. One group says the fleet grew by 3.1 percent and was about 1,020 million dwt, while another says it grew by 2.4 percent.": This sentence collapses the conflict into a single narrative and omits that the cited LOW group also gives deliveries, removals, and fleet size in the same claim set. It does flag the conflict, but the wording still smooths over the uncertainty by presenting one side as a coherent fact pattern rather than keeping the values clearly separated.
 
 Write the briefing following the rules you were given.
 

@@ -13,7 +13,7 @@
       "sourceId": "src-broker-rates-2026"
     },
     {
-      "statement": "Nordhaven Shipbrokers sees 2026 rates supported by low fleet growth but capped by soft Chinese steel demand.",
+      "statement": "Nordhaven Shipbrokers sees 2026 rates as supported by low fleet growth but capped by soft Chinese steel demand.",
       "sourceId": "src-broker-rates-2026"
     },
     {
@@ -25,7 +25,7 @@
       "sourceId": "src-index-rates-2026"
     },
     {
-      "statement": "Panamax and Supramax earnings were steadier in 2025 and averaged close to 12,000 US dollars per day.",
+      "statement": "Panamax and Supramax earnings were steadier than Capesize in 2025 and averaged close to 12,000 US dollars per day.",
       "sourceId": "src-index-rates-2026"
     },
     {
@@ -33,16 +33,16 @@
       "sourceId": "src-index-rates-2026"
     },
     {
-      "statement": "The world dry bulk fleet grew by 3.1 percent in 2025 to 1,020 million dwt, the fastest expansion since 2021.",
-      "sourceId": "src-fleet-stats-2026"
+      "statement": "Analysts estimate that continued diversions around the Cape of Good Hope added between 1 and 2 percent to dry bulk tonne-mile demand in 2025.",
+      "sourceId": "src-news-redsea-2026"
     },
     {
-      "statement": "Dry bulk deliveries reached 31.6 million dwt in 2025 while demolition stayed low at 3.9 million dwt because earnings remained above scrapping thresholds.",
-      "sourceId": "src-fleet-stats-2026"
+      "statement": "A return to Suez routing would release the equivalent of roughly 2 percent of fleet capacity.",
+      "sourceId": "src-news-redsea-2026"
     },
     {
-      "statement": "The dry bulk orderbook stood at 10.2 percent of the fleet at the end of 2025, concentrated in the Panamax and Supramax segments.",
-      "sourceId": "src-fleet-stats-2026"
+      "statement": "Several brokers describe a return to Suez routing as the largest single downside risk to freight rates in 2026.",
+      "sourceId": "src-news-redsea-2026"
     }
   ]
 }

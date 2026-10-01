@@ -30,7 +30,7 @@ Respond with a single JSON object and nothing else. No prose, no markdown fences
 
 Sub-question:
 
-How is the dry bulk shipping market defined and segmented by vessel class (capesize, panamax, supramax, handysize) and by the main cargoes carried (iron ore, coal, grain, bauxite)?
+What is the scope and structure of the dry bulk shipping market, including the main vessel segments, key cargoes, and major trade routes?
 
 Sources:
 
@@ -51,6 +51,18 @@ Title: Seaborne Iron Ore Trade Statistics 2025
 Publisher: Maritime Statistics Bureau (OFFICIAL_STATISTICS)
 Published: 2026-01-28
 Excerpt: Seaborne iron ore trade reached 1.62 billion tonnes in 2025, up 1.3 percent on the year. China imported 1.15 billion tonnes and accounted for 71 percent of seaborne iron ore imports, unchanged from 2024 despite lower domestic steel output. Australia supplied 56 percent and Brazil 24 percent of seaborne volumes. Iron ore remains the single largest dry bulk commodity, ahead of coal and grain.
+
+[sourceId: src-risk-report-2026]
+Title: Dry Bulk Shipping Risk Drivers 2026
+Publisher: Hanseatic Maritime Research (INDUSTRY_REPORT)
+Published: 2026-05-20
+Excerpt: We identify six main risk drivers for dry bulk earnings in 2026: Chinese steel demand and property construction, the ramp-up of the Simandou iron ore project in Guinea which lengthens average haul distances, shifts in grain trade flows between the Americas and Asia, port congestion, bunker fuel prices, and geopolitical disruption of routes including Red Sea diversions. Tonne-mile demand grew 2.3 percent in 2025, roughly double the growth in tonnes.
+
+[sourceId: src-index-rates-2026]
+Title: Dry Bulk Freight Index Annual Summary 2025
+Publisher: Northern Freight Index Board (INDUSTRY_BODY)
+Published: 2026-01-15
+Excerpt: The composite dry bulk freight index averaged 1,650 points in 2025, 9 percent below the 2024 average. Capesize earnings were the most volatile segment, swinging between 8,000 and 34,000 US dollars per day within the year. Panamax and Supramax earnings were steadier and averaged close to 12,000 US dollars per day. The index ended the year at 1,480 points.
 
 
 Extract the factual claims that help answer the sub-question, following the rules you were given.

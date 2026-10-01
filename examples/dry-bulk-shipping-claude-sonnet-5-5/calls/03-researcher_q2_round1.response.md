@@ -1,7 +1,7 @@
 {
   "claims": [
     {
-      "statement": "China took roughly 70 to 71 percent of seaborne iron ore in 2025, in line with official statistics.",
+      "statement": "China took roughly 70 to 71 percent of seaborne iron ore in 2025.",
       "sourceId": "src-broker-demand-2026"
     },
     {
@@ -21,7 +21,7 @@
       "sourceId": "src-industry-body-demand-2026"
     },
     {
-      "statement": "Iron ore and coal together made up 55 percent of seaborne dry bulk volumes, grain and soybeans 10 percent, and minor bulks the remainder.",
+      "statement": "Iron ore and coal together made up 55 percent of seaborne dry bulk volumes in 2025, grain and soybeans 10 percent, and minor bulks the remainder.",
       "sourceId": "src-industry-body-demand-2026"
     },
     {
@@ -33,20 +33,8 @@
       "sourceId": "src-industry-body-demand-2026"
     },
     {
-      "statement": "Tonne-mile demand grew faster than tonnes because of longer Atlantic to Pacific routes.",
+      "statement": "Tonne-mile demand grew faster than tonnes in 2025 because of longer Atlantic to Pacific routes.",
       "sourceId": "src-industry-body-demand-2026"
-    },
-    {
-      "statement": "Hanseatic Maritime Research identifies six main risk drivers for dry bulk earnings in 2026: Chinese steel demand and property construction, the ramp-up of the Simandou iron ore project in Guinea, shifts in grain trade flows between the Americas and Asia, port congestion, bunker fuel prices, and geopolitical disruption of routes including Red Sea diversions.",
-      "sourceId": "src-risk-report-2026"
-    },
-    {
-      "statement": "The ramp-up of the Simandou iron ore project in Guinea lengthens average haul distances.",
-      "sourceId": "src-risk-report-2026"
-    },
-    {
-      "statement": "Tonne-mile demand grew 2.3 percent in 2025, roughly double the growth in tonnes.",
-      "sourceId": "src-risk-report-2026"
     },
     {
       "statement": "Seaborne iron ore trade reached 1.62 billion tonnes in 2025, up 1.3 percent on the year.",
@@ -65,16 +53,16 @@
       "sourceId": "src-ironore-stats-2026"
     },
     {
-      "statement": "Dry bulk tonne-mile demand increased 2.3 percent in 2025 while tonnes carried rose 1.1 percent, reflecting longer average voyage distances.",
-      "sourceId": "src-tonnemile-stats-2026"
+      "statement": "Hanseatic Maritime Research identifies six main risk drivers for dry bulk earnings in 2026: Chinese steel demand and property construction, the ramp-up of the Simandou iron ore project in Guinea, shifts in grain trade flows between the Americas and Asia, port congestion, bunker fuel prices, and geopolitical disruption of routes including Red Sea diversions.",
+      "sourceId": "src-risk-report-2026"
     },
     {
-      "statement": "Diversions away from the Red Sea and Suez Canal accounted for an estimated 1 percentage point of the tonne-mile growth in 2025.",
-      "sourceId": "src-tonnemile-stats-2026"
+      "statement": "The ramp-up of the Simandou iron ore project in Guinea lengthens average haul distances.",
+      "sourceId": "src-risk-report-2026"
     },
     {
-      "statement": "Average laden voyage distance reached 5,200 nautical miles in 2025.",
-      "sourceId": "src-tonnemile-stats-2026"
+      "statement": "Tonne-mile demand grew 2.3 percent in 2025, roughly double the growth in tonnes.",
+      "sourceId": "src-risk-report-2026"
     }
   ]
 }

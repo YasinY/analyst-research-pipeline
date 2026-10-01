@@ -30,9 +30,15 @@ Respond with a single JSON object and nothing else. No prose, no markdown fences
 
 Sub-question:
 
-How have freight rates and benchmark indices such as the Baltic Dry Index and time charter equivalents behaved recently, and what explains their volatility?
+How have freight rates and earnings in dry bulk shipping behaved recently, as measured by the Baltic Dry Index and time charter rates, and what explains their volatility?
 
 Sources:
+
+[sourceId: src-blog-rates-2026]
+Title: Why the Baltic Dry Index will DOUBLE by 2027
+Publisher: FreightMoonshot Blog (BLOG)
+Published: 2026-05-02
+Excerpt: Insiders tell us the Baltic Dry Index will double by 2027. Shipyards are full, China is about to unleash a massive stimulus and every Capesize will be earning 60,000 dollars a day. The big brokers do not want you to know this. Buy shipping stocks now before it is too late.
 
 [sourceId: src-broker-rates-2026]
 Title: Freight Market Recap 2025
@@ -46,17 +52,11 @@ Publisher: Northern Freight Index Board (INDUSTRY_BODY)
 Published: 2026-01-15
 Excerpt: The composite dry bulk freight index averaged 1,650 points in 2025, 9 percent below the 2024 average. Capesize earnings were the most volatile segment, swinging between 8,000 and 34,000 US dollars per day within the year. Panamax and Supramax earnings were steadier and averaged close to 12,000 US dollars per day. The index ended the year at 1,480 points.
 
-[sourceId: src-blog-rates-2026]
-Title: Why the Baltic Dry Index will DOUBLE by 2027
-Publisher: FreightMoonshot Blog (BLOG)
-Published: 2026-05-02
-Excerpt: Insiders tell us the Baltic Dry Index will double by 2027. Shipyards are full, China is about to unleash a massive stimulus and every Capesize will be earning 60,000 dollars a day. The big brokers do not want you to know this. Buy shipping stocks now before it is too late.
-
-[sourceId: src-fleet-stats-2026]
-Title: World Dry Bulk Fleet Review 2025
-Publisher: Maritime Statistics Bureau (OFFICIAL_STATISTICS)
-Published: 2026-02-10
-Excerpt: The world dry bulk fleet grew by 3.1 percent in 2025 to 1,020 million deadweight tonnes (dwt), the fastest expansion since 2021. Deliveries reached 31.6 million dwt while demolition stayed low at 3.9 million dwt because earnings remained above scrapping thresholds. The orderbook stood at 10.2 percent of the fleet at year end, concentrated in the Panamax and Supramax segments. Capesize vessels account for 39 percent of fleet capacity, Panamax for 25 percent, Supramax and Handysize for the remainder. The Bureau counts vessels above 10,000 dwt.
+[sourceId: src-news-redsea-2026]
+Title: Red Sea detours still adding to bulk carrier demand, analysts say
+Publisher: Northern Maritime News (NEWS)
+Published: 2026-07-11
+Excerpt: Analysts estimate that continued diversions around the Cape of Good Hope added between 1 and 2 percent to dry bulk tonne-mile demand in 2025. A return to Suez routing would release the equivalent of roughly 2 percent of fleet capacity, which several brokers describe as the largest single downside risk to freight rates in 2026.
 
 
 Extract the factual claims that help answer the sub-question, following the rules you were given.

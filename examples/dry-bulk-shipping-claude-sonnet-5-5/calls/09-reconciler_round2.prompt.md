@@ -1,4 +1,4 @@
-# reconciler/round1
+# reconciler/round2
 
 ## System prompt
 
@@ -117,6 +117,9 @@ Claims extracted from the sources (one per line, with the sub-question each clai
 [q5-c1] (q5; source src-forum-regulation-2026, ShipTalk Forum, FORUM, 2026-04-21): A poster in the ShipTalk Forum thread claims that an unpublished IMO rule will force half of the dry bulk fleet into scrapping by 2027 because of carbon intensity ratings.
 [q5-c2] (q5; source src-forum-regulation-2026, ShipTalk Forum, FORUM, 2026-04-21): Other posters in the thread state that the current CII and EEXI rules only require slow steaming or efficiency upgrades.
 [q5-c3] (q5; source src-forum-regulation-2026, ShipTalk Forum, FORUM, 2026-04-21): No poster in the thread cites an official document.
+[q5-c4] (q5; source src-forum-regulation-2026, ShipTalk Forum, FORUM, 2026-04-21): A poster in the ShipTalk Forum thread claims that an unpublished IMO rule will force half of the dry bulk fleet into scrapping by 2027 because of carbon intensity ratings.
+[q5-c5] (q5; source src-forum-regulation-2026, ShipTalk Forum, FORUM, 2026-04-21): Other posters in the thread state that the current CII and EEXI rules only require slow steaming or efficiency upgrades.
+[q5-c6] (q5; source src-forum-regulation-2026, ShipTalk Forum, FORUM, 2026-04-21): No poster in the thread cites an official document.
 
 Group the claims and name the conflicts, following the rules you were given.
 

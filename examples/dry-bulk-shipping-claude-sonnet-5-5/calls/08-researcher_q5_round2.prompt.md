@@ -1,4 +1,4 @@
-# researcher/q6/round2
+# researcher/q5/round2
 
 ## System prompt
 
@@ -30,15 +30,15 @@ Respond with a single JSON object and nothing else. No prose, no markdown fences
 
 Sub-question:
 
-What do independent forecasters project for dry bulk trade volume and tonne-mile demand growth in 2026?
+What are the principal regulatory, geopolitical, and macroeconomic risks facing the dry bulk market, including IMO emissions rules, trade disputes, and shipping route disruptions?
 
 Sources:
 
-[sourceId: src-coal-stats-2019]
-Title: Coal Trade Outlook 2019
-Publisher: Maritime Statistics Bureau (OFFICIAL_STATISTICS)
-Published: 2019-06-14
-Excerpt: Chinese seaborne coal imports rose about 5 percent per year between 2016 and 2018 and are expected to keep growing through the mid 2020s as coastal power demand expands. Coal remains the main driver of Panamax demand in the Pacific basin. Indian imports are also projected to rise steadily, supported by power generation growth.
+[sourceId: src-forum-regulation-2026]
+Title: Secret IMO rule will force half the bulk fleet to scrap in 2027 (thread)
+Publisher: ShipTalk Forum (FORUM)
+Published: 2026-04-21
+Excerpt: A poster claims that an unpublished IMO rule will force half of the dry bulk fleet into scrapping by 2027 because of carbon intensity ratings. Other posters disagree and say the current CII and EEXI rules only require slow steaming or efficiency upgrades. Nobody in the thread cites an official document.
 
 
 Extract the factual claims that help answer the sub-question, following the rules you were given.
